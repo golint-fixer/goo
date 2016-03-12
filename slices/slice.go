@@ -5,6 +5,8 @@ type Slice interface {
 
 	AppendSlice(s Slice) Slice
 
+	Cap() int
+
 	Copy(s Slice) int
 
 	Get(i int) interface{}

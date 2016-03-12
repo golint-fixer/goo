@@ -14,6 +14,10 @@ func (s SliceInterface) AppendSlice(t Slice) Slice {
 	return append(s, t.(SliceInterface)...)
 }
 
+func (s SliceInterface) Cap() int {
+	return cap(s)
+}
+
 func (s SliceInterface) Copy(t Slice) int {
 	return copy(s, t.(SliceInterface))
 }
