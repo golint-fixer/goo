@@ -1,6 +1,6 @@
 package lang
 
-type Iterable interface {
+type Iterator interface {
 	More() bool
 
 	Next() interface{}
