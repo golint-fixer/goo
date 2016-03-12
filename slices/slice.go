@@ -21,3 +21,5 @@ type Slice interface {
 
 	Zero() interface{}
 }
+
+var _ Slice = SliceInterface(nil)
