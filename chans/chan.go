@@ -22,6 +22,14 @@ type Chan interface {
 	Send(v interface{})
 }
 
+var (
+	_ Chan = ChanBool(nil)
+	_ Chan = ChanInt(nil)
+	_ Chan = ChanInterface(nil)
+	_ Chan = ChanRune(nil)
+	_ Chan = ChanString(nil)
+)
+
 func Iterator(c ChanReceive) lang.Iterator {
 	return &iterator{c: c}
 }
