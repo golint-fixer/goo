@@ -6,6 +6,90 @@ import (
 	"github.com/willfaught/lang"
 )
 
+type SliceBool []bool
+
+var (
+	_ lang.Equatable = SliceBool(nil)
+	_ sort.Interface = SliceBool(nil)
+)
+
+func (s SliceBool) Append(v ...interface{}) Slice {
+	for _, v := range v {
+		s = append(s, v.(bool))
+	}
+
+	return s
+}
+
+func (s SliceBool) AppendSlice(t Slice) Slice {
+	return append(s, t.(SliceBool)...)
+}
+
+func (s SliceBool) Cap() int {
+	return cap(s)
+}
+
+func (s SliceBool) Copy(t Slice) int {
+	return copy(s, t.(SliceBool))
+}
+
+func (s SliceBool) Equals(v interface{}) bool {
+	var t = v.(SliceBool)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
+		if !lang.Equal(t[i], s[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceBool) Get(i int) interface{} {
+	return s[i]
+}
+
+func (s SliceBool) Len() int {
+	return len(s)
+}
+
+func (s SliceBool) Less(i, j int) bool {
+	return !s[i] && s[j]
+}
+
+func (s SliceBool) Make(l, c int) Slice {
+	return make(SliceBool, l, c)
+}
+
+func (s SliceBool) Set(i int, v interface{}) {
+	s[i] = v.(bool)
+}
+
+func (s SliceBool) Slice(i, j int) Slice {
+	return s[i:j]
+}
+
+func (s SliceBool) SliceCap(i, j, m int) Slice {
+	return s[i:j:m]
+}
+
+func (s SliceBool) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s SliceBool) Zero() interface{} {
+	return false
+}
+
 type SliceInt []int
 
 var (
