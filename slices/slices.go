@@ -46,6 +46,27 @@ func (s SliceBool) Equals(v interface{}) bool {
 	}
 
 	for i := range s {
+		if t[i] != s[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceBool) EqualsDeep(v interface{}) bool {
+	var t = v.(SliceBool)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
 		if !lang.Equal(t[i], s[i]) {
 			return false
 		}
@@ -118,6 +139,27 @@ func (s SliceInt) Copy(t Slice) int {
 }
 
 func (s SliceInt) Equals(v interface{}) bool {
+	var t = v.(SliceInt)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
+		if t[i] != s[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceInt) EqualsDeep(v interface{}) bool {
 	var t = v.(SliceInt)
 	var l = len(s)
 
@@ -207,6 +249,27 @@ func (s SliceInterface) Equals(v interface{}) bool {
 	}
 
 	for i := range s {
+		if t[i] != s[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceInterface) EqualsDeep(v interface{}) bool {
+	var t = v.(SliceInterface)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
 		if !lang.Equal(t[i], s[i]) {
 			return false
 		}
@@ -271,6 +334,27 @@ func (s SliceRune) Copy(t Slice) int {
 }
 
 func (s SliceRune) Equals(v interface{}) bool {
+	var t = v.(SliceRune)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
+		if t[i] != s[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceRune) EqualsDeep(v interface{}) bool {
 	var t = v.(SliceRune)
 	var l = len(s)
 
@@ -355,6 +439,27 @@ func (s SliceString) Copy(t Slice) int {
 }
 
 func (s SliceString) Equals(v interface{}) bool {
+	var t = v.(SliceString)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
+		if t[i] != s[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceString) EqualsDeep(v interface{}) bool {
 	var t = v.(SliceString)
 	var l = len(s)
 
