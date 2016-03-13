@@ -1,6 +1,94 @@
 package slices
 
-import "github.com/willfaught/lang"
+import (
+	"sort"
+
+	"github.com/willfaught/lang"
+)
+
+type SliceInt []int
+
+var (
+	_ lang.Equatable = SliceInt(nil)
+	_ sort.Interface = SliceInt(nil)
+)
+
+func (s SliceInt) Append(v ...interface{}) Slice {
+	for _, v := range v {
+		s = append(s, v.(int))
+	}
+
+	return s
+}
+
+func (s SliceInt) AppendSlice(t Slice) Slice {
+	return append(s, t.(SliceInt)...)
+}
+
+func (s SliceInt) Cap() int {
+	return cap(s)
+}
+
+func (s SliceInt) Copy(t Slice) int {
+	return copy(s, t.(SliceInt))
+}
+
+func (s SliceInt) Equals(v interface{}) bool {
+	var t = v.(SliceInt)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
+		if !lang.Equal(t[i], s[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceInt) Get(i int) interface{} {
+	return s[i]
+}
+
+func (s SliceInt) Len() int {
+	return len(s)
+}
+
+func (s SliceInt) Less(i, j int) bool {
+	return s[i] < s[j]
+}
+
+func (s SliceInt) Make(l, c int) Slice {
+	return make(SliceInt, l, c)
+}
+
+func (s SliceInt) Set(i int, v interface{}) {
+	s[i] = v.(int)
+}
+
+func (s SliceInt) Slice(i, j int) Slice {
+	return s[i:j]
+}
+
+func (s SliceInt) SliceCap(i, j, m int) Slice {
+	return s[i:j:m]
+}
+
+func (s SliceInt) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s SliceInt) Zero() interface{} {
+	return int(0)
+}
 
 type SliceInterface []interface{}
 
