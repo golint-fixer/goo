@@ -28,7 +28,13 @@ type Slice interface {
 	Zero() interface{}
 }
 
-var _ Slice = SliceInterface(nil)
+var (
+	_ Slice = SliceBool(nil)
+	_ Slice = SliceInt(nil)
+	_ Slice = SliceInterface(nil)
+	_ Slice = SliceRune(nil)
+	_ Slice = SliceString(nil)
+)
 
 func Iterator(s Slice) lang.Iterator {
 	return &iterator{n: s.Len(), s: s}
