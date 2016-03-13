@@ -6,12 +6,22 @@ import (
 	"github.com/willfaught/lang"
 )
 
-type SliceBool []bool
-
 var (
 	_ lang.Equatable = SliceBool(nil)
-	_ sort.Interface = SliceBool(nil)
+	_ lang.Equatable = SliceInt(nil)
+	_ lang.Equatable = SliceInterface(nil)
+	_ lang.Equatable = SliceRune(nil)
+	_ lang.Equatable = SliceString(nil)
 )
+
+var (
+	_ sort.Interface = SliceBool(nil)
+	_ sort.Interface = SliceInt(nil)
+	_ sort.Interface = SliceRune(nil)
+	_ sort.Interface = SliceString(nil)
+)
+
+type SliceBool []bool
 
 func (s SliceBool) Append(v ...interface{}) Slice {
 	for _, v := range v {
@@ -113,11 +123,6 @@ func (s SliceBool) Zero() interface{} {
 
 type SliceInt []int
 
-var (
-	_ lang.Equatable = SliceInt(nil)
-	_ sort.Interface = SliceInt(nil)
-)
-
 func (s SliceInt) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(int))
@@ -218,8 +223,6 @@ func (s SliceInt) Zero() interface{} {
 
 type SliceInterface []interface{}
 
-var _ lang.Equatable = SliceInterface(nil)
-
 func (s SliceInterface) Append(v ...interface{}) Slice {
 	return append(s, v...)
 }
@@ -307,11 +310,6 @@ func (s SliceInterface) Zero() interface{} {
 }
 
 type SliceRune []rune
-
-var (
-	_ lang.Equatable = SliceRune(nil)
-	_ sort.Interface = SliceRune(nil)
-)
 
 func (s SliceRune) Append(v ...interface{}) Slice {
 	for _, v := range v {
@@ -412,11 +410,6 @@ func (s SliceRune) Zero() interface{} {
 }
 
 type SliceString []string
-
-var (
-	_ lang.Equatable = SliceString(nil)
-	_ sort.Interface = SliceString(nil)
-)
 
 func (s SliceString) Append(v ...interface{}) Slice {
 	for _, v := range v {
