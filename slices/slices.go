@@ -242,3 +242,87 @@ func (s SliceRune) Swap(i, j int) {
 func (s SliceRune) Zero() interface{} {
 	return rune(0)
 }
+
+type SliceString []string
+
+var (
+	_ lang.Equatable = SliceString(nil)
+	_ sort.Interface = SliceString(nil)
+)
+
+func (s SliceString) Append(v ...interface{}) Slice {
+	for _, v := range v {
+		s = append(s, v.(string))
+	}
+
+	return s
+}
+
+func (s SliceString) AppendSlice(t Slice) Slice {
+	return append(s, t.(SliceString)...)
+}
+
+func (s SliceString) Cap() int {
+	return cap(s)
+}
+
+func (s SliceString) Copy(t Slice) int {
+	return copy(s, t.(SliceString))
+}
+
+func (s SliceString) Equals(v interface{}) bool {
+	var t = v.(SliceString)
+	var l = len(s)
+
+	if len(t) != l {
+		return false
+	}
+
+	if l == 0 {
+		return true
+	}
+
+	for i := range s {
+		if !lang.Equal(t[i], s[i]) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s SliceString) Get(i int) interface{} {
+	return s[i]
+}
+
+func (s SliceString) Len() int {
+	return len(s)
+}
+
+func (s SliceString) Less(i, j int) bool {
+	return s[i] < s[j]
+}
+
+func (s SliceString) Make(l, c int) Slice {
+	return make(SliceString, l, c)
+}
+
+func (s SliceString) Set(i int, v interface{}) {
+	s[i] = v.(string)
+}
+
+func (s SliceString) Slice(i, j int) Slice {
+	return s[i:j]
+}
+
+func (s SliceString) SliceCap(i, j, m int) Slice {
+	return s[i:j:m]
+}
+
+func (s SliceString) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s SliceString) Zero() interface{} {
+	return ""
+}
