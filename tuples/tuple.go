@@ -11,6 +11,15 @@ var (
 	_ lang.Equatable = Tuple7{}
 )
 
+var (
+	_ lang.EquatableDeep = Tuple2{}
+	_ lang.EquatableDeep = Tuple3{}
+	_ lang.EquatableDeep = Tuple4{}
+	_ lang.EquatableDeep = Tuple5{}
+	_ lang.EquatableDeep = Tuple6{}
+	_ lang.EquatableDeep = Tuple7{}
+)
+
 type Tuple2 [2]interface{}
 
 func (t Tuple2) Equals(v interface{}) bool {
