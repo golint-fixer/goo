@@ -36,6 +36,14 @@ var (
 	_ Slice = SliceString(nil)
 )
 
+func Dequeue(s Slice) (Slice, interface{}) {
+	return s.Slice(1, s.Len()-1), s.Get(0)
+}
+
+func Enqueue(s Slice, v interface{}) Slice {
+	return s.Append(v)
+}
+
 func Iterator(s Slice) lang.Iterator {
 	return &iterator{n: s.Len(), s: s}
 }
