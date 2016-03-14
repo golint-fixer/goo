@@ -15,6 +15,14 @@ var (
 )
 
 var (
+	_ lang.EquatableDeep = SliceBool(nil)
+	_ lang.EquatableDeep = SliceInt(nil)
+	_ lang.EquatableDeep = SliceInterface(nil)
+	_ lang.EquatableDeep = SliceRune(nil)
+	_ lang.EquatableDeep = SliceString(nil)
+)
+
+var (
 	_ sort.Interface = SliceBool(nil)
 	_ sort.Interface = SliceInt(nil)
 	_ sort.Interface = SliceRune(nil)
