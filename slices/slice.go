@@ -40,6 +40,16 @@ func Iterator(s Slice) lang.Iterator {
 	return &iterator{n: s.Len(), s: s}
 }
 
+func Pop(s Slice) (Slice, interface{}) {
+	var l = s.Len()
+
+	return s.Slice(0, l-2), s.Get(l - 1)
+}
+
+func Push(s Slice, v interface{}) Slice {
+	return s.Append(v)
+}
+
 type iterator struct {
 	i int
 
