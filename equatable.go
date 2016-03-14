@@ -9,7 +9,7 @@ func Equal(v, w interface{}) bool {
 }
 
 func EqualDeep(v, w interface{}) bool {
-	if v, ok := v.(Equatable); ok {
+	if v, ok := v.(EquatableDeep); ok {
 		return v.EqualsDeep(w)
 	}
 
@@ -18,6 +18,8 @@ func EqualDeep(v, w interface{}) bool {
 
 type Equatable interface {
 	Equals(v interface{}) bool
+}
 
+type EquatableDeep interface {
 	EqualsDeep(v interface{}) bool
 }
