@@ -14,6 +14,8 @@ type ChanReceive interface {
 	ReceiveCheck() (interface{}, bool)
 }
 
+// TODO: Cycle, Iterate, Repeat
+
 func Equal(c, d ChanReceive) bool {
 	for {
 		var vc, okc = c.ReceiveCheck()

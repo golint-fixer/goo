@@ -36,6 +36,16 @@ var (
 	_ Slice = SliceString(nil)
 )
 
+// TODO: All, And, Any, Combine, CombineRepeats, Concat, Contains, Cut,
+// Difference, Drop, DropEnd, DropWith, DropWithEnd, Each, Expand, Extend,
+// Filter, FindIndex, FindIndexEnd, FindIndexes, First, Foldl, Foldl1, Foldr,
+// Foldr1, Greatest, Group, Head, Index, Indexes, Infix, Init, Inits, Insert,
+// Insert, Intersect, Intersperse, Last, Least, Map, Or, Partition, Permute,
+// Prefix, Product, Remove, RemoveAll, RemoveFast, RemoveFirst, RemoveLast,
+// RemoveRange, Replicate, Replicate, Reverse, Sort, SortStable, Split, Subset,
+// Subslice, Subslices, Suffix, Sum, Tail, Tails, Take, TakeEnd, TakeWith,
+// TakeWithEnd, Transpose, Union, Zip, Zip3-7, ZipWith, ZipWith3-7
+
 func Dequeue(s Slice) (Slice, interface{}) {
 	return s.Slice(1, s.Len()-1), s.Get(0)
 }
