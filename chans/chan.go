@@ -27,3 +27,5 @@ var (
 	_ Chan = ChanRune(nil)
 	_ Chan = ChanString(nil)
 )
+
+// TODO: Branch, Combine, Compose, Copy, Merge, Replay, Unblock
