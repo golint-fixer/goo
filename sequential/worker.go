@@ -1,4 +1,4 @@
-package work
+package sequential
 
 type Worker struct {
 	done chan struct{}
