@@ -1,6 +1,6 @@
 package stack
 
-import "github.com/willfaught/lang/slices"
+import "github.com/willfaught/lang/slice"
 
 type Stack interface {
 	Len() int
@@ -15,14 +15,14 @@ type Stack interface {
 var _ Stack = stack{}
 
 type stack struct {
-	s slices.Slice
+	s slice.Slice
 }
 
 func NewStack() Stack {
-	return stack{s: slices.SliceInterface{}}
+	return stack{s: slice.SliceInterface{}}
 }
 
-func NewStackFor(s slices.Slice) Stack {
+func NewStackFor(s slice.Slice) Stack {
 	return stack{s: s}
 }
 
@@ -37,11 +37,11 @@ func (s stack) Peek() interface{} {
 func (s stack) Pop() interface{} {
 	var v interface{}
 
-	s.s, v = slices.Pop(s.s)
+	s.s, v = slice.Pop(s.s)
 
 	return v
 }
 
 func (s stack) Push(v interface{}) {
-	s.s = slices.Push(s.s, v)
+	s.s = slice.Push(s.s, v)
 }

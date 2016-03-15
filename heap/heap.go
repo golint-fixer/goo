@@ -3,7 +3,7 @@ package heap
 import (
 	"sort"
 
-	"github.com/willfaught/lang/slices"
+	"github.com/willfaught/lang/slice"
 )
 
 type Heap interface {
@@ -21,10 +21,10 @@ var _ Heap = heap{}
 type heap struct {
 	i sort.Interface
 
-	s slices.Slice
+	s slice.Slice
 }
 
-func NewHeap(s slices.Slice) Heap {
+func NewHeap(s slice.Slice) Heap {
 	return heap{i: s.(sort.Interface), s: s}
 }
 

@@ -1,6 +1,6 @@
 package vector
 
-import "github.com/willfaught/lang/slices"
+import "github.com/willfaught/lang/slice"
 
 type Vector interface {
 	Append(v interface{})
@@ -19,14 +19,14 @@ type Vector interface {
 var _ Vector = vector{}
 
 type vector struct {
-	s slices.Slice
+	s slice.Slice
 }
 
 func NewVector() Vector {
-	return vector{s: slices.SliceInterface{}}
+	return vector{s: slice.SliceInterface{}}
 }
 
-func NewVectorFor(s slices.Slice) Vector {
+func NewVectorFor(s slice.Slice) Vector {
 	return vector{s: s}
 }
 

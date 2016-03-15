@@ -1,6 +1,6 @@
 package queue
 
-import "github.com/willfaught/lang/slices"
+import "github.com/willfaught/lang/slice"
 
 type Queue interface {
 	Add(v interface{})
@@ -15,19 +15,19 @@ type Queue interface {
 var _ Queue = queue{}
 
 type queue struct {
-	s slices.Slice
+	s slice.Slice
 }
 
 func NewQueue() Queue {
-	return queue{s: slices.SliceInterface{}}
+	return queue{s: slice.SliceInterface{}}
 }
 
-func NewQueueFor(s slices.Slice) Queue {
+func NewQueueFor(s slice.Slice) Queue {
 	return queue{s: s}
 }
 
 func (q queue) Add(v interface{}) {
-	q.s = slices.Enqueue(q.s, v)
+	q.s = slice.Enqueue(q.s, v)
 }
 
 func (q queue) Len() int {
@@ -41,7 +41,7 @@ func (q queue) Peek() interface{} {
 func (q queue) Remove() interface{} {
 	var v interface{}
 
-	q.s, v = slices.Dequeue(q.s)
+	q.s, v = slice.Dequeue(q.s)
 
 	return v
 }
