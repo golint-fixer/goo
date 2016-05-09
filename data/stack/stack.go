@@ -1,6 +1,6 @@
 package stack
 
-import "github.com/willfaught/lang/slice"
+import "github.com/willfaught/lang/data/slice"
 
 type Stack interface {
 	Len() int

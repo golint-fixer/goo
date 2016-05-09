@@ -3,7 +3,7 @@ package heap
 import (
 	"sort"
 
-	"github.com/willfaught/lang/slice"
+	"github.com/willfaught/lang/data/slice"
 )
 
 type Heap interface {

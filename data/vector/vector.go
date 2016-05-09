@@ -1,6 +1,6 @@
 package vector
 
-import "github.com/willfaught/lang/slice"
+import "github.com/willfaught/lang/data/slice"
 
 type Vector interface {
 	Append(v interface{})
