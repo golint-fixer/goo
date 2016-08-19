@@ -2,42 +2,56 @@ package sync
 
 import "sync"
 
-type Pinger interface {
-	Ping()
-
-	Pong()
-}
-
-func NewPinger() Pinger {
-	return &pinger{lock: &sync.Mutex{}, pinged: make(chan struct{}, 1)}
-}
-
-type pinger struct {
-	lock   *sync.Mutex
+type Echo struct {
+	m      *sync.Mutex
 	pinged chan struct{}
 	pings  int
 }
 
-func (p *pinger) Ping() {
-	p.lock.Lock()
-	p.pings++
-
-	if p.pings == 0 {
-		p.pinged <- struct{}{}
-	}
-
-	p.lock.Unlock()
+func NewEcho() *Echo {
+	return &Echo{m: &sync.Mutex{}, pinged: make(chan struct{}, 1)}
 }
 
-func (p *pinger) Pong() {
-	p.lock.Lock()
+func (e *Echo) Ping(n int) {
+	e.m.Lock()
 
-	if p.pings == 0 {
-		p.lock.Unlock()
-		<-p.pinged
-		p.lock.Lock()
+	defer e.m.Unlock()
+
+	if e.pings == 0 {
+		close(e.pinged)
 	}
 
-	p.pings--
-	p.lock.Unlock()
+	e.pings += n
+}
+
+func (e *Echo) Pong(n int) {
+	for {
+		e.m.Lock()
+
+		if e.pings == 0 {
+			var c = make(chan struct{})
+
+			e.pinged = c
+			e.m.Unlock()
+
+			<-c
+
+			continue
+		}
+
+		var rest = e.pings - n
+
+		if rest < 0 {
+			e.pings = 0
+			n += rest
+			e.m.Unlock()
+
+			continue
+		}
+
+		e.pings = rest
+		e.m.Unlock()
+
+		break
+	}
 }
