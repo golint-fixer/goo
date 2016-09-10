@@ -1,6 +1,6 @@
 package set
 
-import "github.com/willfaught/lang/data/maps"
+import "github.com/willfaught/goo/data/maps"
 
 type Set interface {
 	Add(v interface{})

@@ -1,4 +1,4 @@
-package lang
+package goo
 
 func Equal(v, w interface{}) bool {
 	if v, ok := v.(Equatable); ok {

@@ -1,6 +1,6 @@
 package chans
 
-import "github.com/willfaught/lang"
+import "github.com/willfaught/goo"
 
 type ChanReceive interface {
 	Cap() int

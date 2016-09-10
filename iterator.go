@@ -1,4 +1,4 @@
-package lang
+package goo
 
 type Iterator interface {
 	More() bool

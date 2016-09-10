@@ -3,7 +3,7 @@ package slice
 import (
 	"sort"
 
-	"github.com/willfaught/lang"
+	"github.com/willfaught/goo"
 )
 
 var (

@@ -1,6 +1,6 @@
 package slice
 
-import "github.com/willfaught/lang"
+import "github.com/willfaught/goo"
 
 var _ lang.Iterator = &iterator{}
 

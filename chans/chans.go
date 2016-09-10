@@ -1,6 +1,6 @@
 package chans
 
-import "github.com/willfaught/lang"
+import "github.com/willfaught/goo"
 
 var (
 	_ lang.Equatable = ChanBool(nil)

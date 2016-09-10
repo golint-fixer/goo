@@ -1,6 +1,6 @@
 package maps
 
-import "github.com/willfaught/lang"
+import "github.com/willfaught/goo"
 
 type Map interface {
 	Delete(k interface{})
