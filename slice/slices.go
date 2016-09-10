@@ -7,19 +7,19 @@ import (
 )
 
 var (
-	_ lang.Equatable = SliceBool(nil)
-	_ lang.Equatable = SliceInt(nil)
-	_ lang.Equatable = SliceInterface(nil)
-	_ lang.Equatable = SliceRune(nil)
-	_ lang.Equatable = SliceString(nil)
+	_ goo.Equatable = SliceBool(nil)
+	_ goo.Equatable = SliceInt(nil)
+	_ goo.Equatable = SliceInterface(nil)
+	_ goo.Equatable = SliceRune(nil)
+	_ goo.Equatable = SliceString(nil)
 )
 
 var (
-	_ lang.EquatableDeep = SliceBool(nil)
-	_ lang.EquatableDeep = SliceInt(nil)
-	_ lang.EquatableDeep = SliceInterface(nil)
-	_ lang.EquatableDeep = SliceRune(nil)
-	_ lang.EquatableDeep = SliceString(nil)
+	_ goo.EquatableDeep = SliceBool(nil)
+	_ goo.EquatableDeep = SliceInt(nil)
+	_ goo.EquatableDeep = SliceInterface(nil)
+	_ goo.EquatableDeep = SliceRune(nil)
+	_ goo.EquatableDeep = SliceString(nil)
 )
 
 var (
@@ -85,7 +85,7 @@ func (s SliceBool) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !lang.Equal(t[i], s[i]) {
+		if !goo.Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -185,7 +185,7 @@ func (s SliceInt) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !lang.Equal(t[i], s[i]) {
+		if !goo.Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -281,7 +281,7 @@ func (s SliceInterface) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !lang.Equal(t[i], s[i]) {
+		if !goo.Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -373,7 +373,7 @@ func (s SliceRune) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !lang.Equal(t[i], s[i]) {
+		if !goo.Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -473,7 +473,7 @@ func (s SliceString) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !lang.Equal(t[i], s[i]) {
+		if !goo.Equal(t[i], s[i]) {
 			return false
 		}
 	}

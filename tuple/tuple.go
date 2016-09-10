@@ -3,21 +3,21 @@ package tuples
 import "github.com/willfaught/goo"
 
 var (
-	_ lang.Equatable = Tuple2{}
-	_ lang.Equatable = Tuple3{}
-	_ lang.Equatable = Tuple4{}
-	_ lang.Equatable = Tuple5{}
-	_ lang.Equatable = Tuple6{}
-	_ lang.Equatable = Tuple7{}
+	_ goo.Equatable = Tuple2{}
+	_ goo.Equatable = Tuple3{}
+	_ goo.Equatable = Tuple4{}
+	_ goo.Equatable = Tuple5{}
+	_ goo.Equatable = Tuple6{}
+	_ goo.Equatable = Tuple7{}
 )
 
 var (
-	_ lang.EquatableDeep = Tuple2{}
-	_ lang.EquatableDeep = Tuple3{}
-	_ lang.EquatableDeep = Tuple4{}
-	_ lang.EquatableDeep = Tuple5{}
-	_ lang.EquatableDeep = Tuple6{}
-	_ lang.EquatableDeep = Tuple7{}
+	_ goo.EquatableDeep = Tuple2{}
+	_ goo.EquatableDeep = Tuple3{}
+	_ goo.EquatableDeep = Tuple4{}
+	_ goo.EquatableDeep = Tuple5{}
+	_ goo.EquatableDeep = Tuple6{}
+	_ goo.EquatableDeep = Tuple7{}
 )
 
 type Tuple2 [2]interface{}
@@ -30,7 +30,7 @@ func (t Tuple2) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple2)
 
 	for i := range t {
-		if !lang.Equal(t[i], u[i]) {
+		if !goo.Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -56,7 +56,7 @@ func (t Tuple3) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple3)
 
 	for i := range t {
-		if !lang.Equal(t[i], u[i]) {
+		if !goo.Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -86,7 +86,7 @@ func (t Tuple4) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple4)
 
 	for i := range t {
-		if !lang.Equal(t[i], u[i]) {
+		if !goo.Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -120,7 +120,7 @@ func (t Tuple5) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple5)
 
 	for i := range t {
-		if !lang.Equal(t[i], u[i]) {
+		if !goo.Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -158,7 +158,7 @@ func (t Tuple6) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple6)
 
 	for i := range t {
-		if !lang.Equal(t[i], u[i]) {
+		if !goo.Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -200,7 +200,7 @@ func (t Tuple7) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple7)
 
 	for i := range t {
-		if !lang.Equal(t[i], u[i]) {
+		if !goo.Equal(t[i], u[i]) {
 			return false
 		}
 	}

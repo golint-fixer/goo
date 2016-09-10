@@ -50,7 +50,7 @@ func EqualDeep(c, d ChanReceive) bool {
 			break
 		}
 
-		if !lang.Equal(vc, vd) {
+		if !goo.Equal(vc, vd) {
 			return false
 		}
 	}
@@ -58,7 +58,7 @@ func EqualDeep(c, d ChanReceive) bool {
 	return true
 }
 
-func Iterator(c ChanReceive) lang.Iterator {
+func Iterator(c ChanReceive) goo.Iterator {
 	return &iterator{c: c}
 }
 

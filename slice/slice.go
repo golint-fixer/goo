@@ -2,7 +2,7 @@ package slice
 
 import "github.com/willfaught/goo"
 
-var _ lang.Iterator = &iterator{}
+var _ goo.Iterator = &iterator{}
 
 type Slice interface {
 	Append(v ...interface{}) Slice
@@ -54,7 +54,7 @@ func Enqueue(s Slice, v interface{}) Slice {
 	return s.Append(v)
 }
 
-func Iterator(s Slice) lang.Iterator {
+func Iterator(s Slice) goo.Iterator {
 	return &iterator{n: s.Len(), s: s}
 }
 

@@ -20,13 +20,13 @@ type Map interface {
 	Set(k, v interface{})
 }
 
-func KeyValuesIterator(m Map) lang.Iterator {
+func KeyValuesIterator(m Map) goo.Iterator {
 	var kv = m.KeyValues()
 
 	return &keyValuesIterator{n: len(kv), s: kv}
 }
 
-func KeysIterator(m Map) lang.Iterator {
+func KeysIterator(m Map) goo.Iterator {
 	var k = m.Keys()
 
 	return &keyIterator{n: len(k), s: k}
