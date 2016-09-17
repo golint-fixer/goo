@@ -1,5 +1,5 @@
-//go:generate go install github.com/willfaught/goo/cmd/goo
-//go:generate goo -in slice.go -out bool.go -var Name=Bool -var Type=bool -var Zero=false
+//go:generate go get github.com/willfaught/goo/cmd/goo
+//go:generate goo -in slice.go -out bool.go -json {"Name":"Bool","Type":"bool","Zero":"false"}
 
 package slice
 
@@ -9,14 +9,14 @@ import (
 	"github.com/willfaught/goo/slice"
 )
 
-type __Type__ int //goo:omit
+/// {{if false}}
+type __Type__ int /// {{end}}
 
-var __Zero__ = 0 //goo:omit
+/// {{if false}}
+var __Zero__ = 0 /// {{end}}
 
 // Slice__Name__ is a slice of __Type__.
 type Slice__Name__ []__Type__
-
-// TODO: var _ goo.Equatable = Slice__Name__(nil)
 
 /// {{if eq .Type "bool" "interface{}" | not}}
 var _ sort.Interface = Slice__Name__(nil) /// {{end}}
@@ -77,14 +77,13 @@ func (s Slice__Name__) Len() int {
 	return len(s)
 }
 
-//goo:ifnot elementType bool
-//goo:ifnot elementType interface{}
+/// {{if eq .Type "bool" "interface{}" | not}}
 // Less implements sort.Interface.
 func (s Slice__Name__) Less(i, j int) bool {
 	return s[i] < s[j]
-}
+} /// {{end}}
 
-// Make returns a new slice.Slice__Name__ with length l and capacity c.
+// Make returns a new Slice__Name__ with length l and capacity c.
 func (s Slice__Name__) Make(l, c int) slice.Slice {
 	return make(Slice__Name__, l, c)
 }
@@ -104,13 +103,13 @@ func (s Slice__Name__) SliceCap(i, j, c int) slice.Slice {
 	return s[i:j:c]
 }
 
-// {{if eq .Type "bool" "interface{}" | not}}
+/// {{if eq .Type "bool" "interface{}" | not}}
 // Swap implements sort.Interface.
 func (s Slice__Name__) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
-} // {{end}}
+} /// {{end}}
 
-// Zero returns the zero value of the s element type.
+// Zero returns the zero __Zero__ value of the s element type.
 func (s Slice__Name__) Zero() interface{} {
 	return __Zero__
 }

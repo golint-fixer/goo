@@ -1,149 +1,57 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"reflect"
-	"regexp"
-	"strings"
-	"text/template"
+
+	"github.com/willfaught/goo/macro"
 )
 
-type vars map[string][]string
-
-func (v vars) Set(s string) error {
-	var ss = strings.Split(s, "=")
-
-	if len(ss) != 2 {
-		return fmt.Errorf("variable %v is invalid", s)
+func handle(err error, s string) {
+	if err == nil {
+		return
+	} else if s == "" {
+		fmt.Println("goo: error:", err)
+	} else {
+		fmt.Printf("goo: error: %v: %v", s, err)
 	}
 
-	v[ss[0]] = append(v[ss[0]], ss[1])
-
-	return nil
-}
-
-func (v vars) String() string {
-	return fmt.Sprint(map[string][]string(v))
+	os.Exit(1)
 }
 
 func main() {
-	var v = vars{}
-	var pathIn = flag.String("in", "", "Input file path")
-	var pathOut = flag.String("out", "", "Output file path")
+	var flagHelp = flag.Bool("help", false, "Print help.")
+	var flagIn = flag.String("in", "", "Input file path. Required.")
+	var flagJSON = flag.String("json", "null", "JSON data. Conflicts with field flag.")
+	var flagOut = flag.String("out", "", "Output file path. Required.")
 
-	flag.Var(&v, "var", "Variable of the form name=value")
 	flag.Parse()
 
-	if *pathIn == "" || *pathOut == "" || len(v) == 0 {
+	if *flagHelp {
 		flag.PrintDefaults()
-		os.Exit(1)
 
 		return
 	}
 
-	var stringType = reflect.TypeOf("")
-	var stringSliceType = reflect.SliceOf(stringType)
-	var fs []reflect.StructField
-	var vs []reflect.Value
-
-	for name, values := range v {
-		if len(values) == 1 {
-			fs = append(fs, reflect.StructField{Name: name, Type: stringType})
-			vs = append(vs, reflect.ValueOf(values[0]))
-		} else if len(values) > 1 {
-			fs = append(fs, reflect.StructField{Name: name, Type: stringSliceType})
-			vs = append(vs, reflect.ValueOf(values))
-		}
+	if *flagIn == "" {
+		handle(fmt.Errorf("in flag is required"), "")
 	}
 
-	var structValue = reflect.New(reflect.StructOf(fs))
-
-	for i := range fs {
-		structValue.Elem().Field(i).Set(vs[i])
+	if *flagOut == "" {
+		handle(fmt.Errorf("out flag is required"), "")
 	}
 
-	var bs, err = ioutil.ReadFile(*pathIn)
+	var j interface{}
 
-	if err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
+	handle(json.Unmarshal([]byte(*flagJSON), &j), "invalid json")
 
-	bs = regexp.MustCompile(`__([\w_]+)__`).ReplaceAll(bs, []byte("{{.$1}}"))
-	bs = regexp.MustCompile(`\/\/\/\s*(\{\{.+\}\})`).ReplaceAll(bs, []byte("$1"))
-	bs = regexp.MustCompile(`\/\*\*\s*(\{\{.+\}\})\s*\*\*\/`).ReplaceAll(bs, []byte("$1"))
+	var bs, err = ioutil.ReadFile(*flagIn)
 
-	t, err := template.New(*pathIn).Parse(string(bs))
-
-	if err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	var b bytes.Buffer
-
-	if err := t.Execute(b, structValue.Interface()); err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	if b, err = format.Source(b); err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	if err := ioutil.WriteFile(*pathOut, b.Bytes(), 0644); err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	osFile, err := os.OpenFile(*pathOut, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-
-	if err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	osFile.Close()
-
-	if err := osFile.Close(); err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	/*var fileSet = token.NewFileSet()
-	var astFile, err = parser.ParseFile(fileSet, *pathIn, nil, parser.ParseComments)
-
-	if err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	osFile, err := os.OpenFile(*pathOut, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-
-	if err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	if err := macro.Generate(fileSet, astFile, map[string][]string(v)); err != nil {
-		osFile.Close()
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	var c = &printer.Config{Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 8}
-
-	if err := c.Fprint(osFile, fileSet, astFile); err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}
-
-	if err := osFile.Close(); err != nil {
-		fmt.Println("goo:", err)
-		os.Exit(1)
-	}*/
+	handle(err, fmt.Sprintf("cannot read %v", *flagIn))
+	bs, err = macro.Macro(*flagIn, bs, j)
+	handle(err, "macro")
+	handle(ioutil.WriteFile(*flagOut, bs, 0644), fmt.Sprintf("cannot write %v", *flagOut))
 }

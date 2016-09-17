@@ -1,121 +1,33 @@
 package macro
 
 import (
-	"fmt"
-	"go/ast"
-	"go/token"
+	"bytes"
+	"go/format"
 	"regexp"
-	"strings"
+	"text/template"
 )
 
-//goo:case
-//goo:default
-//goo:else
-//goo:elseif
-//goo:elseifnot
-//goo:end
-//goo:for
-//goo:if
-//goo:ifnot
-//goo:write
-//goo:omit
-//goo:switch
+func Macro(name string, file []byte, data interface{}) ([]byte, error) {
+	file = regexp.MustCompile(`(?m:^\/\/go:generate.+$)`).ReplaceAll(file, []byte(""))
+	file = regexp.MustCompile(`__(\w[\w_]*)__`).ReplaceAll(file, []byte("{{.$1}}"))
+	file = regexp.MustCompile(`\/\/\/(.*)`).ReplaceAll(file, []byte("$1"))
+	file = regexp.MustCompile(`\/\*\*(.*)\*\*\/`).ReplaceAll(file, []byte("$1"))
 
-var (
-	ifre    = regexp.MustCompile(`^//goo:if ([\w_]+)$`)
-	ifvalre = regexp.MustCompile(`^//goo:if ([\w_]+)( ([\w_]+|"[^"\r\n]"))?$`)
-	ifnotre = regexp.MustCompile(`^//goo:ifnot ([\w_]+)$`)
-)
+	var t, err = template.New(name).Parse(string(file))
 
-/*func omit(cm ast.CommentMap, n ast.Node) bool {
-	for _, c := range cm[n].List {
-		if c.Text == "goo:omit" {
-			return true
-		}
+	if err != nil {
+		return nil, err
 	}
 
-	return false
-}
+	var b = &bytes.Buffer{}
 
-func vars(cm ast.CommentMap, n ast.Node, r *regexp.Regexp) []string {
-	var cg, ok = cm[n]
-
-	if !ok {
-		return nil
+	if err := t.Execute(b, data); err != nil {
+		return nil, err
 	}
 
-	var vars []string
-
-	for _, c := range cg.List {
-		if ss := r.FindStringSubmatch(c.Text); len(ss) > 1 {
-			vars = append(vars, ss[1])
-		}
+	if file, err = format.Source(b.Bytes()); err != nil {
+		return nil, err
 	}
 
-	return vars
-}
-
-func ifvars(cm ast.CommentMap, n ast.Node) []string {
-	return vars(cm, n, ifre)
-}
-
-func ifnotvars(cm ast.CommentMap, n ast.Node) []string {
-	return vars(cm, n, ifnotre)
-}*/
-
-func Generate(fs *token.FileSet, f *ast.File, vars map[string][]string) error {
-	//var cm = ast.NewCommentMap(fs, f, f.Comments)
-
-	// strip go generate
-
-	// vars
-
-	var reps []string
-
-	for k, vs := range vars {
-		if len(vs) == 0 {
-			continue
-		}
-
-		var v = vs[len(vs)-1]
-		var l = fmt.Sprintf("_%v", k)
-		var r = fmt.Sprintf("%v_", k)
-		var lr = fmt.Sprintf("_%v_", k)
-
-		reps = append(reps, k, v, l, v, r, v, lr, v)
-	}
-
-	var repl = strings.NewReplacer(reps...)
-
-	ast.Inspect(f, func(n ast.Node) bool {
-		if n == nil {
-			return false
-		}
-
-		switch n := n.(type) {
-		case *ast.BasicLit:
-			if n.Kind == token.STRING {
-				n.Value = repl.Replace(n.Value)
-			}
-
-		case *ast.Comment:
-			fmt.Println("COM", n.Text, repl.Replace(n.Text))
-			n.Text = repl.Replace(n.Text)
-
-		case *ast.Ident:
-			n.Name = repl.Replace(n.Name)
-		}
-
-		return true
-	})
-
-	// decls
-
-	/*for _, n := range f.Decls {
-
-	}*/
-
-	//BlockStmt.List (Stmt)
-
-	return nil
+	return file, nil
 }

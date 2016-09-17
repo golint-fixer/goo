@@ -1,6 +1,3 @@
-//go:generate go install github.com/willfaught/goo/cmd/goo
-//go:generate goo -in slice.go -out bool.go -var Name=Bool -var Type=bool -var Zero=false
-
 package slice
 
 import (
@@ -9,16 +6,8 @@ import (
 	"github.com/willfaught/goo/slice"
 )
 
-type bool int //goo:omit
-
-var false = 0 //goo:omit
-
 // SliceBool is a slice of bool.
 type SliceBool []bool
-
-// TODO: var _ goo.Equatable = SliceBool(nil)
-
-
 
 // Append appends v to s and returns the result.
 func (s SliceBool) Append(v ...interface{}) slice.Slice {
@@ -76,14 +65,7 @@ func (s SliceBool) Len() int {
 	return len(s)
 }
 
-//goo:ifnot elementType bool
-//goo:ifnot elementType interface{}
-// Less implements sort.Interface.
-func (s SliceBool) Less(i, j int) bool {
-	return s[i] < s[j]
-}
-
-// Make returns a new slice.SliceBool with length l and capacity c.
+// Make returns a new SliceBool with length l and capacity c.
 func (s SliceBool) Make(l, c int) slice.Slice {
 	return make(SliceBool, l, c)
 }
@@ -103,9 +85,7 @@ func (s SliceBool) SliceCap(i, j, c int) slice.Slice {
 	return s[i:j:c]
 }
 
-// 
-
-// Zero returns the zero value of the s element type.
+// Zero returns the zero false value of the s element type.
 func (s SliceBool) Zero() interface{} {
 	return false
 }
