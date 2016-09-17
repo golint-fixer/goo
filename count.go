@@ -1,4 +1,4 @@
-package sync
+package goo
 
 import "sync"
 
@@ -7,7 +7,7 @@ type Count struct {
 	n int
 }
 
-func NewCount(n int) Guard {
+func NewCount(n int) *Count {
 	return &Count{m: &sync.Mutex{}, n: n}
 }
 

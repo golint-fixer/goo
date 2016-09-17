@@ -1,6 +1,4 @@
-package vector
-
-import "github.com/willfaught/goo/data/slice"
+package goo
 
 type Vector interface {
 	Append(v interface{})
@@ -19,14 +17,14 @@ type Vector interface {
 var _ Vector = vector{}
 
 type vector struct {
-	s slice.Slice
+	s Slice
 }
 
 func NewVector() Vector {
-	return vector{s: slice.SliceInterface{}}
+	return vector{s: SliceInterface{}}
 }
 
-func NewVectorFor(s slice.Slice) Vector {
+func NewVectorFor(s Slice) Vector {
 	return vector{s: s}
 }
 

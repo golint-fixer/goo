@@ -1,13 +1,30 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo -in slice.go -out bool.go -json {"Name":"Bool","Type":"bool","Zero":"false"}
+//go:generate goo -in slice.go -out ../bool.go -json {"Name":"Bool","Type":"bool","Zero":"false"}
+//go:generate goo -in slice.go -out ../byte.go -json {"Name":"Byte","Type":"byte","Zero":"0"}
+//go:generate goo -in slice.go -out ../complex64.go -json {"Name":"Complex64","Type":"complex64","Zero":"0"}
+//go:generate goo -in slice.go -out ../complex128.go -json {"Name":"Complex128","Type":"complex128","Zero":"0"}
+//go:generate goo -in slice.go -out ../float32.go -json {"Name":"Float32","Type":"float32","Zero":"0"}
+//go:generate goo -in slice.go -out ../float64.go -json {"Name":"Float64","Type":"float64","Zero":"0"}
+//go:generate goo -in slice.go -out ../int.go -json {"Name":"Int","Type":"int","Zero":"0"}
+//go:generate goo -in slice.go -out ../int8.go -json {"Name":"Int8","Type":"int8","Zero":"0"}
+//go:generate goo -in slice.go -out ../int16.go -json {"Name":"Int16","Type":"int16","Zero":"0"}
+//go:generate goo -in slice.go -out ../int32.go -json {"Name":"Int32","Type":"int32","Zero":"0"}
+//go:generate goo -in slice.go -out ../int64.go -json {"Name":"Int64","Type":"int64","Zero":"0"}
+//go:generate goo -in slice.go -out ../rune.go -json {"Name":"Rune","Type":"rune","Zero":"0"}
+//go:generate goo -in slice.go -out ../string.go -json {"Name":"String","Type":"string","Zero":"\"\""}
+//go:generate goo -in slice.go -out ../uint.go -json {"Name":"Uint","Type":"uint","Zero":"0"}
+//go:generate goo -in slice.go -out ../uintptr.go -json {"Name":"Uintptr","Type":"uintptr","Zero":"0"}
+//go:generate goo -in slice.go -out ../uint8.go -json {"Name":"Uint8","Type":"uint8","Zero":"0"}
+//go:generate goo -in slice.go -out ../uint16.go -json {"Name":"Uint16","Type":"uint16","Zero":"0"}
+//go:generate goo -in slice.go -out ../uint32.go -json {"Name":"Uint32","Type":"uint32","Zero":"0"}
+//go:generate goo -in slice.go -out ../uint64.go -json {"Name":"Uint64","Type":"uint64","Zero":"0"}
 
-package slice
+package goo
 
-import (
-	"sort"
+import "sort"
 
-	"github.com/willfaught/goo/slice"
-)
+/// {{if false}}
+type Slice interface{} /// {{end}}
 
 /// {{if false}}
 type __Type__ int /// {{end}}
@@ -22,7 +39,7 @@ type Slice__Name__ []__Type__
 var _ sort.Interface = Slice__Name__(nil) /// {{end}}
 
 // Append appends v to s and returns the result.
-func (s Slice__Name__) Append(v ...interface{}) slice.Slice {
+func (s Slice__Name__) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(__Type__))
 	}
@@ -31,7 +48,7 @@ func (s Slice__Name__) Append(v ...interface{}) slice.Slice {
 }
 
 // AppendSlice appends t to s and returns the result.
-func (s Slice__Name__) AppendSlice(t slice.Slice) slice.Slice {
+func (s Slice__Name__) AppendSlice(t Slice) Slice {
 	return append(s, t.(Slice__Name__)...)
 }
 
@@ -41,7 +58,7 @@ func (s Slice__Name__) Cap() int {
 }
 
 // Copy copies t to s.
-func (s Slice__Name__) Copy(t slice.Slice) int {
+func (s Slice__Name__) Copy(t Slice) int {
 	return copy(s, t.(Slice__Name__))
 }
 
@@ -84,7 +101,7 @@ func (s Slice__Name__) Less(i, j int) bool {
 } /// {{end}}
 
 // Make returns a new Slice__Name__ with length l and capacity c.
-func (s Slice__Name__) Make(l, c int) slice.Slice {
+func (s Slice__Name__) Make(l, c int) Slice {
 	return make(Slice__Name__, l, c)
 }
 
@@ -94,12 +111,12 @@ func (s Slice__Name__) Set(i int, v interface{}) {
 }
 
 // Slice returns the slice of s from indexes i to j.
-func (s Slice__Name__) Slice(i, j int) slice.Slice {
+func (s Slice__Name__) Slice(i, j int) Slice {
 	return s[i:j]
 }
 
 // SliceCap returns the slice of s from indexes i to j with capacity c.
-func (s Slice__Name__) SliceCap(i, j, c int) slice.Slice {
+func (s Slice__Name__) SliceCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 

@@ -1,4 +1,4 @@
-package chans
+package goo
 
 import "sync"
 

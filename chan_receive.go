@@ -1,6 +1,4 @@
-package chans
-
-import "github.com/willfaught/goo"
+package goo
 
 type ChanReceive interface {
 	Cap() int
@@ -16,7 +14,7 @@ type ChanReceive interface {
 
 // TODO: Cycle, Iterate, Repeat
 
-func Equal(c, d ChanReceive) bool {
+func ChanEqual(c, d ChanReceive) bool {
 	for {
 		var vc, okc = c.ReceiveCheck()
 		var vd, okd = d.ReceiveCheck()
@@ -37,7 +35,7 @@ func Equal(c, d ChanReceive) bool {
 	return true
 }
 
-func EqualDeep(c, d ChanReceive) bool {
+func ChanEqualDeep(c, d ChanReceive) bool {
 	for {
 		var vc, okc = c.ReceiveCheck()
 		var vd, okd = d.ReceiveCheck()
@@ -50,7 +48,7 @@ func EqualDeep(c, d ChanReceive) bool {
 			break
 		}
 
-		if !goo.Equal(vc, vd) {
+		if !Equal(vc, vd) {
 			return false
 		}
 	}
@@ -58,7 +56,7 @@ func EqualDeep(c, d ChanReceive) bool {
 	return true
 }
 
-func Iterator(c ChanReceive) goo.Iterator {
+func ChanIterator(c ChanReceive) Iterator {
 	return &iterator{c: c}
 }
 

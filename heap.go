@@ -1,10 +1,6 @@
-package heap
+package goo
 
-import (
-	"sort"
-
-	"github.com/willfaught/goo/data/slice"
-)
+import "sort"
 
 type Heap interface {
 	Add(v interface{})
@@ -21,10 +17,10 @@ var _ Heap = heap{}
 type heap struct {
 	i sort.Interface
 
-	s slice.Slice
+	s Slice
 }
 
-func NewHeap(s slice.Slice) Heap {
+func NewHeap(s Slice) Heap {
 	return heap{i: s.(sort.Interface), s: s}
 }
 

@@ -1,23 +1,21 @@
-package tuples
-
-import "github.com/willfaught/goo"
+package goo
 
 var (
-	_ goo.Equatable = Tuple2{}
-	_ goo.Equatable = Tuple3{}
-	_ goo.Equatable = Tuple4{}
-	_ goo.Equatable = Tuple5{}
-	_ goo.Equatable = Tuple6{}
-	_ goo.Equatable = Tuple7{}
+	_ Equatable = Tuple2{}
+	_ Equatable = Tuple3{}
+	_ Equatable = Tuple4{}
+	_ Equatable = Tuple5{}
+	_ Equatable = Tuple6{}
+	_ Equatable = Tuple7{}
 )
 
 var (
-	_ goo.EquatableDeep = Tuple2{}
-	_ goo.EquatableDeep = Tuple3{}
-	_ goo.EquatableDeep = Tuple4{}
-	_ goo.EquatableDeep = Tuple5{}
-	_ goo.EquatableDeep = Tuple6{}
-	_ goo.EquatableDeep = Tuple7{}
+	_ EquatableDeep = Tuple2{}
+	_ EquatableDeep = Tuple3{}
+	_ EquatableDeep = Tuple4{}
+	_ EquatableDeep = Tuple5{}
+	_ EquatableDeep = Tuple6{}
+	_ EquatableDeep = Tuple7{}
 )
 
 type Tuple2 [2]interface{}
@@ -30,7 +28,7 @@ func (t Tuple2) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple2)
 
 	for i := range t {
-		if !goo.Equal(t[i], u[i]) {
+		if !Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -56,7 +54,7 @@ func (t Tuple3) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple3)
 
 	for i := range t {
-		if !goo.Equal(t[i], u[i]) {
+		if !Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -86,7 +84,7 @@ func (t Tuple4) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple4)
 
 	for i := range t {
-		if !goo.Equal(t[i], u[i]) {
+		if !Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -120,7 +118,7 @@ func (t Tuple5) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple5)
 
 	for i := range t {
-		if !goo.Equal(t[i], u[i]) {
+		if !Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -158,7 +156,7 @@ func (t Tuple6) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple6)
 
 	for i := range t {
-		if !goo.Equal(t[i], u[i]) {
+		if !Equal(t[i], u[i]) {
 			return false
 		}
 	}
@@ -200,7 +198,7 @@ func (t Tuple7) EqualsDeep(v interface{}) bool {
 	var u = v.(Tuple7)
 
 	for i := range t {
-		if !goo.Equal(t[i], u[i]) {
+		if !Equal(t[i], u[i]) {
 			return false
 		}
 	}

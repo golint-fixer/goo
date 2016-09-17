@@ -1,6 +1,4 @@
-package stack
-
-import "github.com/willfaught/goo/data/slice"
+package goo
 
 type Stack interface {
 	Len() int
@@ -15,14 +13,14 @@ type Stack interface {
 var _ Stack = stack{}
 
 type stack struct {
-	s slice.Slice
+	s Slice
 }
 
 func NewStack() Stack {
-	return stack{s: slice.SliceInterface{}}
+	return stack{s: SliceInterface{}}
 }
 
-func NewStackFor(s slice.Slice) Stack {
+func NewStackFor(s Slice) Stack {
 	return stack{s: s}
 }
 
@@ -37,11 +35,11 @@ func (s stack) Peek() interface{} {
 func (s stack) Pop() interface{} {
 	var v interface{}
 
-	s.s, v = slice.Pop(s.s)
+	s.s, v = Pop(s.s)
 
 	return v
 }
 
 func (s stack) Push(v interface{}) {
-	s.s = slice.Push(s.s, v)
+	s.s = Push(s.s, v)
 }

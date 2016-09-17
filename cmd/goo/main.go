@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/willfaught/goo/macro"
+	"github.com/willfaught/goo"
 )
 
 func handle(err error, s string) {
@@ -51,7 +51,7 @@ func main() {
 	var bs, err = ioutil.ReadFile(*flagIn)
 
 	handle(err, fmt.Sprintf("cannot read %v", *flagIn))
-	bs, err = macro.Macro(*flagIn, bs, j)
+	bs, err = goo.Macro(*flagIn, bs, j)
 	handle(err, "macro")
 	handle(ioutil.WriteFile(*flagOut, bs, 0644), fmt.Sprintf("cannot write %v", *flagOut))
 }

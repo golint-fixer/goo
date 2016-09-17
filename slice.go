@@ -1,8 +1,6 @@
-package slice
+package goo
 
-import "github.com/willfaught/goo"
-
-var _ goo.Iterator = &iterator{}
+var _ Iterator = &sliceIterator{}
 
 type Slice interface {
 	Append(v ...interface{}) Slice
@@ -54,8 +52,8 @@ func Enqueue(s Slice, v interface{}) Slice {
 	return s.Append(v)
 }
 
-func Iterator(s Slice) goo.Iterator {
-	return &iterator{n: s.Len(), s: s}
+func SliceIterator(s Slice) Iterator {
+	return &sliceIterator{n: s.Len(), s: s}
 }
 
 func Pop(s Slice) (Slice, interface{}) {
@@ -68,7 +66,7 @@ func Push(s Slice, v interface{}) Slice {
 	return s.Append(v)
 }
 
-type iterator struct {
+type sliceIterator struct {
 	i int
 
 	n int
@@ -76,11 +74,11 @@ type iterator struct {
 	s Slice
 }
 
-func (i iterator) More() bool {
+func (i sliceIterator) More() bool {
 	return i.i < i.n
 }
 
-func (i *iterator) Next() interface{} {
+func (i *sliceIterator) Next() interface{} {
 	var v = i.s.Get(i.i)
 
 	i.i++

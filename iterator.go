@@ -6,11 +6,11 @@ type Iterator interface {
 	Next() interface{}
 }
 
-func Repeat(v interface{}) Iterator {
+func RepeatIterator(v interface{}) Iterator {
 	return repeater{v: v}
 }
 
-func Replicate(v interface{}, n int) Iterator {
+func ReplicateIterator(v interface{}, n int) Iterator {
 	return &replicator{n: n, v: v}
 }
 

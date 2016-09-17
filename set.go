@@ -1,6 +1,4 @@
-package set
-
-import "github.com/willfaught/goo/data/maps"
+package goo
 
 type Set interface {
 	Add(v interface{})
@@ -55,14 +53,14 @@ func Union(s, t Set) {
 }
 
 type set struct {
-	m maps.Map
+	m Map
 }
 
 func NewSet() Set {
-	return set{m: maps.MapInterfaceStruct{}}
+	return set{m: MapInterfaceStruct{}}
 }
 
-func NewSetFor(m maps.Map) Set {
+func NewSetFor(m Map) Set {
 	return set{m: m}
 }
 

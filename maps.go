@@ -1,4 +1,4 @@
-package maps
+package goo
 
 type MapInterfaceBool map[interface{}]bool
 

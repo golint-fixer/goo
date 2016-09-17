@@ -1,5 +1,6 @@
-package work
+package goo
 
+/*
 import "sync"
 
 const (
@@ -127,9 +128,9 @@ type Concurrent interface {
 	Wait()
 }
 
-var _ Concurrent = pool{}
+var _ Concurrent = &pool{}
 
-func NewConcurrent(capacity, queue Strategy) Concurrent {
+func NewConcurrent(capacity, s Strategy) Concurrent {
 	return newPool(s)
 }
 
@@ -161,8 +162,8 @@ func (g *guard) set(i interface{}) {
 type pool struct {
 	strategy Strategy
 	wait     *guard
-	works    *queue
-	workers  *queue
+	works    *concQueue
+	workers  *concQueue
 }
 
 func newPool(s Strategy) *pool {
@@ -226,19 +227,19 @@ func (p *pool) run() {
 	}
 }
 
-type queue struct {
+type concQueue struct {
 	cap, len int
 	done     chan struct{}
 	in, out  chan interface{}
 	m        *sync.Mutex
-	w        *sync.WorkGroup
+	w        *sync.WaitGroup
 }
 
-func newQueue(cap int) *queue {
-	return &queue{done: make(chan struct{}), in: make(chan interface{}, 1), out: make(chan interface{}, 1)}
+func newQueue(cap int) *concQueue {
+	return &concQueue{done: make(chan struct{}), in: make(chan interface{}, 1), out: make(chan interface{}, 1)}
 }
 
-func (q *queue) main(capacity int) {
+func (q *concQueue) main(capacity int) {
 	var ins, outs []interface{}
 	var n int
 
@@ -276,7 +277,7 @@ func (q *queue) main(capacity int) {
 	}
 }
 
-func (q *queue) cap() int {
+func (q *concQueue) getCap() int {
 	q.m.Lock()
 
 	defer q.m.Unlock()
@@ -284,14 +285,14 @@ func (q *queue) cap() int {
 	return q.cap
 }
 
-func (q *queue) close() {
+func (q *concQueue) close() {
 	q.done <- struct{}{}
 	close(q.done)
 	close(q.in)
 	close(q.out)
 }
 
-func (q *queue) len() int {
+func (q *concQueue) getLen() int {
 	q.m.Lock()
 
 	defer q.m.Unlock()
@@ -299,7 +300,7 @@ func (q *queue) len() int {
 	return q.len
 }
 
-func (q *queue) receive(in, out chan []interface{}) {
+func (q *concQueue) receive(in, out chan []interface{}) {
 	for _, items := range in {
 	Loop:
 		for _, item := range q.in {
@@ -318,7 +319,7 @@ func (q *queue) receive(in, out chan []interface{}) {
 	}
 }
 
-func (q *queue) send(in, out chan []interface{}) {
+func (q *concQueue) send(in, out chan []interface{}) {
 	for _, items := range in {
 		for _, item := range items {
 			q.out <- item
@@ -337,7 +338,7 @@ func (q *queue) send(in, out chan []interface{}) {
 	}
 }
 
-func (q *queue) run() {
+func (q *concQueue) run() {
 	var a, b = make(chan []interface{}, 1), make(chan []interface{}, 1)
 
 	a <- make([]interface{}, 0, 1)
@@ -367,3 +368,4 @@ func (c *concurrentWorker) run() {
 		c.pool.resize()
 	}
 }
+*/

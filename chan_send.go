@@ -1,4 +1,4 @@
-package chans
+package goo
 
 type ChanSend interface {
 	Cap() int

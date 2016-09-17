@@ -1,4 +1,4 @@
-package macro
+package goo
 
 import (
 	"bytes"

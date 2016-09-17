@@ -1,21 +1,19 @@
-package chans
-
-import "github.com/willfaught/goo"
+package goo
 
 var (
-	_ goo.Equatable = ChanBool(nil)
-	_ goo.Equatable = ChanInt(nil)
-	_ goo.Equatable = ChanInterface(nil)
-	_ goo.Equatable = ChanRune(nil)
-	_ goo.Equatable = ChanString(nil)
+	_ Equatable = ChanBool(nil)
+	_ Equatable = ChanInt(nil)
+	_ Equatable = ChanInterface(nil)
+	_ Equatable = ChanRune(nil)
+	_ Equatable = ChanString(nil)
 )
 
 var (
-	_ goo.EquatableDeep = ChanBool(nil)
-	_ goo.EquatableDeep = ChanInt(nil)
-	_ goo.EquatableDeep = ChanInterface(nil)
-	_ goo.EquatableDeep = ChanRune(nil)
-	_ goo.EquatableDeep = ChanString(nil)
+	_ EquatableDeep = ChanBool(nil)
+	_ EquatableDeep = ChanInt(nil)
+	_ EquatableDeep = ChanInterface(nil)
+	_ EquatableDeep = ChanRune(nil)
+	_ EquatableDeep = ChanString(nil)
 )
 
 type ChanBool chan bool
@@ -74,7 +72,7 @@ func (c ChanBool) EqualsDeep(v interface{}) bool {
 			break
 		}
 
-		if !goo.Equal(vc, vd) {
+		if !Equal(vc, vd) {
 			return false
 		}
 	}
@@ -160,7 +158,7 @@ func (c ChanInt) EqualsDeep(v interface{}) bool {
 			break
 		}
 
-		if !goo.Equal(vc, vd) {
+		if !Equal(vc, vd) {
 			return false
 		}
 	}
@@ -246,7 +244,7 @@ func (c ChanInterface) EqualsDeep(v interface{}) bool {
 			break
 		}
 
-		if !goo.Equal(vc, vd) {
+		if !Equal(vc, vd) {
 			return false
 		}
 	}
@@ -332,7 +330,7 @@ func (c ChanRune) EqualsDeep(v interface{}) bool {
 			break
 		}
 
-		if !goo.Equal(vc, vd) {
+		if !Equal(vc, vd) {
 			return false
 		}
 	}
@@ -418,7 +416,7 @@ func (c ChanString) EqualsDeep(v interface{}) bool {
 			break
 		}
 
-		if !goo.Equal(vc, vd) {
+		if !Equal(vc, vd) {
 			return false
 		}
 	}

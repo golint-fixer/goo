@@ -1,25 +1,21 @@
-package slice
+package goo
 
-import (
-	"sort"
+import "sort"
 
-	"github.com/willfaught/goo"
+var (
+	_ Equatable = SliceBool(nil)
+	_ Equatable = SliceInt(nil)
+	_ Equatable = SliceInterface(nil)
+	_ Equatable = SliceRune(nil)
+	_ Equatable = SliceString(nil)
 )
 
 var (
-	_ goo.Equatable = SliceBool(nil)
-	_ goo.Equatable = SliceInt(nil)
-	_ goo.Equatable = SliceInterface(nil)
-	_ goo.Equatable = SliceRune(nil)
-	_ goo.Equatable = SliceString(nil)
-)
-
-var (
-	_ goo.EquatableDeep = SliceBool(nil)
-	_ goo.EquatableDeep = SliceInt(nil)
-	_ goo.EquatableDeep = SliceInterface(nil)
-	_ goo.EquatableDeep = SliceRune(nil)
-	_ goo.EquatableDeep = SliceString(nil)
+	_ EquatableDeep = SliceBool(nil)
+	_ EquatableDeep = SliceInt(nil)
+	_ EquatableDeep = SliceInterface(nil)
+	_ EquatableDeep = SliceRune(nil)
+	_ EquatableDeep = SliceString(nil)
 )
 
 var (
@@ -85,7 +81,7 @@ func (s SliceBool) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !goo.Equal(t[i], s[i]) {
+		if !Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -185,7 +181,7 @@ func (s SliceInt) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !goo.Equal(t[i], s[i]) {
+		if !Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -281,7 +277,7 @@ func (s SliceInterface) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !goo.Equal(t[i], s[i]) {
+		if !Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -373,7 +369,7 @@ func (s SliceRune) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !goo.Equal(t[i], s[i]) {
+		if !Equal(t[i], s[i]) {
 			return false
 		}
 	}
@@ -473,7 +469,7 @@ func (s SliceString) EqualsDeep(v interface{}) bool {
 	}
 
 	for i := range s {
-		if !goo.Equal(t[i], s[i]) {
+		if !Equal(t[i], s[i]) {
 			return false
 		}
 	}

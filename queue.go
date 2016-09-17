@@ -1,6 +1,4 @@
-package queue
-
-import "github.com/willfaught/goo/data/slice"
+package goo
 
 type Queue interface {
 	Add(v interface{})
@@ -15,19 +13,19 @@ type Queue interface {
 var _ Queue = queue{}
 
 type queue struct {
-	s slice.Slice
+	s Slice
 }
 
 func NewQueue() Queue {
-	return queue{s: slice.SliceInterface{}}
+	return queue{s: SliceInterface{}}
 }
 
-func NewQueueFor(s slice.Slice) Queue {
+func NewQueueFor(s Slice) Queue {
 	return queue{s: s}
 }
 
 func (q queue) Add(v interface{}) {
-	q.s = slice.Enqueue(q.s, v)
+	q.s = Enqueue(q.s, v)
 }
 
 func (q queue) Len() int {
@@ -41,7 +39,7 @@ func (q queue) Peek() interface{} {
 func (q queue) Remove() interface{} {
 	var v interface{}
 
-	q.s, v = slice.Dequeue(q.s)
+	q.s, v = Dequeue(q.s)
 
 	return v
 }
