@@ -26,14 +26,6 @@ type Slice interface {
 	Zero() interface{}
 }
 
-var (
-	_ Slice = SliceBool(nil)
-	_ Slice = SliceInt(nil)
-	_ Slice = SliceInterface(nil)
-	_ Slice = SliceRune(nil)
-	_ Slice = SliceString(nil)
-)
-
 // TODO: All, And, Any, Combine, CombineRepeats, Concat, Contains, Cut,
 // Difference, Drop, DropEnd, DropWith, DropWithEnd, Each, Expand, Extend,
 // Filter, FindIndex, FindIndexEnd, FindIndexes, First, Foldl, Foldl1, Foldr,
