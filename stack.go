@@ -16,9 +16,11 @@ type stack struct {
 	s Slice
 }
 
+/*
 func NewStack() Stack {
 	return stack{s: SliceInterface{}}
 }
+*/
 
 func NewStackFor(s Slice) Stack {
 	return stack{s: s}

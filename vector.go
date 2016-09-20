@@ -20,9 +20,11 @@ type vector struct {
 	s Slice
 }
 
+/*
 func NewVector() Vector {
 	return vector{s: SliceInterface{}}
 }
+*/
 
 func NewVectorFor(s Slice) Vector {
 	return vector{s: s}

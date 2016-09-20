@@ -16,9 +16,11 @@ type queue struct {
 	s Slice
 }
 
+/*
 func NewQueue() Queue {
 	return queue{s: SliceInterface{}}
 }
+*/
 
 func NewQueueFor(s Slice) Queue {
 	return queue{s: s}
