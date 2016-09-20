@@ -80,8 +80,3 @@ func (s SliceInterface) Slice(i, j int) Slice {
 func (s SliceInterface) SliceCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
-
-// Zero returns the zero nil value of the s element type.
-func (s SliceInterface) Zero() interface{} {
-	return nil
-}

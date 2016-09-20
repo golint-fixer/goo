@@ -94,8 +94,3 @@ func (s SliceString) SliceCap(i, j, c int) Slice {
 func (s SliceString) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
-
-// Zero returns the zero "" value of the s element type.
-func (s SliceString) Zero() interface{} {
-	return ""
-}

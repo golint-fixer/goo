@@ -80,8 +80,3 @@ func (s SliceBool) Slice(i, j int) Slice {
 func (s SliceBool) SliceCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
-
-// Zero returns the zero false value of the s element type.
-func (s SliceBool) Zero() interface{} {
-	return false
-}

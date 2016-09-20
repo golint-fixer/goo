@@ -22,8 +22,6 @@ type Slice interface {
 	Slice(i, j int) Slice
 
 	SliceCap(i, j, m int) Slice
-
-	Zero() interface{}
 }
 
 // TODO: All, And, Any, Combine, CombineRepeats, Concat, Contains, Cut,

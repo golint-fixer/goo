@@ -80,8 +80,3 @@ func (s SliceComplex64) Slice(i, j int) Slice {
 func (s SliceComplex64) SliceCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
-
-// Zero returns the zero 0 value of the s element type.
-func (s SliceComplex64) Zero() interface{} {
-	return 0
-}

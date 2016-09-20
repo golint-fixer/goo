@@ -9,7 +9,7 @@ type Heap interface {
 
 	Peek() interface{}
 
-	Remove() interface{}
+	//Remove() interface{}
 }
 
 var _ Heap = heap{}
@@ -48,6 +48,7 @@ func (h heap) Peek() interface{} {
 	return h.s.Get(0)
 }
 
+/*
 func (h heap) Remove() interface{} {
 	var v, l = h.s.Get(0), h.s.Len()
 
@@ -87,3 +88,4 @@ func (h heap) Remove() interface{} {
 
 	return v
 }
+*/

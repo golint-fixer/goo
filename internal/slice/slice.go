@@ -1,24 +1,24 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo -in slice.go -out ../../slice_bool.go -json {"name":"Bool","sort":false,"element":"bool","zero":"false"}
-//go:generate goo -in slice.go -out ../../slice_byte.go -json {"name":"Byte","sort":true,"element":"byte","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_complex64.go -json {"name":"Complex64","sort":false,"element":"complex64","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_complex128.go -json {"name":"Complex128","sort":false,"element":"complex128","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_float32.go -json {"name":"Float32","sort":true,"element":"float32","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_float64.go -json {"name":"Float64","sort":true,"element":"float64","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int.go -json {"name":"Int","sort":true,"element":"int","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_interface.go -json {"name":"Interface","sort":false,"element":"interface{}","zero":"nil"}
-//go:generate goo -in slice.go -out ../../slice_int8.go -json {"name":"Int8","sort":true,"element":"int8","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int16.go -json {"name":"Int16","sort":true,"element":"int16","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int32.go -json {"name":"Int32","sort":true,"element":"int32","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int64.go -json {"name":"Int64","sort":true,"element":"int64","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_rune.go -json {"name":"Rune","sort":true,"element":"rune","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_string.go -json {"name":"String","sort":true,"element":"string","zero":"\"\""}
-//go:generate goo -in slice.go -out ../../slice_uint.go -json {"name":"Uint","sort":true,"element":"uint","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uintptr.go -json {"name":"Uintptr","sort":true,"element":"uintptr","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint8.go -json {"name":"Uint8","sort":true,"element":"uint8","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint16.go -json {"name":"Uint16","sort":true,"element":"uint16","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint32.go -json {"name":"Uint32","sort":true,"element":"uint32","zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint64.go -json {"name":"Uint64","sort":true,"element":"uint64","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_bool.go -json {"name":"Bool","sort":false,"element":"bool"}
+//go:generate goo -in slice.go -out ../../slice_byte.go -json {"name":"Byte","sort":true,"element":"byte"}
+//go:generate goo -in slice.go -out ../../slice_complex64.go -json {"name":"Complex64","sort":false,"element":"complex64"}
+//go:generate goo -in slice.go -out ../../slice_complex128.go -json {"name":"Complex128","sort":false,"element":"complex128"}
+//go:generate goo -in slice.go -out ../../slice_float32.go -json {"name":"Float32","sort":true,"element":"float32"}
+//go:generate goo -in slice.go -out ../../slice_float64.go -json {"name":"Float64","sort":true,"element":"float64"}
+//go:generate goo -in slice.go -out ../../slice_int.go -json {"name":"Int","sort":true,"element":"int"}
+//go:generate goo -in slice.go -out ../../slice_interface.go -json {"name":"Interface","sort":false,"element":"interface{}"}
+//go:generate goo -in slice.go -out ../../slice_int8.go -json {"name":"Int8","sort":true,"element":"int8"}
+//go:generate goo -in slice.go -out ../../slice_int16.go -json {"name":"Int16","sort":true,"element":"int16"}
+//go:generate goo -in slice.go -out ../../slice_int32.go -json {"name":"Int32","sort":true,"element":"int32"}
+//go:generate goo -in slice.go -out ../../slice_int64.go -json {"name":"Int64","sort":true,"element":"int64"}
+//go:generate goo -in slice.go -out ../../slice_rune.go -json {"name":"Rune","sort":true,"element":"rune"}
+//go:generate goo -in slice.go -out ../../slice_string.go -json {"name":"String","sort":true,"element":"string"}
+//go:generate goo -in slice.go -out ../../slice_uint.go -json {"name":"Uint","sort":true,"element":"uint"}
+//go:generate goo -in slice.go -out ../../slice_uintptr.go -json {"name":"Uintptr","sort":true,"element":"uintptr"}
+//go:generate goo -in slice.go -out ../../slice_uint8.go -json {"name":"Uint8","sort":true,"element":"uint8"}
+//go:generate goo -in slice.go -out ../../slice_uint16.go -json {"name":"Uint16","sort":true,"element":"uint16"}
+//go:generate goo -in slice.go -out ../../slice_uint32.go -json {"name":"Uint32","sort":true,"element":"uint32"}
+//go:generate goo -in slice.go -out ../../slice_uint64.go -json {"name":"Uint64","sort":true,"element":"uint64"}
 
 package goo
 
@@ -30,9 +30,6 @@ type Slice interface{} /// {{end}}
 
 /// {{if false}}
 type __element__ int /// {{end}}
-
-/// {{if false}}
-var __zero__ = 0 /// {{end}}
 
 // Slice__name__ is a slice of __element__.
 type Slice__name__ []__element__
@@ -129,8 +126,3 @@ func (s Slice__name__) SliceCap(i, j, c int) Slice {
 func (s Slice__name__) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 } /// {{end}}
-
-// Zero returns the zero __zero__ value of the s element type.
-func (s Slice__name__) Zero() interface{} {
-	return __zero__
-}
