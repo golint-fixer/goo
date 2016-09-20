@@ -24,7 +24,10 @@ package goo
 /// {{if false}}
 var __Zero__ = 0 /// {{end}}
 
-/// {{if .Number}}
+/// {{if .Int}}
+var _ Integer = __Name__(__Zero__)
+
+/// {{else if .Number}}
 var _ Number = __Name__(__Zero__)
 
 /// {{else if .Comparable}}
@@ -32,9 +35,6 @@ var _ Comparable = __Name__(__Zero__)
 
 /// {{else if .Equatable}}
 var _ Equatable = __Name__(__Zero__) /// {{end}}
-
-/// {{if .Int}}
-var _ Integer = __Name__(__Zero__) /// {{end}}
 
 // {{.Name}}Zero is the {{.Name}} zero value.
 var __Name__Zero = __Name__(__Zero__)
@@ -73,8 +73,8 @@ func (__Rec__ __Name____Goo_Comment_Bool__) And__Goo_Comment_Bool__(other __Name
 
 /// {{if .Int}}
 // And returns the bitwise conjunction of __Rec__ and other.
-func (__Rec__ __Name____Goo_Comment_Int__) And__Goo_Comment_Int__(other __Name____Goo_Comment_Int__) __Name____Goo_Comment_Int__ {
-	return __Rec__ & other
+func (__Rec__ __Name____Goo_Comment_Int__) And__Goo_Comment_Int__(other Integer) Integer {
+	return __Rec__ & other.(__Name____Goo_Comment_Int__)
 } /// {{end}}
 
 /// {{if eq .Type "string"}}
