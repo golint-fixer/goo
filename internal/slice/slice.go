@@ -37,6 +37,8 @@ var __Zero__ = 0 /// {{end}}
 // Slice__Name__ is a slice of __Type__.
 type Slice__Name__ []__Type__
 
+var _ Slice = Slice__Name__(nil)
+
 /// {{if .Sort}}
 var _ sort.Interface = Slice__Name__(nil) /// {{end}}
 
