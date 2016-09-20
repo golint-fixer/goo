@@ -1,5 +1,6 @@
 package goo
 
+/*
 var (
 	_ Equatable = ChanBool(nil)
 	_ Equatable = ChanInt(nil)
@@ -445,3 +446,4 @@ func (c ChanString) ReceiveCheck() (interface{}, bool) {
 func (c ChanString) Send(v interface{}) {
 	c <- v.(string)
 }
+*/

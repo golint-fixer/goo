@@ -1,7 +1,5 @@
 package goo
 
-import "sync"
-
 type Chan interface {
 	Cap() int
 
@@ -22,6 +20,7 @@ type Chan interface {
 	Send(v interface{})
 }
 
+/*
 var (
 	_ Chan = ChanBool(nil)
 	_ Chan = ChanInt(nil)
@@ -304,3 +303,4 @@ func Unblock(c ChanSend) ChanSend {
 
 	return unblocked
 }
+*/
