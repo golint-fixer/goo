@@ -9,31 +9,14 @@ var (
 	_ Equatable = Tuple7{}
 )
 
-var (
-	_ EquatableDeep = Tuple2{}
-	_ EquatableDeep = Tuple3{}
-	_ EquatableDeep = Tuple4{}
-	_ EquatableDeep = Tuple5{}
-	_ EquatableDeep = Tuple6{}
-	_ EquatableDeep = Tuple7{}
-)
-
 type Tuple2 [2]interface{}
 
-func (t Tuple2) Equals(v interface{}) bool {
-	return t == v.(Tuple2)
+func (t Tuple2) Equals(e Equatable) bool {
+	return t == e.(Tuple2)
 }
 
-func (t Tuple2) EqualsDeep(v interface{}) bool {
-	var u = v.(Tuple2)
-
-	for i := range t {
-		if !Equal(t[i], u[i]) {
-			return false
-		}
-	}
-
-	return true
+func (t Tuple2) NotEquals(e Equatable) bool {
+	return t != e.(Tuple2)
 }
 
 func (t Tuple2) First() interface{} {
@@ -46,20 +29,12 @@ func (t Tuple2) Second() interface{} {
 
 type Tuple3 [3]interface{}
 
-func (t Tuple3) Equals(v interface{}) bool {
-	return t == v.(Tuple3)
+func (t Tuple3) Equals(e Equatable) bool {
+	return t == e.(Tuple3)
 }
 
-func (t Tuple3) EqualsDeep(v interface{}) bool {
-	var u = v.(Tuple3)
-
-	for i := range t {
-		if !Equal(t[i], u[i]) {
-			return false
-		}
-	}
-
-	return true
+func (t Tuple3) NotEquals(e Equatable) bool {
+	return t != e.(Tuple3)
 }
 
 func (t Tuple3) First() interface{} {
@@ -76,20 +51,12 @@ func (t Tuple3) Third() interface{} {
 
 type Tuple4 [4]interface{}
 
-func (t Tuple4) Equals(v interface{}) bool {
-	return t == v.(Tuple4)
+func (t Tuple4) Equals(e Equatable) bool {
+	return t == e.(Tuple4)
 }
 
-func (t Tuple4) EqualsDeep(v interface{}) bool {
-	var u = v.(Tuple4)
-
-	for i := range t {
-		if !Equal(t[i], u[i]) {
-			return false
-		}
-	}
-
-	return true
+func (t Tuple4) NotEquals(e Equatable) bool {
+	return t != e.(Tuple4)
 }
 
 func (t Tuple4) First() interface{} {
@@ -110,20 +77,12 @@ func (t Tuple4) Fourth() interface{} {
 
 type Tuple5 [5]interface{}
 
-func (t Tuple5) Equals(v interface{}) bool {
-	return t == v.(Tuple5)
+func (t Tuple5) Equals(e Equatable) bool {
+	return t == e.(Tuple5)
 }
 
-func (t Tuple5) EqualsDeep(v interface{}) bool {
-	var u = v.(Tuple5)
-
-	for i := range t {
-		if !Equal(t[i], u[i]) {
-			return false
-		}
-	}
-
-	return true
+func (t Tuple5) NotEquals(e Equatable) bool {
+	return t != e.(Tuple5)
 }
 
 func (t Tuple5) First() interface{} {
@@ -148,20 +107,12 @@ func (t Tuple5) Fifth() interface{} {
 
 type Tuple6 [6]interface{}
 
-func (t Tuple6) Equals(v interface{}) bool {
-	return t == v.(Tuple6)
+func (t Tuple6) Equals(e Equatable) bool {
+	return t == e.(Tuple6)
 }
 
-func (t Tuple6) EqualsDeep(v interface{}) bool {
-	var u = v.(Tuple6)
-
-	for i := range t {
-		if !Equal(t[i], u[i]) {
-			return false
-		}
-	}
-
-	return true
+func (t Tuple6) NotEquals(e Equatable) bool {
+	return t == e.(Tuple6)
 }
 
 func (t Tuple6) First() interface{} {
@@ -190,20 +141,12 @@ func (t Tuple6) Sixth() interface{} {
 
 type Tuple7 [7]interface{}
 
-func (t Tuple7) Equals(v interface{}) bool {
-	return t == v.(Tuple7)
+func (t Tuple7) Equals(e Equatable) bool {
+	return t == e.(Tuple7)
 }
 
-func (t Tuple7) EqualsDeep(v interface{}) bool {
-	var u = v.(Tuple7)
-
-	for i := range t {
-		if !Equal(t[i], u[i]) {
-			return false
-		}
-	}
-
-	return true
+func (t Tuple7) NotEquals(e Equatable) bool {
+	return t != e.(Tuple7)
 }
 
 func (t Tuple7) First() interface{} {
