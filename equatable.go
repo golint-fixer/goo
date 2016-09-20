@@ -1,25 +1,27 @@
 package goo
 
-func Equal(v, w interface{}) bool {
-	if v, ok := v.(Equatable); ok {
-		return v.Equals(w)
+func Equal(a, b interface{}) bool {
+	if a, ok := a.(Equatable); ok {
+		if b, ok := a.(Equatable); ok {
+			return a.Equals(b)
+		}
 	}
 
-	return v == w
+	return false
 }
 
-func EqualDeep(v, w interface{}) bool {
-	if v, ok := v.(EquatableDeep); ok {
-		return v.EqualsDeep(w)
+func NotEqual(a, b interface{}) bool {
+	if a, ok := a.(Equatable); ok {
+		if b, ok := a.(Equatable); ok {
+			return a.NotEquals(b)
+		}
 	}
 
-	return v == w
+	return true
 }
 
 type Equatable interface {
-	Equals(v interface{}) bool
-}
+	Equals(e Equatable) bool
 
-type EquatableDeep interface {
-	EqualsDeep(v interface{}) bool
+	NotEquals(e Equatable) bool
 }
