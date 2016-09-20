@@ -1,74 +1,74 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo -in slice.go -out ../../slice_bool.go -json {"Name":"Bool","Sort":false,"Type":"bool","Zero":"false"}
-//go:generate goo -in slice.go -out ../../slice_byte.go -json {"Name":"Byte","Sort":true,"Type":"byte","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_complex64.go -json {"Name":"Complex64","Sort":false,"Type":"complex64","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_complex128.go -json {"Name":"Complex128","Sort":false,"Type":"complex128","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_float32.go -json {"Name":"Float32","Sort":true,"Type":"float32","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_float64.go -json {"Name":"Float64","Sort":true,"Type":"float64","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int.go -json {"Name":"Int","Sort":true,"Type":"int","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_interface.go -json {"Name":"Interface","Sort":false,"Type":"interface{}","Zero":"nil"}
-//go:generate goo -in slice.go -out ../../slice_int8.go -json {"Name":"Int8","Sort":true,"Type":"int8","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int16.go -json {"Name":"Int16","Sort":true,"Type":"int16","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int32.go -json {"Name":"Int32","Sort":true,"Type":"int32","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_int64.go -json {"Name":"Int64","Sort":true,"Type":"int64","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_rune.go -json {"Name":"Rune","Sort":true,"Type":"rune","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_string.go -json {"Name":"String","Sort":true,"Type":"string","Zero":"\"\""}
-//go:generate goo -in slice.go -out ../../slice_uint.go -json {"Name":"Uint","Sort":true,"Type":"uint","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uintptr.go -json {"Name":"Uintptr","Sort":true,"Type":"uintptr","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint8.go -json {"Name":"Uint8","Sort":true,"Type":"uint8","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint16.go -json {"Name":"Uint16","Sort":true,"Type":"uint16","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint32.go -json {"Name":"Uint32","Sort":true,"Type":"uint32","Zero":"0"}
-//go:generate goo -in slice.go -out ../../slice_uint64.go -json {"Name":"Uint64","Sort":true,"Type":"uint64","Zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_bool.go -json {"name":"Bool","sort":false,"element":"bool","zero":"false"}
+//go:generate goo -in slice.go -out ../../slice_byte.go -json {"name":"Byte","sort":true,"element":"byte","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_complex64.go -json {"name":"Complex64","sort":false,"element":"complex64","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_complex128.go -json {"name":"Complex128","sort":false,"element":"complex128","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_float32.go -json {"name":"Float32","sort":true,"element":"float32","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_float64.go -json {"name":"Float64","sort":true,"element":"float64","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_int.go -json {"name":"Int","sort":true,"element":"int","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_interface.go -json {"name":"Interface","sort":false,"element":"interface{}","zero":"nil"}
+//go:generate goo -in slice.go -out ../../slice_int8.go -json {"name":"Int8","sort":true,"element":"int8","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_int16.go -json {"name":"Int16","sort":true,"element":"int16","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_int32.go -json {"name":"Int32","sort":true,"element":"int32","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_int64.go -json {"name":"Int64","sort":true,"element":"int64","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_rune.go -json {"name":"Rune","sort":true,"element":"rune","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_string.go -json {"name":"String","sort":true,"element":"string","zero":"\"\""}
+//go:generate goo -in slice.go -out ../../slice_uint.go -json {"name":"Uint","sort":true,"element":"uint","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_uintptr.go -json {"name":"Uintptr","sort":true,"element":"uintptr","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_uint8.go -json {"name":"Uint8","sort":true,"element":"uint8","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_uint16.go -json {"name":"Uint16","sort":true,"element":"uint16","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_uint32.go -json {"name":"Uint32","sort":true,"element":"uint32","zero":"0"}
+//go:generate goo -in slice.go -out ../../slice_uint64.go -json {"name":"Uint64","sort":true,"element":"uint64","zero":"0"}
 
 package goo
 
-/// {{if .Sort}}
+/// {{if .sort}}
 import "sort" /// {{end}}
 
 /// {{if false}}
 type Slice interface{} /// {{end}}
 
 /// {{if false}}
-type __Type__ int /// {{end}}
+type __element__ int /// {{end}}
 
 /// {{if false}}
-var __Zero__ = 0 /// {{end}}
+var __zero__ = 0 /// {{end}}
 
-// Slice__Name__ is a slice of __Type__.
-type Slice__Name__ []__Type__
+// Slice__name__ is a slice of __element__.
+type Slice__name__ []__element__
 
-var _ Slice = Slice__Name__(nil)
+var _ Slice = Slice__name__(nil)
 
-/// {{if .Sort}}
-var _ sort.Interface = Slice__Name__(nil) /// {{end}}
+/// {{if .sort}}
+var _ sort.Interface = Slice__name__(nil) /// {{end}}
 
 // Append appends v to s and returns the result.
-func (s Slice__Name__) Append(v ...interface{}) Slice {
+func (s Slice__name__) Append(v ...interface{}) Slice {
 	for _, v := range v {
-		s = append(s, v.(__Type__))
+		s = append(s, v.(__element__))
 	}
 
 	return s
 }
 
 // AppendSlice appends t to s and returns the result.
-func (s Slice__Name__) AppendSlice(t Slice) Slice {
-	return append(s, t.(Slice__Name__)...)
+func (s Slice__name__) AppendSlice(t Slice) Slice {
+	return append(s, t.(Slice__name__)...)
 }
 
 // Cap returns the s capacity.
-func (s Slice__Name__) Cap() int {
+func (s Slice__name__) Cap() int {
 	return cap(s)
 }
 
 // Copy copies t to s.
-func (s Slice__Name__) Copy(t Slice) int {
-	return copy(s, t.(Slice__Name__))
+func (s Slice__name__) Copy(t Slice) int {
+	return copy(s, t.(Slice__name__))
 }
 
 // Equals returns whether s equals v.
-func (s Slice__Name__) Equals(v interface{}) bool {
-	var t = v.(Slice__Name__)
+func (s Slice__name__) Equals(v interface{}) bool {
+	var t = v.(Slice__name__)
 	var l = len(s)
 
 	if len(t) != l {
@@ -89,48 +89,48 @@ func (s Slice__Name__) Equals(v interface{}) bool {
 }
 
 // Get returns the s element at index i.
-func (s Slice__Name__) Get(i int) interface{} {
+func (s Slice__name__) Get(i int) interface{} {
 	return s[i]
 }
 
 // Len returns the s length.
-func (s Slice__Name__) Len() int {
+func (s Slice__name__) Len() int {
 	return len(s)
 }
 
-/// {{if .Sort}}
+/// {{if .sort}}
 // Less implements sort.Interface.
-func (s Slice__Name__) Less(i, j int) bool {
+func (s Slice__name__) Less(i, j int) bool {
 	return s[i] < s[j]
 } /// {{end}}
 
-// Make returns a new Slice__Name__ with length l and capacity c.
-func (s Slice__Name__) Make(l, c int) Slice {
-	return make(Slice__Name__, l, c)
+// Make returns a new Slice__name__ with length l and capacity c.
+func (s Slice__name__) Make(l, c int) Slice {
+	return make(Slice__name__, l, c)
 }
 
 // Set sets the s element at index i to v.
-func (s Slice__Name__) Set(i int, v interface{}) {
-	s[i] = v.(__Type__)
+func (s Slice__name__) Set(i int, v interface{}) {
+	s[i] = v.(__element__)
 }
 
 // Slice returns the slice of s from indexes i to j.
-func (s Slice__Name__) Slice(i, j int) Slice {
+func (s Slice__name__) Slice(i, j int) Slice {
 	return s[i:j]
 }
 
 // SliceCap returns the slice of s from indexes i to j with capacity c.
-func (s Slice__Name__) SliceCap(i, j, c int) Slice {
+func (s Slice__name__) SliceCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
-/// {{if .Sort}}
+/// {{if .sort}}
 // Swap implements sort.Interface.
-func (s Slice__Name__) Swap(i, j int) {
+func (s Slice__name__) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 } /// {{end}}
 
-// Zero returns the zero __Zero__ value of the s element type.
-func (s Slice__Name__) Zero() interface{} {
-	return __Zero__
+// Zero returns the zero __zero__ value of the s element type.
+func (s Slice__name__) Zero() interface{} {
+	return __zero__
 }
