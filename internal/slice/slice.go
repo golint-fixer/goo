@@ -1,5 +1,5 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo -in slice.go -out ../../slice_bool.go -json {"Name":"Bool","Sort":fasle,"Type":"bool","Zero":"false"}
+//go:generate goo -in slice.go -out ../../slice_bool.go -json {"Name":"Bool","Sort":false,"Type":"bool","Zero":"false"}
 //go:generate goo -in slice.go -out ../../slice_byte.go -json {"Name":"Byte","Sort":true,"Type":"byte","Zero":"0"}
 //go:generate goo -in slice.go -out ../../slice_complex64.go -json {"Name":"Complex64","Sort":false,"Type":"complex64","Zero":"0"}
 //go:generate goo -in slice.go -out ../../slice_complex128.go -json {"Name":"Complex128","Sort":false,"Type":"complex128","Zero":"0"}
