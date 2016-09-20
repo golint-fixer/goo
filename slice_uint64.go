@@ -5,6 +5,8 @@ import "sort"
 // SliceUint64 is a slice of uint64.
 type SliceUint64 []uint64
 
+var _ Slice = SliceUint64(nil)
+
 var _ sort.Interface = SliceUint64(nil)
 
 // Append appends v to s and returns the result.

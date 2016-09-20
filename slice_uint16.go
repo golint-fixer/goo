@@ -5,6 +5,8 @@ import "sort"
 // SliceUint16 is a slice of uint16.
 type SliceUint16 []uint16
 
+var _ Slice = SliceUint16(nil)
+
 var _ sort.Interface = SliceUint16(nil)
 
 // Append appends v to s and returns the result.

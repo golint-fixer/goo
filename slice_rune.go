@@ -5,6 +5,8 @@ import "sort"
 // SliceRune is a slice of rune.
 type SliceRune []rune
 
+var _ Slice = SliceRune(nil)
+
 var _ sort.Interface = SliceRune(nil)
 
 // Append appends v to s and returns the result.

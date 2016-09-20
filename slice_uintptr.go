@@ -5,6 +5,8 @@ import "sort"
 // SliceUintptr is a slice of uintptr.
 type SliceUintptr []uintptr
 
+var _ Slice = SliceUintptr(nil)
+
 var _ sort.Interface = SliceUintptr(nil)
 
 // Append appends v to s and returns the result.

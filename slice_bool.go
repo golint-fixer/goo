@@ -3,6 +3,8 @@ package goo
 // SliceBool is a slice of bool.
 type SliceBool []bool
 
+var _ Slice = SliceBool(nil)
+
 // Append appends v to s and returns the result.
 func (s SliceBool) Append(v ...interface{}) Slice {
 	for _, v := range v {

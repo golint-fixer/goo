@@ -3,6 +3,8 @@ package goo
 // SliceComplex64 is a slice of complex64.
 type SliceComplex64 []complex64
 
+var _ Slice = SliceComplex64(nil)
+
 // Append appends v to s and returns the result.
 func (s SliceComplex64) Append(v ...interface{}) Slice {
 	for _, v := range v {

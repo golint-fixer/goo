@@ -3,6 +3,8 @@ package goo
 // SliceComplex128 is a slice of complex128.
 type SliceComplex128 []complex128
 
+var _ Slice = SliceComplex128(nil)
+
 // Append appends v to s and returns the result.
 func (s SliceComplex128) Append(v ...interface{}) Slice {
 	for _, v := range v {

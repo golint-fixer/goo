@@ -5,6 +5,8 @@ import "sort"
 // SliceFloat64 is a slice of float64.
 type SliceFloat64 []float64
 
+var _ Slice = SliceFloat64(nil)
+
 var _ sort.Interface = SliceFloat64(nil)
 
 // Append appends v to s and returns the result.

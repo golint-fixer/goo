@@ -5,6 +5,8 @@ import "sort"
 // SliceInt8 is a slice of int8.
 type SliceInt8 []int8
 
+var _ Slice = SliceInt8(nil)
+
 var _ sort.Interface = SliceInt8(nil)
 
 // Append appends v to s and returns the result.

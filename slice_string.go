@@ -5,6 +5,8 @@ import "sort"
 // SliceString is a slice of string.
 type SliceString []string
 
+var _ Slice = SliceString(nil)
+
 var _ sort.Interface = SliceString(nil)
 
 // Append appends v to s and returns the result.

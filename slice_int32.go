@@ -5,6 +5,8 @@ import "sort"
 // SliceInt32 is a slice of int32.
 type SliceInt32 []int32
 
+var _ Slice = SliceInt32(nil)
+
 var _ sort.Interface = SliceInt32(nil)
 
 // Append appends v to s and returns the result.

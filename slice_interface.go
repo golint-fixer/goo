@@ -3,6 +3,8 @@ package goo
 // SliceInterface is a slice of interface{}.
 type SliceInterface []interface{}
 
+var _ Slice = SliceInterface(nil)
+
 // Append appends v to s and returns the result.
 func (s SliceInterface) Append(v ...interface{}) Slice {
 	for _, v := range v {

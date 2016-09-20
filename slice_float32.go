@@ -5,6 +5,8 @@ import "sort"
 // SliceFloat32 is a slice of float32.
 type SliceFloat32 []float32
 
+var _ Slice = SliceFloat32(nil)
+
 var _ sort.Interface = SliceFloat32(nil)
 
 // Append appends v to s and returns the result.

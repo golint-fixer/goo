@@ -5,6 +5,8 @@ import "sort"
 // SliceByte is a slice of byte.
 type SliceByte []byte
 
+var _ Slice = SliceByte(nil)
+
 var _ sort.Interface = SliceByte(nil)
 
 // Append appends v to s and returns the result.
