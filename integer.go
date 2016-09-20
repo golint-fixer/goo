@@ -5,7 +5,7 @@ type Integer interface {
 
 	And(i Integer) Integer
 
-	AndNot(i Integer) Integer
+	/*AndNot(i Integer) Integer
 
 	Left(n uint) Integer
 
@@ -17,5 +17,5 @@ type Integer interface {
 
 	Right(n uint) Integer
 
-	Xor(i Integer) Integer
+	Xor(i Integer) Integer*/
 }
