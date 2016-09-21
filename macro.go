@@ -9,7 +9,7 @@ import (
 
 var (
 	genRegexp       = regexp.MustCompile(`(?m:^\/\/go:generate.+$)`)
-	gooRegexp       = regexp.MustCompile(`__(?i:goo)_(?i:comment)_[\w\d]+__`)
+	gooRegexp       = regexp.MustCompile(`__(?i:goo)_(?i:omit)_[\w\d]+__`)
 	identRegexp     = regexp.MustCompile(`__([[:alpha:]](_?[[:alnum:]])*)__`)
 	lineRegexp      = regexp.MustCompile(`\/\/\/(.*)`)
 	multilineRegexp = regexp.MustCompile(`\/\*\*(.*)\*\*\/`)

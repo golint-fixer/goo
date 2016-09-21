@@ -41,8 +41,8 @@ var __name__Zero = __name__(__zero__)
 
 /// {{if false}}
 type (
-	__name____goo_comment_bool__ bool
-	__name____goo_comment_int__  int
+	__name____goo_omit_bool__ bool
+	__name____goo_omit_int__  int
 ) /// {{end}}
 
 // {{.name}} is a {{.base}}.
@@ -67,14 +67,14 @@ func (__rec__ __name__) Add(n Number) Number {
 
 /// {{if eq .base "bool"}}
 // And returns the conjunction of __rec__ and other.
-func (__rec__ __name____goo_comment_bool__) And__Goo_Comment_Bool__(other __name____goo_comment_bool__) __name____goo_comment_bool__ {
+func (__rec__ __name____goo_omit_bool__) And__Goo_Omit_Bool__(other __name____goo_omit_bool__) __name____goo_omit_bool__ {
 	return __rec__ && other
 } /// {{end}}
 
 /// {{if .integer}}
 // And returns the bitwise conjunction of __rec__ and other.
-func (__rec__ __name____goo_comment_int__) And__Goo_Comment_Int__(other Integer) Integer {
-	return __rec__ & other.(__name____goo_comment_int__)
+func (__rec__ __name____goo_omit_int__) And__Goo_Omit_Int__(other Integer) Integer {
+	return __rec__ & other.(__name____goo_omit_int__)
 } /// {{end}}
 
 /// {{if eq .base "string"}}
