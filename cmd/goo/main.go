@@ -10,6 +10,27 @@ import (
 	"github.com/willfaught/goo"
 )
 
+func convert(d interface{}) interface{} {
+	switch t := d.(type) {
+	case map[string]interface{}:
+		for k, v := range t {
+			t[k] = convert(v)
+		}
+
+	case []interface{}:
+		for i := range t {
+			t[i] = convert(t[i])
+		}
+
+	case float64:
+		if i := int64(t); float64(i) == t {
+			d = i
+		}
+	}
+
+	return d
+}
+
 func handle(err error, s string) {
 	if err == nil {
 		return
@@ -34,6 +55,7 @@ func main() {
 	var j interface{}
 
 	handle(json.Unmarshal([]byte(*flagJSON), &j), "invalid json")
+	convert(j)
 
 	var fileIn, fileOut *os.File
 	var nameIn, nameOut string
