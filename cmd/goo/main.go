@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 
+	"github.com/alecthomas/kingpin"
 	"github.com/willfaught/goo"
 )
 
@@ -31,82 +31,123 @@ func convert(d interface{}) interface{} {
 	return d
 }
 
-func handle(err error, s string) {
-	if err == nil {
-		return
-	} else if s == "" {
-		fmt.Println("goo: error:", err)
-	} else {
-		fmt.Printf("goo: error: %v: %v\n", s, err)
-	}
-
-	os.Exit(1)
-}
-
-func main() {
-	var flagIn = flag.String("in", "", "Input file path. Defaults to standard in.")
-	var flagJSON = flag.String("json", "null", "Macro data as JSON.")
-	var flagNoFormat = flag.Bool("noformat", false, "Do not format the macro.")
-	var flagNoPreprocess = flag.Bool("nopreprocess", false, "Do not preprocess the macro.")
-	var flagNoProcess = flag.Bool("noprocess", false, "Do not process the macro.")
-	var flagOut = flag.String("out", "", "Output file path. Defaults to standard out.")
-
-	flag.Parse()
-
+func macro(p *program) error {
 	var j interface{}
 
-	handle(json.Unmarshal([]byte(*flagJSON), &j), "invalid json")
+	if err := json.Unmarshal([]byte(p.json), &j); err != nil {
+		return fmt.Errorf("invalid json: %v", err)
+	}
+
 	convert(j)
 
-	var fileIn, fileOut *os.File
-	var nameIn, nameOut string
-	var bs []byte
-	var err error
+	var bs, err = ioutil.ReadAll(p.in)
 
-	if *flagIn == "" {
-		nameIn = "standard in"
-		fileIn = os.Stdin
-	} else {
-		nameIn = *flagIn
-		fileIn, err = os.Open(*flagIn)
-		handle(err, fmt.Sprintf("cannot open %v", *flagIn))
+	if err != nil {
+		return fmt.Errorf("cannot read %v: %v", p.inName, err)
 	}
 
-	if *flagOut == "" {
-		nameOut = "standard out"
-		fileOut = os.Stdout
-	} else {
-		nameOut = *flagOut
-		fileOut, err = os.OpenFile(*flagOut, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-		handle(err, fmt.Sprintf("cannot open %v", *flagOut))
+	var done = func() error {
+		if _, err := p.out.Write(bs); err != nil {
+			return fmt.Errorf("cannot write %v: %v", p.outName, err)
+		}
+
+		return nil
 	}
 
-	bs, err = ioutil.ReadAll(fileIn)
-	handle(err, fmt.Sprint("cannot read", nameIn))
-
-	defer func() {
-		var _, err = fileOut.Write(bs)
-
-		handle(err, fmt.Sprint("cannot write", nameOut))
-	}()
-
-	if *flagNoPreprocess {
-		return
+	if !p.preprocess {
+		return done()
 	}
 
 	bs = goo.MacroPreprocess(bs)
 
-	if *flagNoProcess {
-		return
+	if !p.process {
+		return done()
 	}
 
-	bs, err = goo.MacroProcess(*flagIn, bs, j)
-	handle(err, "cannot process macro")
-
-	if *flagNoFormat {
-		return
+	if bs, err = goo.MacroProcess(p.inName, bs, j); err != nil {
+		return fmt.Errorf("cannot process macro: %v", err)
 	}
 
-	bs, err = goo.MacroFormat(bs)
-	handle(err, "cannot format macro")
+	if !p.format {
+		return done()
+	}
+
+	if bs, err = goo.MacroFormat(bs); err != nil {
+		return fmt.Errorf("cannot format macro: %v", err)
+	}
+
+	return done()
+}
+
+func main() {
+	var p = newProgram()
+
+	defer func() {
+		p.app.FatalIfError(p.in.Close(), "cannot close %v: ", p.in.Name())
+		p.app.FatalIfError(p.out.Close(), "cannot close %v: ", p.out.Name())
+	}()
+
+	switch p.cmd {
+	case "macro":
+		p.app.FatalIfError(macro(p), "cannot run macro")
+
+	default:
+		panic(p.cmd)
+	}
+}
+
+type program struct {
+	app        *kingpin.Application
+	cmd        string
+	format     bool
+	in         *os.File
+	inName     string
+	json       string
+	out        *os.File
+	outName    string
+	preprocess bool
+	process    bool
+}
+
+func newProgram() *program {
+	var app = kingpin.New(os.Args[0], "The missing link.")
+	var macro = app.Command("macro", "Run a macro.")
+	var prog = program{app: app}
+
+	app.Author("Will Faught")
+	app.Version("0.1.0")
+	app.HelpFlag.Short('h')
+
+	macro.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&prog.in)
+	macro.Flag("json", "Macro data as JSON.").Short('j').Default("null").StringVar(&prog.json)
+	macro.Flag("format", "Format the macro.").Short('f').Default("true").BoolVar(&prog.format)
+	macro.Flag("preprocess", "Preprocess the macro.").Short('e').Default("true").BoolVar(&prog.preprocess)
+	macro.Flag("process", "Process the macro.").Short('p').Default("true").BoolVar(&prog.process)
+	macro.Flag("out", "Output file path. Defaults to standard out.").Short('o').OpenFileVar(&prog.out, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+
+	var args = os.Args[1:]
+	var cmd = kingpin.MustParse(app.Parse(args))
+
+	if cmd == "" {
+		app.Usage(args)
+		os.Exit(0)
+	}
+
+	prog.cmd = cmd
+
+	if prog.in == nil {
+		prog.inName = "standard in"
+		prog.in = os.Stdin
+	} else {
+		prog.inName = prog.in.Name()
+	}
+
+	if prog.out == nil {
+		prog.outName = "standard out"
+		prog.out = os.Stdout
+	} else {
+		prog.outName = prog.out.Name()
+	}
+
+	return &prog
 }

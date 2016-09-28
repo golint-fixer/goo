@@ -1,23 +1,23 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo -in primitive.go -out ../../primitive_bool.go -json {"equatable":true,"name":"Bool","rec":"b","base":"bool","zero":"false"}
-//go:generate goo -in primitive.go -out ../../primitive_byte.go -json {"comparable":true,"integer":true,"name":"Byte","number":true,"rec":"b","base":"byte","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_complex64.go -json {"name":"Complex64","number":true,"rec":"c","base":"complex64","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_complex128.go -json {"name":"Complex128","number":true,"rec":"c","base":"complex128","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_float32.go -json {"comparable":true,"name":"Float32","number":true,"rec":"f","base":"float32","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_float64.go -json {"comparable":true,"name":"Float64","number":true,"rec":"f","base":"float64","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_int.go -json {"comparable":true,"integer":true,"name":"Int","number":true,"rec":"i","base":"int","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_int8.go -json {"comparable":true,"integer":true,"name":"Int8","number":true,"rec":"i","base":"int8","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_int16.go -json {"comparable":true,"integer":true,"name":"Int16","number":true,"rec":"i","base":"int16","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_int32.go -json {"comparable":true,"integer":true,"name":"Int32","number":true,"rec":"i","base":"int32","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_int64.go -json {"comparable":true,"integer":true,"name":"Int64","number":true,"rec":"i","base":"int64","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_rune.go -json {"comparable":true,"integer":true,"name":"Rune","number":true,"rec":"r","base":"rune","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_string.go -json {"comparable":true,"name":"String","rec":"s","base":"string","zero":"\"\""}
-//go:generate goo -in primitive.go -out ../../primitive_uint.go -json {"comparable":true,"integer":true,"name":"Uint","number":true,"rec":"u","base":"uint","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_uintptr.go -json {"comparable":true,"integer":true,"name":"Uintptr","number":true,"rec":"u","base":"uintptr","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_uint8.go -json {"comparable":true,"integer":true,"name":"Uint8","number":true,"rec":"u","base":"uint8","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_uint16.go -json {"comparable":true,"integer":true,"name":"Uint16","number":true,"rec":"u","base":"uint16","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_uint32.go -json {"comparable":true,"integer":true,"name":"Uint32","number":true,"rec":"u","base":"uint32","zero":"0"}
-//go:generate goo -in primitive.go -out ../../primitive_uint64.go -json {"comparable":true,"integer":true,"name":"Uint64","number":true,"rec":"u","base":"uint64","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_bool.go -j {"equatable":true,"name":"Bool","rec":"b","base":"bool","zero":"false"}
+//go:generate goo macro -i primitive.go -o ../../primitive_byte.go -j {"comparable":true,"integer":true,"name":"Byte","number":true,"rec":"b","base":"byte","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_complex64.go -j {"name":"Complex64","number":true,"rec":"c","base":"complex64","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_complex128.go -j {"name":"Complex128","number":true,"rec":"c","base":"complex128","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_float32.go -j {"comparable":true,"name":"Float32","number":true,"rec":"f","base":"float32","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_float64.go -j {"comparable":true,"name":"Float64","number":true,"rec":"f","base":"float64","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_int.go -j {"comparable":true,"integer":true,"name":"Int","number":true,"rec":"i","base":"int","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_int8.go -j {"comparable":true,"integer":true,"name":"Int8","number":true,"rec":"i","base":"int8","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_int16.go -j {"comparable":true,"integer":true,"name":"Int16","number":true,"rec":"i","base":"int16","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_int32.go -j {"comparable":true,"integer":true,"name":"Int32","number":true,"rec":"i","base":"int32","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_int64.go -j {"comparable":true,"integer":true,"name":"Int64","number":true,"rec":"i","base":"int64","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_rune.go -j {"comparable":true,"integer":true,"name":"Rune","number":true,"rec":"r","base":"rune","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_string.go -j {"comparable":true,"name":"String","rec":"s","base":"string","zero":"\"\""}
+//go:generate goo macro -i primitive.go -o ../../primitive_uint.go -j {"comparable":true,"integer":true,"name":"Uint","number":true,"rec":"u","base":"uint","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_uintptr.go -j {"comparable":true,"integer":true,"name":"Uintptr","number":true,"rec":"u","base":"uintptr","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_uint8.go -j {"comparable":true,"integer":true,"name":"Uint8","number":true,"rec":"u","base":"uint8","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_uint16.go -j {"comparable":true,"integer":true,"name":"Uint16","number":true,"rec":"u","base":"uint16","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_uint32.go -j {"comparable":true,"integer":true,"name":"Uint32","number":true,"rec":"u","base":"uint32","zero":"0"}
+//go:generate goo macro -i primitive.go -o ../../primitive_uint64.go -j {"comparable":true,"integer":true,"name":"Uint64","number":true,"rec":"u","base":"uint64","zero":"0"}
 
 package goo
 
