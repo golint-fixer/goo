@@ -46,9 +46,10 @@ func handle(err error, s string) {
 func main() {
 	var flagIn = flag.String("in", "", "Input file path. Defaults to standard in.")
 	var flagJSON = flag.String("json", "null", "Macro data as JSON.")
+	var flagNoFormat = flag.Bool("noformat", false, "Do not format the macro.")
+	var flagNoPreprocess = flag.Bool("nopreprocess", false, "Do not preprocess the macro.")
+	var flagNoProcess = flag.Bool("noprocess", false, "Do not process the macro.")
 	var flagOut = flag.String("out", "", "Output file path. Defaults to standard out.")
-	var flagPreprocess = flag.Bool("preprocess", false, "Do not process and format the macro.")
-	var flagProcess = flag.Bool("process", false, "Do not format the macro.")
 
 	flag.Parse()
 
@@ -59,6 +60,7 @@ func main() {
 
 	var fileIn, fileOut *os.File
 	var nameIn, nameOut string
+	var bs []byte
 	var err error
 
 	if *flagIn == "" {
@@ -79,32 +81,32 @@ func main() {
 		handle(err, fmt.Sprintf("cannot open %v", *flagOut))
 	}
 
-	var bs []byte
-
 	bs, err = ioutil.ReadAll(fileIn)
 	handle(err, fmt.Sprint("cannot read", nameIn))
+
+	defer func() {
+		var _, err = fileOut.Write(bs)
+
+		handle(err, fmt.Sprint("cannot write", nameOut))
+	}()
+
+	if *flagNoPreprocess {
+		return
+	}
+
 	bs = goo.MacroPreprocess(bs)
 
-	if *flagPreprocess {
-		_, err = fileOut.Write(bs)
-		handle(err, fmt.Sprint("cannot write", nameOut))
-
+	if *flagNoProcess {
 		return
 	}
 
 	bs, err = goo.MacroProcess(*flagIn, bs, j)
 	handle(err, "cannot process macro")
 
-	if *flagProcess {
-		_, err = fileOut.Write(bs)
-		handle(err, fmt.Sprint("cannot write", nameOut))
-
+	if *flagNoFormat {
 		return
 	}
 
 	bs, err = goo.MacroFormat(bs)
 	handle(err, "cannot format macro")
-
-	_, err = fileOut.Write(bs)
-	handle(err, fmt.Sprint("cannot write", nameOut))
 }
