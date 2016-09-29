@@ -32,23 +32,15 @@ func convert(d interface{}) interface{} {
 }
 
 func macro(p *program) error {
-	var j interface{}
-
-	if err := json.Unmarshal([]byte(p.json), &j); err != nil {
-		return fmt.Errorf("invalid json: %v", err)
-	}
-
-	convert(j)
-
 	var bs, err = ioutil.ReadAll(p.in)
 
 	if err != nil {
-		return fmt.Errorf("cannot read %v: %v", p.inName, err)
+		return fmt.Errorf("cannot read %v: %v", p.in.Name(), err)
 	}
 
 	var done = func() error {
 		if _, err := p.out.Write(bs); err != nil {
-			return fmt.Errorf("cannot write %v: %v", p.outName, err)
+			return fmt.Errorf("cannot write %v: %v", p.out.Name(), err)
 		}
 
 		return nil
@@ -64,7 +56,7 @@ func macro(p *program) error {
 		return done()
 	}
 
-	if bs, err = goo.MacroProcess(p.inName, bs, j); err != nil {
+	if bs, err = goo.MacroProcess(p.in.Name(), bs, p.data); err != nil {
 		return fmt.Errorf("cannot process macro: %v", err)
 	}
 
@@ -99,12 +91,10 @@ func main() {
 type program struct {
 	app        *kingpin.Application
 	cmd        string
+	data       interface{}
 	format     bool
 	in         *os.File
-	inName     string
-	json       string
 	out        *os.File
-	outName    string
 	preprocess bool
 	process    bool
 }
@@ -113,13 +103,16 @@ func newProgram() *program {
 	var app = kingpin.New(os.Args[0], "The missing link.")
 	var macro = app.Command("macro", "Run a macro.")
 	var prog = program{app: app}
+	var m = map[string]string{}
+	var s string
 
 	app.Author("Will Faught")
 	app.Version("0.1.0")
 	app.HelpFlag.Short('h')
 
 	macro.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&prog.in)
-	macro.Flag("json", "Macro data as JSON.").Short('j').Default("null").StringVar(&prog.json)
+	macro.Flag("json", "Macro data as JSON. Overrides fields.").Short('j').StringVar(&s)
+	macro.Flag("field", "Macro data struct field.").Short('d').StringMapVar(&m)
 	macro.Flag("format", "Format the macro.").Short('f').Default("true").BoolVar(&prog.format)
 	macro.Flag("preprocess", "Preprocess the macro.").Short('e').Default("true").BoolVar(&prog.preprocess)
 	macro.Flag("process", "Process the macro.").Short('p').Default("true").BoolVar(&prog.process)
@@ -135,18 +128,20 @@ func newProgram() *program {
 
 	prog.cmd = cmd
 
-	if prog.in == nil {
-		prog.inName = "standard in"
-		prog.in = os.Stdin
+	if s == "" {
+		prog.data = m
 	} else {
-		prog.inName = prog.in.Name()
+		app.FatalIfError(json.Unmarshal([]byte(s), &prog.data), "json is invalid")
+	}
+
+	convert(prog.data)
+
+	if prog.in == nil {
+		prog.in = os.Stdin
 	}
 
 	if prog.out == nil {
-		prog.outName = "standard out"
 		prog.out = os.Stdout
-	} else {
-		prog.outName = prog.out.Name()
 	}
 
 	return &prog
