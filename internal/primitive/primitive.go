@@ -77,7 +77,7 @@ func (__rec__ __nameOMIT_bool__) And__CUSTOM_OMIT_bool__(other __nameOMIT_bool__
 /// {{if .integer}}
 // And returns the bitwise conjunction of __rec__ and other.
 func (__rec__ __nameOMIT_int__) And__CUSTOM_OMIT_int__(other Integer) Integer {
-	return __rec__ & other.(__name_OMIT_int__)
+	return __rec__ & other.(__nameOMIT_int__)
 } /// {{end}}
 
 /// {{if eq .base "string"}}
@@ -145,7 +145,7 @@ func (__rec__ __name__) Negate() Number {
 
 /// {{if eq .base "bool"}}
 // Not returns the negation of __rec__.
-func (__rec__ __name__) Not() Bool {
+func (__rec__ Bool) Not() Bool {
 	return !__rec__
 } /// {{end}}
 
