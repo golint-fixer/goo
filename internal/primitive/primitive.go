@@ -41,8 +41,11 @@ var __name__Zero = __name__(__zero__)
 
 /// {{if false}}
 type (
-	__name____goo_omit_bool__ bool
-	__name____goo_omit_int__  int
+	__CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ interface{}
+
+	__name_OMIT_bool__ bool
+	__name_OMIT_imag__ complex64
+	__name_OMIT_int__  int
 ) /// {{end}}
 
 // {{.name}} is a {{.base}}.
@@ -67,14 +70,14 @@ func (__rec__ __name__) Add(n Number) Number {
 
 /// {{if eq .base "bool"}}
 // And returns the conjunction of __rec__ and other.
-func (__rec__ __name____goo_omit_bool__) And__Goo_Omit_Bool__(other __name____goo_omit_bool__) __name____goo_omit_bool__ {
+func (__rec__ __name_OMIT_bool__) __And_OMIT_Bool__(other __name_OMIT_bool__) __name_OMIT_bool__ {
 	return __rec__ && other
 } /// {{end}}
 
 /// {{if .integer}}
 // And returns the bitwise conjunction of __rec__ and other.
-func (__rec__ __name____goo_omit_int__) And__Goo_Omit_Int__(other Integer) Integer {
-	return __rec__ & other.(__name____goo_omit_int__)
+func (__rec__ __name_OMIT_int__) __And_OMIT_Int__(other Integer) Integer {
+	return __rec__ & other.(__name_OMIT_int__)
 } /// {{end}}
 
 /// {{if eq .base "string"}}
@@ -108,8 +111,8 @@ func (__rec__ __name__) GreaterEqual(c Comparable) bool {
 
 /// {{if eq .base "complex64" "complex128"}}
 // Imag returns the imaginary part.
-func (__rec__ __name__) Imag() /** {{if eq .base "complex64"}} float32 {{else}} float64 {{end}} **/ {
-	/// return imag(__rec__)
+func (__rec__ __name_OMIT_imag__) Imag() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
+	return imag(__rec__)
 } /// {{end}}
 
 /// {{if .comparable}}
@@ -160,8 +163,8 @@ func (b Bool) Or(other Bool) Bool {
 
 /// {{if eq .base "complex64" "complex128"}}
 // Real returns the real part.
-func (__rec__ __name__) Real() /** {{if eq .base "complex64"}} float32 {{else}} float64 {{end}} **/ {
-	/// return real(__rec__)
+func (__rec__ __name_OMIT_imag__) Real() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
+	return real(__rec__)
 } /// {{end}}
 
 /// {{if .number}}
