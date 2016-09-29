@@ -43,9 +43,9 @@ var __name__Zero = __name__(__zero__)
 type (
 	__CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ interface{}
 
-	__name_OMIT_bool__ bool
-	__name_OMIT_imag__ complex64
-	__name_OMIT_int__  int
+	__nameOMIT_bool__ bool
+	__nameOMIT_imag__ complex64
+	__nameOMIT_int__  int
 ) /// {{end}}
 
 // {{.name}} is a {{.base}}.
@@ -70,13 +70,13 @@ func (__rec__ __name__) Add(n Number) Number {
 
 /// {{if eq .base "bool"}}
 // And returns the conjunction of __rec__ and other.
-func (__rec__ __name_OMIT_bool__) __And_OMIT_Bool__(other __name_OMIT_bool__) __name_OMIT_bool__ {
+func (__rec__ __nameOMIT_bool__) And__CUSTOM_OMIT_bool__(other __nameOMIT_bool__) __nameOMIT_bool__ {
 	return __rec__ && other
 } /// {{end}}
 
 /// {{if .integer}}
 // And returns the bitwise conjunction of __rec__ and other.
-func (__rec__ __name_OMIT_int__) __And_OMIT_Int__(other Integer) Integer {
+func (__rec__ __nameOMIT_int__) And__CUSTOM_OMIT_int__(other Integer) Integer {
 	return __rec__ & other.(__name_OMIT_int__)
 } /// {{end}}
 
@@ -111,7 +111,7 @@ func (__rec__ __name__) GreaterEqual(c Comparable) bool {
 
 /// {{if eq .base "complex64" "complex128"}}
 // Imag returns the imaginary part.
-func (__rec__ __name_OMIT_imag__) Imag() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
+func (__rec__ __nameOMIT_imag__) Imag() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
 	return imag(__rec__)
 } /// {{end}}
 
@@ -144,9 +144,9 @@ func (__rec__ __name__) Negate() Number {
 } /// {{end}}
 
 /// {{if eq .base "bool"}}
-// Not returns the negation of b.
-func (b Bool) Not() Bool {
-	return !b
+// Not returns the negation of __rec__.
+func (__rec__ __name__) Not() Bool {
+	return !__rec__
 } /// {{end}}
 
 /// {{if or .comparable .equatable .number}}
@@ -163,7 +163,7 @@ func (b Bool) Or(other Bool) Bool {
 
 /// {{if eq .base "complex64" "complex128"}}
 // Real returns the real part.
-func (__rec__ __name_OMIT_imag__) Real() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
+func (__rec__ __nameOMIT_imag__) Real() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
 	return real(__rec__)
 } /// {{end}}
 

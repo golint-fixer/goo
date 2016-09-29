@@ -16,7 +16,7 @@ var (
 	macroIdentifier = regexp.MustCompile(`__[A-Za-z](_?[[:alnum:]])*__`)
 	macroLine       = regexp.MustCompile(`\/\/\/(.*)`)
 	macroMultiLine  = regexp.MustCompile(`(?s:\/\*\*(.*)\*\*\/)`)
-	macroShorthand  = regexp.MustCompile(`(?m:^__([[:alnum:]]+)__$)`)
+	macroShorthand  = regexp.MustCompile(`(?m:^__(\w+)__$)`)
 )
 
 var (
