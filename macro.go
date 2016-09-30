@@ -15,7 +15,7 @@ var (
 	macroGenerate   = regexp.MustCompile(`(?m:^\/\/go:generate.*$)`)
 	macroIdentifier = regexp.MustCompile(`__[A-Za-z](_?[[:alnum:]])*__`)
 	macroLine       = regexp.MustCompile(`\/\/\/(.*)`)
-	macroMultiLine  = regexp.MustCompile(`(?s:\/\*\*(.*)\*\*\/)`)
+	macroMultiLine  = regexp.MustCompile(`(?s:\/\*\*(.*?)\*\*\/)`)
 	macroShorthand  = regexp.MustCompile(`(?m:^__(\w+)__$)`)
 )
 
