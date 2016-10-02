@@ -111,8 +111,8 @@ func newProgram() *program {
 	app.HelpFlag.Short('h')
 
 	macro.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&prog.in)
-	macro.Flag("json", "Macro data as JSON. Overrides fields.").Short('j').StringVar(&s)
-	macro.Flag("field", "Macro data struct field.").Short('d').StringMapVar(&m)
+	macro.Flag("json", "JSON macro data. Overrides fields.").Short('j').StringVar(&s)
+	macro.Flag("field", "Struct field macro data.").Short('d').StringMapVar(&m)
 	macro.Flag("format", "Format the macro.").Short('f').Default("true").BoolVar(&prog.format)
 	macro.Flag("preprocess", "Preprocess the macro.").Short('e').Default("true").BoolVar(&prog.preprocess)
 	macro.Flag("process", "Process the macro.").Short('p').Default("true").BoolVar(&prog.process)
