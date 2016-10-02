@@ -81,7 +81,7 @@ func main() {
 
 	switch p.cmd {
 	case "macro":
-		p.app.FatalIfError(macro(p))
+		p.app.FatalIfError(macro(p), "")
 
 	default:
 		panic(p.cmd)
