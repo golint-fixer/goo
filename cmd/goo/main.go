@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/willfaught/goo"
@@ -97,26 +98,31 @@ type program struct {
 	out        *os.File
 	preprocess bool
 	process    bool
+	receiver   string
 }
 
 func newProgram() *program {
 	var app = kingpin.New(os.Args[0], "The missing link.")
 	var macro = app.Command("macro", "Run a macro.")
 	var prog = program{app: app}
-	var m = map[string]string{}
-	var s string
 
 	app.Author("Will Faught")
 	app.Version("0.1.0")
 	app.HelpFlag.Short('h')
 
+	var doc = macro.Flag("doc", "Struct doc line.").Short('d').Strings()
+	var fields = macro.Flag("field", "Struct field macro data.").Short('f').StringMap()
+	var interface_ = macro.Flag("interface", "Struct interface.").Short('n').String()
+	var json_ = macro.Flag("json", "JSON macro data. Overrides fields.").Short('j').String()
+	var package_ = macro.Flag("package", "Struct package.").Short('p').String()
+	var receiver = macro.Flag("receiver", "Struct receiver.").Short('r').String()
+	var struct_ = macro.Flag("struct", "Struct name.").Short('s').String()
+
+	macro.Flag("format", "Format the macro.").Default("true").BoolVar(&prog.format)
 	macro.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&prog.in)
-	macro.Flag("json", "JSON macro data. Overrides fields.").Short('j').StringVar(&s)
-	macro.Flag("field", "Struct field macro data.").Short('d').StringMapVar(&m)
-	macro.Flag("format", "Format the macro.").Short('f').Default("true").BoolVar(&prog.format)
-	macro.Flag("preprocess", "Preprocess the macro.").Short('e').Default("true").BoolVar(&prog.preprocess)
-	macro.Flag("process", "Process the macro.").Short('p').Default("true").BoolVar(&prog.process)
 	macro.Flag("out", "Output file path. Defaults to standard out.").Short('o').OpenFileVar(&prog.out, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	macro.Flag("preprocess", "Preprocess the macro.").Default("true").BoolVar(&prog.preprocess)
+	macro.Flag("process", "Process the macro.").Default("true").BoolVar(&prog.process)
 
 	var args = os.Args[1:]
 	var cmd = kingpin.MustParse(app.Parse(args))
@@ -128,10 +134,21 @@ func newProgram() *program {
 
 	prog.cmd = cmd
 
-	if s == "" {
-		prog.data = m
+	if *json_ != "" {
+		app.FatalIfError(json.Unmarshal([]byte(*json_), &prog.data), "json is invalid")
+	} else if *interface_ != "" {
+		var ss = strings.Split(*interface_, ".")
+		var pkg = strings.Join(ss[:len(ss)-1], ".")
+		var id = ss[len(ss)-1]
+		var i, err = goo.MacroInterface(pkg, id)
+
+		if err != nil {
+			app.FatalIfError(err, "cannot use interface %v", *interface_)
+		}
+
+		prog.data = &goo.Struct{Doc: *doc, Interface: i, Name: *struct_, Package: *package_, Receiver: *receiver}
 	} else {
-		app.FatalIfError(json.Unmarshal([]byte(s), &prog.data), "json is invalid")
+		prog.data = *fields
 	}
 
 	convert(prog.data)
