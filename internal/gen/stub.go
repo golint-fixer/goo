@@ -7,8 +7,7 @@ package __FIELD_Package__
 
 /// {{if false}}
 type __X_IF_FIELDS_Interface_Qualifier_ENDFIELDS_THEN_ACTION_FIELDS_Interface_Qualifier_ENDFIELDS_ENDACTION_PERIOD_ENDIF_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__ interface{}
-type __FIELD_Name__ struct{}
-type __X_IF_VAR_r_THEN_VAR_r_ENDIF_ASTERISK_VAR_s__ struct{} /// {{end}}
+type __X_IF_VAR_r_THEN_ACTION_VAR_r_ENDACTION_ENDIF_ASTERISK_ACTION_VAR_s_ENDACTION__ struct{} /// {{end}}
 
 var _ __X_IF_FIELDS_Interface_Qualifier_ENDFIELDS_THEN_ACTION_FIELDS_Interface_Qualifier_ENDFIELDS_ENDACTION_PERIOD_ENDIF_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__ = &__FIELD_Name__{}
 
