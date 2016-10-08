@@ -3,6 +3,7 @@ package goo
 import (
 	"bytes"
 	"compress/gzip"
+	"io/ioutil"
 	"sync"
 )
 
@@ -37,22 +38,19 @@ func Resource(name string) ([]byte, bool) {
 	}
 
 	if resourceCompression[name] {
-		var b bytes.Buffer
-		var r, err = gzip.NewReader(&b)
+		var r, err = gzip.NewReader(bytes.NewBuffer(d))
 
 		if err != nil {
 			panic(err)
 		}
 
-		if _, err := r.Read(d); err != nil {
+		if d, err = ioutil.ReadAll(r); err != nil {
 			panic(err)
 		}
 
-		if err := r.Close(); err != nil {
+		if err = r.Close(); err != nil {
 			panic(err)
 		}
-
-		d = b.Bytes()
 	}
 
 	return d, true
