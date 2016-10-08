@@ -12,16 +12,20 @@ var (
 	resourceMutex       = &sync.Mutex{}
 )
 
-func AddResource(name string, file []byte, compressed bool) {
+func DeleteResource(name string) bool {
 	resourceMutex.Lock()
 
 	defer resourceMutex.Unlock()
 
-	resourceData[name] = file
-	resourceCompression[name] = compressed
+	var _, ok = resourceData[name]
+
+	delete(resourceData, name)
+	delete(resourceCompression, name)
+
+	return ok
 }
 
-func GetResource(name string) ([]byte, bool) {
+func Resource(name string) ([]byte, bool) {
 	resourceMutex.Lock()
 
 	defer resourceMutex.Unlock()
@@ -54,15 +58,11 @@ func GetResource(name string) ([]byte, bool) {
 	return d, true
 }
 
-func RemoveResource(name string) bool {
+func SetResource(name string, file []byte, compressed bool) {
 	resourceMutex.Lock()
 
 	defer resourceMutex.Unlock()
 
-	var _, ok = resourceData[name]
-
-	delete(resourceData, name)
-	delete(resourceCompression, name)
-
-	return ok
+	resourceData[name] = file
+	resourceCompression[name] = compressed
 }
