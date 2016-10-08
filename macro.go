@@ -268,7 +268,7 @@ type Interface struct {
 }
 
 func MacroInterface(package_, identifier string) (*Interface, error) {
-	var bp, err = build.Import(package_, "", build.FindOnly)
+	var bp, err = build.Import(package_, "", 0)
 
 	if err != nil {
 		return nil, fmt.Errorf("cannot find package %v: %v", package_, err)
