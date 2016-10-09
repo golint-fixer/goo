@@ -292,21 +292,11 @@ func (r *resource) run() (err error) {
 		bs = compressed.Bytes()
 	}
 
-	var syntax bytes.Buffer
-
-	for i, b := range bs {
-		if i > 0 {
-			syntax.WriteString(", ")
-		}
-
-		syntax.WriteString(fmt.Sprint(b))
-	}
-
 	var data = struct {
 		Compressed, Data, Name, Package string
 	}{
 		Compressed: fmt.Sprint(r.compress),
-		Data:       syntax.String(),
+		Data:       fmt.Sprintf("%#v", bs),
 		Name:       r.name,
 		Package:    r.package_,
 	}
