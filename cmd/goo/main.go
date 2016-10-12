@@ -1,3 +1,7 @@
+//go:generate go get github.com/willfaught/goo/cmd/goo
+//go:generate goo resource ../../internal/resource/resource.go
+//go:generate goo resource ../../internal/stub/stub.go
+
 package main
 
 import (
