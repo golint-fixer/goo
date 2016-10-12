@@ -341,24 +341,28 @@ func MacroInterface(package_, identifier string) (*Interface, error) {
 
 		var ps, rs []*Vars
 
-		for _, p := range f.Params.List {
-			var ns []string
+		if f.Params != nil {
+			for _, p := range f.Params.List {
+				var ns []string
 
-			for _, n := range p.Names {
-				ns = append(ns, n.Name)
+				for _, n := range p.Names {
+					ns = append(ns, n.Name)
+				}
+
+				ps = append(ps, &Vars{Names: ns, Type: fmt.Sprint(p.Type)})
 			}
-
-			ps = append(ps, &Vars{Names: ns, Type: fmt.Sprint(p.Type)})
 		}
 
-		for _, r := range f.Results.List {
-			var ns []string
+		if f.Results != nil {
+			for _, r := range f.Results.List {
+				var ns []string
 
-			for _, n := range r.Names {
-				ns = append(ns, n.Name)
+				for _, n := range r.Names {
+					ns = append(ns, n.Name)
+				}
+
+				rs = append(rs, &Vars{Names: ns, Type: fmt.Sprint(r.Type)})
 			}
-
-			rs = append(rs, &Vars{Names: ns, Type: fmt.Sprint(r.Type)})
 		}
 
 		ms = append(ms, &Method{Doc: macroCommentGroup(m.Doc), Name: m.Names[0].Name, Params: ps, Results: rs})
@@ -387,6 +391,7 @@ type Struct struct {
 	Interface *Interface
 	Name      string
 	Package   string
+	Pointer   bool
 	Receiver  string
 }
 

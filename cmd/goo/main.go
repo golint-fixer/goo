@@ -17,7 +17,11 @@ import (
 	"github.com/willfaught/goo"
 )
 
-var identifier = regexp.MustCompile(`(?m:^\w+$)`)
+var (
+	identifier         = regexp.MustCompile(`(?m:^)\w+(?m:$)`)
+	identifierExported = regexp.MustCompile(`(?m:^)[A-Z]\w*(?m:$)`)
+	qualified          = regexp.MustCompile(`(?m:^)(?:([\w.]+(?:\/[\w.]+)*)\.)?([\w.]+)(?m:$)`)
+)
 
 func convert(d interface{}) interface{} {
 	switch t := d.(type) {
@@ -199,7 +203,7 @@ func newResource(app *kingpin.Application) *resource {
 
 	c.Flag("compress", "Resource compression.").Short('c').BoolVar(&r.compress)
 	c.Flag("name", "Resource name.").Short('n').StringVar(&r.name)
-	c.Flag("output", "Output file.").Short('o').OpenFileVar(&r.output, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644)
+	c.Flag("output", "Output file.").Short('o').OpenFileVar(&r.output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	c.Flag("package", "Resource package.").Short('p').StringVar(&r.package_)
 
 	return &r
@@ -264,7 +268,7 @@ func (r *resource) run() (err error) {
 	}
 
 	if r.output == nil {
-		if r.output, err = os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0644); err != nil {
+		if r.output, err = os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644); err != nil {
 			return fmt.Errorf("cannot open %v: %v", outputName, err)
 		}
 	}
@@ -301,13 +305,13 @@ func (r *resource) run() (err error) {
 		Package:    r.package_,
 	}
 
-	var res, ok = goo.Resource("../../internal/resource/resource.go")
+	var resource, ok = goo.Resource("../../internal/resource/resource.go")
 
 	if !ok {
 		panic(ok)
 	}
 
-	if bs, err = (&macro{format: true, preprocess: true, process: true}).pipeline(inputName, res, data); err != nil {
+	if bs, err = (&macro{format: true, preprocess: true, process: true}).pipeline(inputName, resource, data); err != nil {
 		return fmt.Errorf("cannot create resource: %v", err)
 	}
 
@@ -322,38 +326,114 @@ func (r *resource) run() (err error) {
 
 type stub struct {
 	app        *kingpin.Application
+	identifier string
 	interface_ string
-	name       string
-	out        *os.File
+	output     string
 	package_   string
-	receiver   string
-	struct_    *goo.Struct
+	type_      string
+	value      bool
 }
 
 func newStub(app *kingpin.Application) *stub {
 	var s = stub{app: app}
 	var c = app.Command("stub", "Stub an interface.")
 
-	c.Arg("interface", "Struct interface. Qualified with its package path.").Required().StringVar(&s.interface_)
-	c.Flag("name", "Struct name.").Short('s').Default("Stub").StringVar(&s.name)
-	c.Flag("out", "Output file path.").Short('o').Default("/dev/stdout").OpenFileVar(&s.out, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	c.Flag("package", "Struct package.").Short('p').Default("main").StringVar(&s.package_)
-	c.Flag("receiver", "Struct receiver.").Short('r').StringVar(&s.receiver)
+	c.Arg("type", "Stub receiver type.").Required().StringVar(&s.type_)
+	c.Arg("interface", "Stub interface.").Required().StringVar(&s.interface_)
+
+	c.Flag("identifier", "Stub receiver identifier.").Short('i').StringVar(&s.identifier)
+	c.Flag("output", "Stub file.").Short('o').StringVar(&s.output)
+	c.Flag("package", "Stub package.").Short('p').StringVar(&s.package_)
+	c.Flag("value", "Stub receiver is a value type.").Short('v').BoolVar(&s.value)
 
 	return &s
 }
 
-func (s *stub) run() error {
-	var ss = strings.Split(s.interface_, ".")
-	var pkg = strings.Join(ss[:len(ss)-1], ".")
-	var id = ss[len(ss)-1]
-	var i, err = goo.MacroInterface(pkg, id)
+func (s *stub) run() (err error) {
+	var g = qualified.FindStringSubmatch(s.interface_)
 
-	if err != nil {
-		s.app.FatalIfError(err, "cannot use interface %v", s.interface_)
+	if len(g) != 3 {
+		return fmt.Errorf("interface %v is invalid: %v", s.interface_, g)
 	}
 
-	s.struct_ = &goo.Struct{Interface: i, Name: s.name, Package: s.package_, Receiver: s.receiver}
+	var p, t = g[1], g[2]
 
-	return (&macro{data: s.struct_, in: nil, out: s.out}).run()
+	if !identifierExported.MatchString(t) {
+		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
+	}
+
+	i, err := goo.MacroInterface(p, t)
+
+	if err != nil {
+		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
+	}
+
+	if p == "" {
+		i.Package = ""
+		i.Qualifier = ""
+	}
+
+	var outputName string
+
+	if s.output == "" {
+		outputName = fmt.Sprintf("%v_%v.go", strings.ToLower(s.type_), strings.ToLower(t))
+	} else {
+		outputName = s.output
+	}
+
+	outputNameAbs, err := filepath.Abs(outputName)
+
+	if err != nil {
+		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
+	}
+
+	var outputNameAbsDir = filepath.Dir(outputNameAbs)
+	var outputPackage string
+
+	if s.package_ == "" {
+		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
+			s.package_ = p.Name
+			outputPackage = p.ImportPath
+		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
+			s.package_ = b
+		} else {
+			s.package_ = "main"
+		}
+	}
+
+	var resource, ok = goo.Resource("../../internal/stub/stub.go")
+
+	if !ok {
+		panic(ok)
+	}
+
+	if p == outputPackage {
+		i.Package = ""
+		i.Qualifier = ""
+	}
+
+	var d = &goo.Struct{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
+	bs, err := (&Macro{format: true, preprocess: true, process: true}).Pipeline(outputName, resource, d)
+
+	if err != nil {
+		return fmt.Errorf("cannot create stub: %v", err)
+	}
+
+	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+
+	if err != nil {
+		return fmt.Errorf("cannot open %v: %v", outputName, err)
+	}
+
+	if n, err := output.Write(bs); err != nil {
+		return fmt.Errorf("cannot write %v: %v", outputName, err)
+	} else if n != len(bs) {
+		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
+	}
+
+	if err := output.Close(); err != nil {
+		return fmt.Errorf("cannot close %v: %v", outputName, err)
+	}
+
+	return nil
 }
