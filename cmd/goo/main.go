@@ -45,10 +45,10 @@ func convert(d interface{}) interface{} {
 }
 
 func main() {
-	newProgram().run()
+	NewProgram().Run()
 }
 
-type macro struct {
+type Macro struct {
 	app        *kingpin.Application
 	doc        []string
 	data       interface{}
@@ -67,8 +67,8 @@ type macro struct {
 	struct_    string
 }
 
-func newMacro(app *kingpin.Application) *macro {
-	var m = macro{app: app}
+func NewMacro(app *kingpin.Application) *Macro {
+	var m = Macro{app: app}
 	var c = app.Command("macro", "Run a macro.")
 
 	c.Flag("field", "Struct field macro data.").Short('f').StringMapVar(&m.fields)
@@ -82,7 +82,7 @@ func newMacro(app *kingpin.Application) *macro {
 	return &m
 }
 
-func (m *macro) run() error {
+func (m *Macro) Run() error {
 	if m.json_ != "" {
 		m.app.FatalIfError(json.Unmarshal([]byte(m.json_), &m.data), "json is invalid")
 		convert(m.data)
@@ -104,7 +104,7 @@ func (m *macro) run() error {
 		return fmt.Errorf("cannot read %v: %v", m.in.Name(), err)
 	}
 
-	bs, err = m.pipeline(m.in.Name(), bs, m.data)
+	bs, err = m.Pipeline(m.in.Name(), bs, m.data)
 
 	if n, err := m.out.Write(bs); err != nil {
 		return fmt.Errorf("cannot write %v: %v", m.out.Name(), err)
@@ -123,7 +123,7 @@ func (m *macro) run() error {
 	return nil
 }
 
-func (m *macro) pipeline(name string, bs []byte, data interface{}) ([]byte, error) {
+func (m *Macro) Pipeline(name string, bs []byte, data interface{}) ([]byte, error) {
 	if !m.preprocess {
 		return bs, nil
 	}
@@ -151,42 +151,42 @@ func (m *macro) pipeline(name string, bs []byte, data interface{}) ([]byte, erro
 	return bs, nil
 }
 
-type program struct {
-	app      *kingpin.Application
-	macro    *macro
-	resource *resource
-	stub     *stub
+type Program struct {
+	App      *kingpin.Application
+	Macro    *Macro
+	Resource *Resource
+	Stub     *Stub
 }
 
-func newProgram() *program {
+func NewProgram() *Program {
 	var app = kingpin.New(os.Args[0], "Fill the gaps.")
 
 	app.Author("Will Faught")
 	app.Version("0.1.0")
 	app.HelpFlag.Short('h')
 
-	return &program{app: app, macro: newMacro(app), stub: newStub(app), resource: newResource(app)}
+	return &Program{App: app, Macro: NewMacro(app), Stub: NewStub(app), Resource: NewResource(app)}
 }
 
-func (p *program) run() {
+func (p *Program) Run() {
 	var a = os.Args[1:]
 
-	switch kingpin.MustParse(p.app.Parse(a)) {
+	switch kingpin.MustParse(p.App.Parse(a)) {
 	case "macro":
-		p.app.FatalIfError(p.macro.run(), "")
+		p.App.FatalIfError(p.Macro.Run(), "")
 
 	case "stub":
-		p.app.FatalIfError(p.stub.run(), "")
+		p.App.FatalIfError(p.Stub.Run(), "")
 
 	case "resource":
-		p.app.FatalIfError(p.resource.run(), "")
+		p.App.FatalIfError(p.Resource.Run(), "")
 
 	default:
-		p.app.Usage(a)
+		p.App.Usage(a)
 	}
 }
 
-type resource struct {
+type Resource struct {
 	app      *kingpin.Application
 	compress bool
 	input    *os.File
@@ -195,8 +195,8 @@ type resource struct {
 	package_ string
 }
 
-func newResource(app *kingpin.Application) *resource {
-	var r = resource{app: app}
+func NewResource(app *kingpin.Application) *Resource {
+	var r = Resource{app: app}
 	var c = app.Command("resource", "Create a resource.")
 
 	c.Arg("input", "Input file.").Required().FileVar(&r.input)
@@ -209,7 +209,7 @@ func newResource(app *kingpin.Application) *resource {
 	return &r
 }
 
-func (r *resource) run() (err error) {
+func (r *Resource) Run() (err error) {
 	defer func() {
 		if err2 := r.input.Close(); err2 != nil && err == nil {
 			err = fmt.Errorf("cannot close %v: %v", r.input.Name(), err2)
@@ -311,7 +311,7 @@ func (r *resource) run() (err error) {
 		panic(ok)
 	}
 
-	if bs, err = (&macro{format: true, preprocess: true, process: true}).pipeline(inputName, resource, data); err != nil {
+	if bs, err = (&Macro{format: true, preprocess: true, process: true}).Pipeline(inputName, resource, data); err != nil {
 		return fmt.Errorf("cannot create resource: %v", err)
 	}
 
@@ -324,7 +324,7 @@ func (r *resource) run() (err error) {
 	return nil
 }
 
-type stub struct {
+type Stub struct {
 	app        *kingpin.Application
 	identifier string
 	interface_ string
@@ -334,8 +334,8 @@ type stub struct {
 	value      bool
 }
 
-func newStub(app *kingpin.Application) *stub {
-	var s = stub{app: app}
+func NewStub(app *kingpin.Application) *Stub {
+	var s = Stub{app: app}
 	var c = app.Command("stub", "Stub an interface.")
 
 	c.Arg("type", "Stub receiver type.").Required().StringVar(&s.type_)
@@ -349,7 +349,7 @@ func newStub(app *kingpin.Application) *stub {
 	return &s
 }
 
-func (s *stub) run() (err error) {
+func (s *Stub) Run() error {
 	var g = qualified.FindStringSubmatch(s.interface_)
 
 	if len(g) != 3 {
@@ -362,7 +362,7 @@ func (s *stub) run() (err error) {
 		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
 	}
 
-	i, err := goo.MacroInterface(p, t)
+	var i, err = goo.MacroInterface(p, t)
 
 	if err != nil {
 		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
