@@ -75,7 +75,7 @@ func NewMacro(app *kingpin.Application) *Macro {
 	var m = Macro{app: app}
 	var c = app.Command("macro", "Run a macro.")
 
-	c.Flag("field", "Struct field macro data.").Short('f').StringMapVar(&m.fields)
+	c.Flag("field", "Type field macro data.").Short('f').StringMapVar(&m.fields)
 	c.Flag("format", "Format the macro.").Default("true").BoolVar(&m.format)
 	c.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&m.in)
 	c.Flag("json", "JSON macro data. Overrides field.").Short('j').StringVar(&m.json_)
@@ -366,7 +366,7 @@ func (s *Stub) Run() error {
 		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
 	}
 
-	var i, err = goo.MacroInterface(p, t)
+	var i, err = goo.GetMacroInterface(p, t)
 
 	if err != nil {
 		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
@@ -416,7 +416,7 @@ func (s *Stub) Run() error {
 		i.Qualifier = ""
 	}
 
-	var d = &goo.Struct{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
+	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
 	bs, err := (&Macro{format: true, preprocess: true, process: true}).Pipeline(outputName, resource, d)
 
 	if err != nil {

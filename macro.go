@@ -259,15 +259,15 @@ func macroCommentGroup(cg *ast.CommentGroup) []string {
 	return cs
 }
 
-type Interface struct {
+type MacroInterface struct {
 	Doc       []string
-	Methods   []*Method
+	Methods   []*MacroMethod
 	Name      string
 	Package   string
 	Qualifier string
 }
 
-func MacroInterface(package_, identifier string) (*Interface, error) {
+func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 	var bp, err = build.Import(package_, "", 0)
 
 	if err != nil {
@@ -330,7 +330,7 @@ func MacroInterface(package_, identifier string) (*Interface, error) {
 		panic(match.Type)
 	}
 
-	var ms []*Method
+	var ms []*MacroMethod
 
 	for _, m := range i.Methods.List {
 		var f, ok = m.Type.(*ast.FuncType)
@@ -339,7 +339,8 @@ func MacroInterface(package_, identifier string) (*Interface, error) {
 			panic(m.Type)
 		}
 
-		var ps, rs []*Vars
+		var pfs, rfs []*MacroVar
+		var pgs, rgs []*MacroVars
 
 		if f.Params != nil {
 			for _, p := range f.Params.List {
@@ -347,9 +348,10 @@ func MacroInterface(package_, identifier string) (*Interface, error) {
 
 				for _, n := range p.Names {
 					ns = append(ns, n.Name)
+					pfs = append(pfs, &MacroVar{Name: n.Name, Type: fmt.Sprint(p.Type)})
 				}
 
-				ps = append(ps, &Vars{Names: ns, Type: fmt.Sprint(p.Type)})
+				pgs = append(pgs, &MacroVars{Names: ns, Type: fmt.Sprint(p.Type)})
 			}
 		}
 
@@ -359,16 +361,24 @@ func MacroInterface(package_, identifier string) (*Interface, error) {
 
 				for _, n := range r.Names {
 					ns = append(ns, n.Name)
+					rfs = append(rfs, &MacroVar{Name: n.Name, Type: fmt.Sprint(r.Type)})
 				}
 
-				rs = append(rs, &Vars{Names: ns, Type: fmt.Sprint(r.Type)})
+				rgs = append(rgs, &MacroVars{Names: ns, Type: fmt.Sprint(r.Type)})
 			}
 		}
 
-		ms = append(ms, &Method{Doc: macroCommentGroup(m.Doc), Name: m.Names[0].Name, Params: ps, Results: rs})
+		ms = append(ms, &MacroMethod{
+			Doc:            macroCommentGroup(m.Doc),
+			Name:           m.Names[0].Name,
+			ParamsFlat:     pfs,
+			ParamsGrouped:  pgs,
+			ResultsFlat:    rfs,
+			ResultsGrouped: rgs,
+		})
 	}
 
-	var x = &Interface{
+	var x = &MacroInterface{
 		Doc:       macroCommentGroup(match.Doc),
 		Methods:   ms,
 		Name:      match.Name.Name,
@@ -379,23 +389,30 @@ func MacroInterface(package_, identifier string) (*Interface, error) {
 	return x, nil
 }
 
-type Method struct {
-	Doc     []string
-	Name    string
-	Params  []*Vars
-	Results []*Vars
+type MacroMethod struct {
+	Doc            []string
+	Name           string
+	ParamsFlat     []*MacroVar
+	ParamsGrouped  []*MacroVars
+	ResultsFlat    []*MacroVar
+	ResultsGrouped []*MacroVars
 }
 
-type Struct struct {
+type MacroType struct {
 	Doc       []string
-	Interface *Interface
+	Interface *MacroInterface
 	Name      string
 	Package   string
 	Pointer   bool
 	Receiver  string
 }
 
-type Vars struct {
+type MacroVar struct {
+	Name string
+	Type string
+}
+
+type MacroVars struct {
 	Names []string
 	Type  string
 }

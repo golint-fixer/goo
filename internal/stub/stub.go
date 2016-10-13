@@ -21,7 +21,7 @@ var _ __FIELDS_Interface_Name_ENDFIELDS__ = &__FIELD_Name__{}                   
 /// {{range .Interface.Methods}}
 /// {{range .Doc}}
 /// {{.}}{{end}}
-func (__VAR_r__ __X_IF_VAR_p_THEN_ASTERISK_ENDIF____VAR_n__) __FIELD_Name__( /** {{range $i, $p := .Params}}{{if $i}}, {{end}}{{range $j, $n := $p.Names}}{{if $j}}, {{end}}{{$n}}{{end}} {{$p.Type}}{{end}} **/ ) /** {{if .Results}}{{if or (gt (len .Results) 1) (index .Results 0).Names}}({{end}}{{end}}{{range $i, $r := .Results}}{{if $i}}, {{end}}{{range $j, $n := $r.Names}}{{if $j}}, {{end}}{{$n}}{{end}} {{$r.Type}}{{end}}{{if .Results}}{{if or (gt (len .Results) 1) (index .Results 0).Names}}){{end}}{{end}} **/ {
+func (__VAR_r__ __X_IF_VAR_p_THEN_ASTERISK_ENDIF____VAR_n__) __FIELD_Name__( /** {{range $i, $p := .ParamsGrouped}}{{if $i}}, {{end}}{{range $j, $n := $p.Names}}{{if $j}}, {{end}}{{$n}}{{end}} {{$p.Type}}{{end}} **/ ) /** {{if .ResultsGrouped}}{{if or (gt (len .ResultsGrouped) 1) (index .ResultsGrouped 0).Names}}({{end}}{{end}}{{range $i, $r := .ResultsGrouped}}{{if $i}}, {{end}}{{range $j, $n := $r.Names}}{{if $j}}, {{end}}{{$n}}{{end}} {{$r.Type}}{{end}}{{if .ResultsGrouped}}{{if or (gt (len .ResultsGrouped) 1) (index .ResultsGrouped 0).Names}}){{end}}{{end}} **/ {
 	panic("not implemented")
 }
 
