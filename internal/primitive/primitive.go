@@ -22,137 +22,137 @@
 package goo
 
 /// {{if false}}
-var __zero__ = 0 /// {{end}}
+var __FIELD_zero__ = 0 /// {{end}}
 
 /// {{if .integer}}
-var _ Integer = __name__(__zero__)
+var _ Integer = __FIELD_name__(__FIELD_zero__)
 
 /// {{else if .number}}
-var _ Number = __name__(__zero__)
+var _ Number = __FIELD_name__(__FIELD_zero__)
 
 /// {{else if .comparable}}
-var _ Comparable = __name__(__zero__)
+var _ Comparable = __FIELD_name__(__FIELD_zero__)
 
 /// {{else if .equatable}}
-var _ Equatable = __name__(__zero__) /// {{end}}
+var _ Equatable = __FIELD_name__(__FIELD_zero__) /// {{end}}
 
 // {{.name}}Zero is the {{.name}} zero value.
-var __name__Zero = __name__(__zero__)
+var __FIELD_name__Zero = __FIELD_name__(__FIELD_zero__)
 
 /// {{if false}}
 type (
-	__CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ interface{}
+	__X_IFE_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_ENDIF__ interface{}
 
-	__nameOMIT_bool__ bool
-	__nameOMIT_imag__ complex64
-	__nameOMIT_int__  int
+	__FIELD_nameOMIT_bool__ bool
+	__FIELD_nameOMIT_imag__ complex64
+	__FIELD_nameOMIT_int__  int
 ) /// {{end}}
 
 // {{.name}} is a {{.base}}.
-type __name__ __base__
+type __FIELD_name__ __FIELD_base__
 
 /// {{if false}}
 type (
-	__base__   int
-	Bool       bool
-	Comparable interface{}
-	Equatable  interface{}
-	Integer    interface{}
-	Number     interface{}
-	String     string
+	__FIELD_base__ int
+	Bool           bool
+	Comparable     interface{}
+	Equatable      interface{}
+	Integer        interface{}
+	Number         interface{}
+	String         string
 ) /// {{end}}
 
 /// {{if .number}}
 // Add implements Number.
-func (__rec__ __name__) Add(n Number) Number {
-	return __rec__ + n.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Add(n Number) Number {
+	return __FIELD_rec__ + n.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if eq .base "bool"}}
-// And returns the conjunction of __rec__ and other.
-func (__rec__ __nameOMIT_bool__) And__CUSTOM_OMIT_bool__(other __nameOMIT_bool__) __nameOMIT_bool__ {
-	return __rec__ && other
+// And returns the conjunction of __FIELD_rec__ and other.
+func (__FIELD_rec__ __FIELD_nameOMIT_bool__) And__X_OMIT_bool__(other __FIELD_nameOMIT_bool__) __FIELD_nameOMIT_bool__ {
+	return __FIELD_rec__ && other
 } /// {{end}}
 
 /// {{if .integer}}
-// And returns the bitwise conjunction of __rec__ and other.
-func (__rec__ __nameOMIT_int__) And__CUSTOM_OMIT_int__(other Integer) Integer {
-	return __rec__ & other.(__nameOMIT_int__)
+// And returns the bitwise conjunction of __FIELD_rec__ and other.
+func (__FIELD_rec__ __FIELD_nameOMIT_int__) And__X_OMIT_int__(other Integer) Integer {
+	return __FIELD_rec__ & other.(__FIELD_nameOMIT_int__)
 } /// {{end}}
 
 /// {{if eq .base "string"}}
 // Concat returns the concatenation of {{.rec}} and other.
-func (__rec__ __name__) Concat(other __name__) __name__ {
-	return __rec__ + other
+func (__FIELD_rec__ __FIELD_name__) Concat(other __FIELD_name__) __FIELD_name__ {
+	return __FIELD_rec__ + other
 } /// {{end}}
 
 /// {{if .number}}
 // Divide implements Number.
-func (__rec__ __name__) Divide(n Number) Number {
-	return __rec__ / n.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Divide(n Number) Number {
+	return __FIELD_rec__ / n.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if or .comparable .equatable .number}}
 // Equals implements Equatable.
-func (__rec__ __name__) Equals(e Equatable) bool {
-	return __rec__ == e.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Equals(e Equatable) bool {
+	return __FIELD_rec__ == e.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if .comparable}}
 // Greater implements Comparable.
-func (__rec__ __name__) Greater(c Comparable) bool {
-	return __rec__ > c.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Greater(c Comparable) bool {
+	return __FIELD_rec__ > c.(__FIELD_name__)
 }
 
 // GreaterEqual implements Comparable.
-func (__rec__ __name__) GreaterEqual(c Comparable) bool {
-	return __rec__ >= c.(__name__)
+func (__FIELD_rec__ __FIELD_name__) GreaterEqual(c Comparable) bool {
+	return __FIELD_rec__ >= c.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if eq .base "complex64" "complex128"}}
 // Imag returns the imaginary part.
-func (__rec__ __nameOMIT_imag__) Imag() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
-	return imag(__rec__)
+func (__FIELD_rec__ __FIELD_nameOMIT_imag__) Imag() __X_IFE_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_ENDIF__ {
+	return imag(__FIELD_rec__)
 } /// {{end}}
 
 /// {{if .comparable}}
 // Less implements Comparable.
-func (__rec__ __name__) Less(c Comparable) bool {
-	return __rec__ < c.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Less(c Comparable) bool {
+	return __FIELD_rec__ < c.(__FIELD_name__)
 }
 
 // LessEqual implements Comparable.
-func (__rec__ __name__) LessEqual(c Comparable) bool {
-	return __rec__ <= c.(__name__)
+func (__FIELD_rec__ __FIELD_name__) LessEqual(c Comparable) bool {
+	return __FIELD_rec__ <= c.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if .integer}}
 // Modulo implements Number.
-func (__rec__ __name__) Modulo(other Integer) Integer {
-	return __rec__ % other.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Modulo(other Integer) Integer {
+	return __FIELD_rec__ % other.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if .number}}
 // Multiply implements Number.
-func (__rec__ __name__) Multiply(n Number) Number {
-	return __rec__ * n.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Multiply(n Number) Number {
+	return __FIELD_rec__ * n.(__FIELD_name__)
 }
 
 // Negate implements Number.
-func (__rec__ __name__) Negate() Number {
-	return -__rec__
+func (__FIELD_rec__ __FIELD_name__) Negate() Number {
+	return -__FIELD_rec__
 } /// {{end}}
 
 /// {{if eq .base "bool"}}
-// Not returns the negation of __rec__.
-func (__rec__ Bool) Not() Bool {
-	return !__rec__
+// Not returns the negation of __FIELD_rec__.
+func (__FIELD_rec__ Bool) Not() Bool {
+	return !__FIELD_rec__
 } /// {{end}}
 
 /// {{if or .comparable .equatable .number}}
 // NotEquals implements Equatable.
-func (__rec__ __name__) NotEquals(e Equatable) bool {
-	return __rec__ != e.(__name__)
+func (__FIELD_rec__ __FIELD_name__) NotEquals(e Equatable) bool {
+	return __FIELD_rec__ != e.(__FIELD_name__)
 } /// {{end}}
 
 /// {{if eq .base "bool"}}
@@ -163,12 +163,12 @@ func (b Bool) Or(other Bool) Bool {
 
 /// {{if eq .base "complex64" "complex128"}}
 // Real returns the real part.
-func (__rec__ __nameOMIT_imag__) Real() __CUSTOM_IFEX_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_END__ {
-	return real(__rec__)
+func (__FIELD_rec__ __FIELD_nameOMIT_imag__) Real() __X_IFE_eq_FIELD_base_STRING_complex64_THEN_float32_ELSE_float64_ENDIF__ {
+	return real(__FIELD_rec__)
 } /// {{end}}
 
 /// {{if .number}}
 // Subtract implements Number.
-func (__rec__ __name__) Subtract(n Number) Number {
-	return __rec__ - n.(__name__)
+func (__FIELD_rec__ __FIELD_name__) Subtract(n Number) Number {
+	return __FIELD_rec__ - n.(__FIELD_name__)
 } /// {{end}}

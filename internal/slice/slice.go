@@ -29,43 +29,43 @@ import "sort" /// {{end}}
 type Slice interface{} /// {{end}}
 
 /// {{if false}}
-type __element__ int /// {{end}}
+type __FIELD_element__ int /// {{end}}
 
-// Slice__name__ is a slice of __element__.
-type Slice__name__ []__element__
+// Slice__FIELD_name__ is a slice of __FIELD_element__.
+type Slice__FIELD_name__ []__FIELD_element__
 
-var _ Slice = Slice__name__(nil)
+var _ Slice = Slice__FIELD_name__(nil)
 
 /// {{if .sort}}
-var _ sort.Interface = Slice__name__(nil) /// {{end}}
+var _ sort.Interface = Slice__FIELD_name__(nil) /// {{end}}
 
 // Append appends v to s and returns the result.
-func (s Slice__name__) Append(v ...interface{}) Slice {
+func (s Slice__FIELD_name__) Append(v ...interface{}) Slice {
 	for _, v := range v {
-		s = append(s, v.(__element__))
+		s = append(s, v.(__FIELD_element__))
 	}
 
 	return s
 }
 
 // AppendSlice appends t to s and returns the result.
-func (s Slice__name__) AppendSlice(t Slice) Slice {
-	return append(s, t.(Slice__name__)...)
+func (s Slice__FIELD_name__) AppendSlice(t Slice) Slice {
+	return append(s, t.(Slice__FIELD_name__)...)
 }
 
 // Cap returns the s capacity.
-func (s Slice__name__) Cap() int {
+func (s Slice__FIELD_name__) Cap() int {
 	return cap(s)
 }
 
 // Copy copies t to s.
-func (s Slice__name__) Copy(t Slice) int {
-	return copy(s, t.(Slice__name__))
+func (s Slice__FIELD_name__) Copy(t Slice) int {
+	return copy(s, t.(Slice__FIELD_name__))
 }
 
 // Equals returns whether s equals v.
-func (s Slice__name__) Equals(v interface{}) bool {
-	var t = v.(Slice__name__)
+func (s Slice__FIELD_name__) Equals(v interface{}) bool {
+	var t = v.(Slice__FIELD_name__)
 	var l = len(s)
 
 	if len(t) != l {
@@ -86,43 +86,43 @@ func (s Slice__name__) Equals(v interface{}) bool {
 }
 
 // Get returns the s element at index i.
-func (s Slice__name__) Get(i int) interface{} {
+func (s Slice__FIELD_name__) Get(i int) interface{} {
 	return s[i]
 }
 
 // Len returns the s length.
-func (s Slice__name__) Len() int {
+func (s Slice__FIELD_name__) Len() int {
 	return len(s)
 }
 
 /// {{if .sort}}
 // Less implements sort.Interface.
-func (s Slice__name__) Less(i, j int) bool {
+func (s Slice__FIELD_name__) Less(i, j int) bool {
 	return s[i] < s[j]
 } /// {{end}}
 
-// Make returns a new Slice__name__ with length l and capacity c.
-func (s Slice__name__) Make(l, c int) Slice {
-	return make(Slice__name__, l, c)
+// Make returns a new Slice__FIELD_name__ with length l and capacity c.
+func (s Slice__FIELD_name__) Make(l, c int) Slice {
+	return make(Slice__FIELD_name__, l, c)
 }
 
 // Set sets the s element at index i to v.
-func (s Slice__name__) Set(i int, v interface{}) {
-	s[i] = v.(__element__)
+func (s Slice__FIELD_name__) Set(i int, v interface{}) {
+	s[i] = v.(__FIELD_element__)
 }
 
 // Slice returns the slice of s from indexes i to j.
-func (s Slice__name__) Slice(i, j int) Slice {
+func (s Slice__FIELD_name__) Slice(i, j int) Slice {
 	return s[i:j]
 }
 
 // SliceCap returns the slice of s from indexes i to j with capacity c.
-func (s Slice__name__) SliceCap(i, j, c int) Slice {
+func (s Slice__FIELD_name__) SliceCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
 /// {{if .sort}}
 // Swap implements sort.Interface.
-func (s Slice__name__) Swap(i, j int) {
+func (s Slice__FIELD_name__) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 } /// {{end}}
