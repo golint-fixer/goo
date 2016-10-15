@@ -155,9 +155,128 @@ func (m *Macro) Pipeline(name string, bs []byte, data interface{}) ([]byte, erro
 	return bs, nil
 }
 
+type Mock struct {
+	app        *kingpin.Application
+	identifier string
+	interface_ string
+	output     string
+	package_   string
+	type_      string
+	value      bool
+}
+
+func NewMock(app *kingpin.Application) *Mock {
+	var m = Mock{app: app}
+	var c = app.Command("mock", "Mock an interface.")
+
+	c.Arg("type", "Mock receiver type.").Required().StringVar(&m.type_)
+	c.Arg("identifier", "Mock receiver identifier.").Required().StringVar(&m.identifier)
+	c.Arg("interface", "Mock interface.").Required().StringVar(&m.interface_)
+
+	c.Flag("output", "Mock file.").Short('o').StringVar(&m.output)
+	c.Flag("package", "Mock package.").Short('p').StringVar(&m.package_)
+	c.Flag("value", "Mock receiver is a value type.").Short('v').BoolVar(&m.value)
+
+	return &m
+}
+
+func (s *Mock) Run() error {
+	var g = qualified.FindStringSubmatch(s.interface_)
+
+	if len(g) != 3 {
+		return fmt.Errorf("interface %v is invalid: %v", s.interface_, g)
+	}
+
+	var p, t = g[1], g[2]
+
+	if !identifierExported.MatchString(t) {
+		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
+	}
+
+	var i, err = goo.GetMacroInterface(p, t)
+
+	if err != nil {
+		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
+	}
+
+	if p == "" {
+		i.Package = ""
+		i.Qualifier = ""
+	}
+
+	var outputName string
+
+	if s.output == "" {
+		outputName = fmt.Sprintf("%v_%v.go", strings.ToLower(s.type_), strings.ToLower(t))
+	} else {
+		outputName = s.output
+	}
+
+	outputNameAbs, err := filepath.Abs(outputName)
+
+	if err != nil {
+		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
+	}
+
+	var outputNameAbsDir = filepath.Dir(outputNameAbs)
+	var outputPackage string
+
+	if s.package_ == "" {
+		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
+			s.package_ = p.Name
+			outputPackage = p.ImportPath
+		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
+			s.package_ = b
+		} else {
+			s.package_ = "main"
+		}
+	}
+
+	var resource, ok = goo.Resource("../../internal/mock/mock.go")
+
+	if !ok {
+		panic(ok)
+	}
+
+	if p == outputPackage {
+		i.Package = ""
+		i.Qualifier = ""
+	}
+
+	for _, m := range i.Methods {
+		m.Receiver = s.identifier
+	}
+
+	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
+	bs, err := (&Macro{format: true, preprocess: true, process: true}).Pipeline(outputName, resource, d)
+
+	if err != nil {
+		return fmt.Errorf("cannot create mock: %v", err)
+	}
+
+	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+
+	if err != nil {
+		return fmt.Errorf("cannot open %v: %v", outputName, err)
+	}
+
+	if n, err := output.Write(bs); err != nil {
+		return fmt.Errorf("cannot write %v: %v", outputName, err)
+	} else if n != len(bs) {
+		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
+	}
+
+	if err := output.Close(); err != nil {
+		return fmt.Errorf("cannot close %v: %v", outputName, err)
+	}
+
+	return nil
+}
+
 type Program struct {
 	App      *kingpin.Application
 	Macro    *Macro
+	Mock     *Mock
 	Resource *Resource
 	Stub     *Stub
 }
@@ -169,7 +288,13 @@ func NewProgram() *Program {
 	app.Version("0.1.0")
 	app.HelpFlag.Short('h')
 
-	return &Program{App: app, Macro: NewMacro(app), Stub: NewStub(app), Resource: NewResource(app)}
+	return &Program{
+		App:      app,
+		Macro:    NewMacro(app),
+		Mock:     NewMock(app),
+		Stub:     NewStub(app),
+		Resource: NewResource(app),
+	}
 }
 
 func (p *Program) Run() {
@@ -178,6 +303,9 @@ func (p *Program) Run() {
 	switch kingpin.MustParse(p.App.Parse(a)) {
 	case "macro":
 		p.App.FatalIfError(p.Macro.Run(), "")
+
+	case "mock":
+		p.App.FatalIfError(p.Mock.Run(), "")
 
 	case "stub":
 		p.App.FatalIfError(p.Stub.Run(), "")

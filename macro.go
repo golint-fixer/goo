@@ -9,6 +9,7 @@ import (
 	"go/parser"
 	"go/token"
 	"regexp"
+	"strings"
 	"text/template"
 )
 
@@ -267,6 +268,107 @@ type MacroInterface struct {
 	Qualifier string
 }
 
+func exprString(e ast.Expr) string {
+	if e == nil {
+		return ""
+	}
+
+	switch e := e.(type) {
+	case *ast.BasicLit:
+		return e.Value
+
+	case *ast.ArrayType:
+		return fmt.Sprintf("[%v]%v", exprString(e.Len), exprString(e.Elt))
+
+	case *ast.ChanType:
+		var recv, send string
+
+		if e.Arrow != token.NoPos {
+			if e.Dir == ast.RECV {
+				recv = "<-"
+			} else if e.Dir == ast.SEND {
+				send = "<-"
+			}
+		}
+
+		return fmt.Sprintf("%vchan%v %v", recv, send, exprString(e.Value))
+
+	case *ast.Ident:
+		return e.Name
+
+	case *ast.Ellipsis:
+		return fmt.Sprintf("...%v", exprString(e.Elt))
+
+	case *ast.MapType:
+		return fmt.Sprintf("map[%v]%v", exprString(e.Key), exprString(e.Value))
+
+	case *ast.InterfaceType:
+		var fields []string
+
+		for _, f := range e.Methods.List {
+			var field string
+
+			if len(f.Names) == 0 {
+				field = exprString(f.Type)
+			} else {
+				var ns []string
+
+				for _, n := range f.Names {
+					ns = append(ns, n.Name)
+				}
+
+				field = fmt.Sprintf("%v %v", strings.Join(ns, ", "), exprString(f.Type))
+			}
+
+			if f.Tag != nil {
+				if v := f.Tag.Value; strings.Contains(v, "`") {
+					field = fmt.Sprintf(`%v "%v"`, field, v)
+				} else {
+					field = fmt.Sprintf("%v `%v`", field, v)
+				}
+			}
+
+			fields = append(fields, field)
+		}
+
+		return fmt.Sprintf("interface{%v}", strings.Join(fields, "; "))
+
+	case *ast.StructType:
+		var fields []string
+
+		for _, f := range e.Fields.List {
+			var field string
+
+			if len(f.Names) == 0 {
+				field = exprString(f.Type)
+			} else {
+				var ns []string
+
+				for _, n := range f.Names {
+					ns = append(ns, n.Name)
+				}
+
+				field = fmt.Sprintf("%v %v", strings.Join(ns, ", "), exprString(f.Type))
+			}
+
+			if f.Tag != nil {
+				if v := f.Tag.Value; strings.Contains(v, "`") {
+					field = fmt.Sprintf(`%v "%v"`, field, v)
+				} else {
+					field = fmt.Sprintf("%v `%v`", field, v)
+				}
+			}
+
+			fields = append(fields, field)
+		}
+
+		return fmt.Sprintf("struct{%v}", strings.Join(fields, "; "))
+
+	default:
+		panic(e)
+	}
+}
+
 func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 	var bp, err = build.Import(package_, "", 0)
 
@@ -348,10 +450,10 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 
 				for _, n := range p.Names {
 					ns = append(ns, n.Name)
-					pfs = append(pfs, &MacroVar{Name: n.Name, Type: fmt.Sprint(p.Type)})
+					pfs = append(pfs, &MacroVar{Name: n.Name, Type: exprString(p.Type)})
 				}
 
-				pgs = append(pgs, &MacroVars{Names: ns, Type: fmt.Sprint(p.Type)})
+				pgs = append(pgs, &MacroVars{Names: ns, Type: exprString(p.Type)})
 			}
 		}
 
@@ -359,12 +461,16 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 			for _, r := range f.Results.List {
 				var ns []string
 
-				for _, n := range r.Names {
-					ns = append(ns, n.Name)
-					rfs = append(rfs, &MacroVar{Name: n.Name, Type: fmt.Sprint(r.Type)})
+				if len(r.Names) == 0 {
+					rfs = append(rfs, &MacroVar{Type: exprString(r.Type)})
+				} else {
+					for _, n := range r.Names {
+						ns = append(ns, n.Name)
+						rfs = append(rfs, &MacroVar{Name: n.Name, Type: exprString(r.Type)})
+					}
 				}
 
-				rgs = append(rgs, &MacroVars{Names: ns, Type: fmt.Sprint(r.Type)})
+				rgs = append(rgs, &MacroVars{Names: ns, Type: exprString(r.Type)})
 			}
 		}
 
@@ -394,6 +500,7 @@ type MacroMethod struct {
 	Name           string
 	ParamsFlat     []*MacroVar
 	ParamsGrouped  []*MacroVars
+	Receiver       string
 	ResultsFlat    []*MacroVar
 	ResultsGrouped []*MacroVars
 }
