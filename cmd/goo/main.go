@@ -108,7 +108,9 @@ func (m *Macro) Run() error {
 		return fmt.Errorf("cannot read %v: %v", m.in.Name(), err)
 	}
 
-	bs, err = m.Pipeline(m.in.Name(), bs, m.data)
+	if bs, err = m.Pipeline(m.in.Name(), bs, m.data); err != nil {
+		return fmt.Errorf("cannot run macro: %v", err)
+	}
 
 	if n, err := m.out.Write(bs); err != nil {
 		return fmt.Errorf("cannot write %v: %v", m.out.Name(), err)
