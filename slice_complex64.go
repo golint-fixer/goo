@@ -56,6 +56,16 @@ func (s SliceComplex64) Get(i int) interface{} {
 	return s[i]
 }
 
+// GetRange returns the slice of s from indexes i to j.
+func (s SliceComplex64) GetRange(i, j int) Slice {
+	return s[i:j]
+}
+
+// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+func (s SliceComplex64) GetRangeCap(i, j, c int) Slice {
+	return s[i:j:c]
+}
+
 // Len returns the s length.
 func (s SliceComplex64) Len() int {
 	return len(s)
@@ -69,14 +79,4 @@ func (s SliceComplex64) Make(l, c int) Slice {
 // Set sets the s element at index i to v.
 func (s SliceComplex64) Set(i int, v interface{}) {
 	s[i] = v.(complex64)
-}
-
-// Slice returns the slice of s from indexes i to j.
-func (s SliceComplex64) Slice(i, j int) Slice {
-	return s[i:j]
-}
-
-// SliceCap returns the slice of s from indexes i to j with capacity c.
-func (s SliceComplex64) SliceCap(i, j, c int) Slice {
-	return s[i:j:c]
 }

@@ -56,6 +56,16 @@ func (s SliceInterface) Get(i int) interface{} {
 	return s[i]
 }
 
+// GetRange returns the slice of s from indexes i to j.
+func (s SliceInterface) GetRange(i, j int) Slice {
+	return s[i:j]
+}
+
+// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+func (s SliceInterface) GetRangeCap(i, j, c int) Slice {
+	return s[i:j:c]
+}
+
 // Len returns the s length.
 func (s SliceInterface) Len() int {
 	return len(s)
@@ -69,14 +79,4 @@ func (s SliceInterface) Make(l, c int) Slice {
 // Set sets the s element at index i to v.
 func (s SliceInterface) Set(i int, v interface{}) {
 	s[i] = v.(interface{})
-}
-
-// Slice returns the slice of s from indexes i to j.
-func (s SliceInterface) Slice(i, j int) Slice {
-	return s[i:j]
-}
-
-// SliceCap returns the slice of s from indexes i to j with capacity c.
-func (s SliceInterface) SliceCap(i, j, c int) Slice {
-	return s[i:j:c]
 }

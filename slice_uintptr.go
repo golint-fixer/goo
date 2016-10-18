@@ -60,6 +60,16 @@ func (s SliceUintptr) Get(i int) interface{} {
 	return s[i]
 }
 
+// GetRange returns the slice of s from indexes i to j.
+func (s SliceUintptr) GetRange(i, j int) Slice {
+	return s[i:j]
+}
+
+// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+func (s SliceUintptr) GetRangeCap(i, j, c int) Slice {
+	return s[i:j:c]
+}
+
 // Len returns the s length.
 func (s SliceUintptr) Len() int {
 	return len(s)
@@ -78,16 +88,6 @@ func (s SliceUintptr) Make(l, c int) Slice {
 // Set sets the s element at index i to v.
 func (s SliceUintptr) Set(i int, v interface{}) {
 	s[i] = v.(uintptr)
-}
-
-// Slice returns the slice of s from indexes i to j.
-func (s SliceUintptr) Slice(i, j int) Slice {
-	return s[i:j]
-}
-
-// SliceCap returns the slice of s from indexes i to j with capacity c.
-func (s SliceUintptr) SliceCap(i, j, c int) Slice {
-	return s[i:j:c]
 }
 
 // Swap implements sort.Interface.

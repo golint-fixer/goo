@@ -13,15 +13,15 @@ type Slice interface {
 
 	Get(i int) interface{}
 
+	GetRange(i, j int) Slice
+
+	GetRangeCap(i, j, m int) Slice
+
 	Len() int
 
 	Make(l, c int) Slice
 
 	Set(i int, v interface{})
-
-	Slice(i, j int) Slice
-
-	SliceCap(i, j, m int) Slice
 }
 
 // TODO: All, And, Any, Combine, CombineRepeats, Concat, Contains, Cut,
@@ -35,7 +35,7 @@ type Slice interface {
 // TakeWithEnd, Transpose, Union, Zip, Zip3-7, ZipWith, ZipWith3-7
 
 func Dequeue(s Slice) (Slice, interface{}) {
-	return s.Slice(1, s.Len()-1), s.Get(0)
+	return s.GetRange(1, s.Len()-1), s.Get(0)
 }
 
 func Enqueue(s Slice, v interface{}) Slice {
@@ -49,7 +49,7 @@ func SliceIterator(s Slice) Iterator {
 func Pop(s Slice) (Slice, interface{}) {
 	var l = s.Len()
 
-	return s.Slice(0, l-2), s.Get(l - 1)
+	return s.GetRange(0, l-2), s.Get(l - 1)
 }
 
 func Push(s Slice, v interface{}) Slice {
