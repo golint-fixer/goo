@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+	"unicode/utf8"
 )
 
 const macroIdentifierContent = "[[:alnum:]](?:_?[[:alnum:]])*?"
@@ -262,6 +263,7 @@ func macroCommentGroup(cg *ast.CommentGroup) []string {
 
 type MacroInterface struct {
 	Doc       []string
+	Initial   string
 	Methods   []*MacroMethod
 	Name      string
 	Package   string
@@ -426,15 +428,23 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 		}
 	}
 
-	var i, ok = match.Type.(*ast.InterfaceType)
+	var it, ok = match.Type.(*ast.InterfaceType)
 
 	if !ok {
 		panic(match.Type)
 	}
 
-	var ms []*MacroMethod
+	var initial, _ = utf8.DecodeRuneInString(strings.ToLower(match.Name.Name))
 
-	for _, m := range i.Methods.List {
+	var mi = &MacroInterface{
+		Doc:       macroCommentGroup(match.Doc),
+		Initial:   fmt.Sprintf("%c", initial),
+		Name:      match.Name.Name,
+		Package:   package_,
+		Qualifier: bp.Name,
+	}
+
+	for _, m := range it.Methods.List {
 		var f, ok = m.Type.(*ast.FuncType)
 
 		if !ok {
@@ -474,8 +484,9 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 			}
 		}
 
-		ms = append(ms, &MacroMethod{
+		mi.Methods = append(mi.Methods, &MacroMethod{
 			Doc:            macroCommentGroup(m.Doc),
+			Interface:      mi,
 			Name:           m.Names[0].Name,
 			ParamsFlat:     pfs,
 			ParamsGrouped:  pgs,
@@ -484,19 +495,12 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 		})
 	}
 
-	var x = &MacroInterface{
-		Doc:       macroCommentGroup(match.Doc),
-		Methods:   ms,
-		Name:      match.Name.Name,
-		Package:   package_,
-		Qualifier: bp.Name,
-	}
-
-	return x, nil
+	return mi, nil
 }
 
 type MacroMethod struct {
 	Doc            []string
+	Interface      *MacroInterface
 	Name           string
 	ParamsFlat     []*MacroVar
 	ParamsGrouped  []*MacroVars
