@@ -1,6 +1,8 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
+//go:generate goo resource ../../internal/mock/mock.go
 //go:generate goo resource ../../internal/resource/resource.go
 //go:generate goo resource ../../internal/stub/stub.go
+//go:generate goo resource ../../internal/wrap/wrap.go
 
 package main
 
@@ -281,6 +283,7 @@ type Program struct {
 	Mock     *Mock
 	Resource *Resource
 	Stub     *Stub
+	Wrap     *Wrap
 }
 
 func NewProgram() *Program {
@@ -296,6 +299,7 @@ func NewProgram() *Program {
 		Mock:     NewMock(app),
 		Stub:     NewStub(app),
 		Resource: NewResource(app),
+		Wrap:     NewWrap(app),
 	}
 }
 
@@ -314,6 +318,9 @@ func (p *Program) Run() {
 
 	case "resource":
 		p.App.FatalIfError(p.Resource.Run(), "")
+
+	case "wrap":
+		p.App.FatalIfError(p.Wrap.Run(), "")
 
 	default:
 		p.App.Usage(a)
@@ -551,6 +558,124 @@ func (s *Stub) Run() error {
 
 	if err != nil {
 		return fmt.Errorf("cannot create stub: %v", err)
+	}
+
+	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+
+	if err != nil {
+		return fmt.Errorf("cannot open %v: %v", outputName, err)
+	}
+
+	if n, err := output.Write(bs); err != nil {
+		return fmt.Errorf("cannot write %v: %v", outputName, err)
+	} else if n != len(bs) {
+		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
+	}
+
+	if err := output.Close(); err != nil {
+		return fmt.Errorf("cannot close %v: %v", outputName, err)
+	}
+
+	return nil
+}
+
+type Wrap struct {
+	app        *kingpin.Application
+	identifier string
+	interface_ string
+	output     string
+	package_   string
+	type_      string
+	value      bool
+}
+
+func NewWrap(app *kingpin.Application) *Wrap {
+	var m = Wrap{app: app}
+	var c = app.Command("wrap", "Wrap an interface.")
+
+	c.Arg("type", "Wrap receiver type.").Required().StringVar(&m.type_)
+	c.Arg("identifier", "Wrap receiver identifier.").Required().StringVar(&m.identifier)
+	c.Arg("interface", "Wrap interface.").Required().StringVar(&m.interface_)
+
+	c.Flag("output", "Wrap file.").Short('o').StringVar(&m.output)
+	c.Flag("package", "Wrap package.").Short('p').StringVar(&m.package_)
+	c.Flag("value", "Wrap receiver is a value type.").Short('v').BoolVar(&m.value)
+
+	return &m
+}
+
+func (s *Wrap) Run() error {
+	var g = qualified.FindStringSubmatch(s.interface_)
+
+	if len(g) != 3 {
+		return fmt.Errorf("interface %v is invalid: %v", s.interface_, g)
+	}
+
+	var p, t = g[1], g[2]
+
+	if !identifierExported.MatchString(t) {
+		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
+	}
+
+	var i, err = goo.GetMacroInterface(p, t)
+
+	if err != nil {
+		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
+	}
+
+	if p == "" {
+		i.Package = ""
+		i.Qualifier = ""
+	}
+
+	var outputName string
+
+	if s.output == "" {
+		outputName = fmt.Sprintf("%v_%v.go", strings.ToLower(s.type_), strings.ToLower(t))
+	} else {
+		outputName = s.output
+	}
+
+	outputNameAbs, err := filepath.Abs(outputName)
+
+	if err != nil {
+		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
+	}
+
+	var outputNameAbsDir = filepath.Dir(outputNameAbs)
+	var outputPackage string
+
+	if s.package_ == "" {
+		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
+			s.package_ = p.Name
+			outputPackage = p.ImportPath
+		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
+			s.package_ = b
+		} else {
+			s.package_ = "main"
+		}
+	}
+
+	var resource, ok = goo.Resource("../../internal/wrap/wrap.go")
+
+	if !ok {
+		panic(ok)
+	}
+
+	if p == outputPackage {
+		i.Package = ""
+		i.Qualifier = ""
+	}
+
+	for _, m := range i.Methods {
+		m.Receiver = s.identifier
+	}
+
+	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
+	bs, err := (&Macro{format: true, preprocess: true, process: true}).Pipeline(outputName, resource, d)
+
+	if err != nil {
+		return fmt.Errorf("cannot create wrapper: %v", err)
 	}
 
 	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
