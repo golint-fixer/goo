@@ -330,7 +330,7 @@ func (p *Program) Run() {
 type Resource struct {
 	app      *kingpin.Application
 	compress bool
-	input    *os.File
+	file     *os.File
 	name     string
 	output   *os.File
 	package_ string
@@ -340,7 +340,7 @@ func NewResource(app *kingpin.Application) *Resource {
 	var r = Resource{app: app}
 	var c = app.Command("resource", "Create a resource.")
 
-	c.Arg("input", "Input file.").Required().FileVar(&r.input)
+	c.Arg("file", "Input file.").Required().FileVar(&r.file)
 
 	c.Flag("compress", "Resource compression.").Short('c').BoolVar(&r.compress)
 	c.Flag("name", "Resource name.").Short('n').StringVar(&r.name)
@@ -352,8 +352,8 @@ func NewResource(app *kingpin.Application) *Resource {
 
 func (r *Resource) Run() (err error) {
 	defer func() {
-		if err2 := r.input.Close(); err2 != nil && err == nil {
-			err = fmt.Errorf("cannot close %v: %v", r.input.Name(), err2)
+		if err2 := r.file.Close(); err2 != nil && err == nil {
+			err = fmt.Errorf("cannot close %v: %v", r.file.Name(), err2)
 		}
 
 		if r.output != nil {
@@ -363,7 +363,7 @@ func (r *Resource) Run() (err error) {
 		}
 	}()
 
-	var inputName = r.input.Name()
+	var inputName = r.file.Name()
 	inputNameAbs, err := filepath.Abs(inputName)
 
 	if err != nil {
@@ -414,7 +414,7 @@ func (r *Resource) Run() (err error) {
 		}
 	}
 
-	bs, err := ioutil.ReadAll(r.input)
+	bs, err := ioutil.ReadAll(r.file)
 
 	if err != nil {
 		return fmt.Errorf("cannot read %v: %v", inputName, err)
