@@ -54,14 +54,10 @@ func main() {
 	NewProgram().Run()
 }
 
-func Pipeline(format, preprocess, process bool, name string, bs []byte, data interface{}) ([]byte, error) {
-	if !preprocess {
-		return bs, nil
-	}
-
+func Pipeline(preprocess, process bool, name string, bs []byte, data interface{}) ([]byte, error) {
 	bs = goo.MacroPreprocess(bs)
 
-	if !process {
+	if preprocess {
 		return bs, nil
 	}
 
@@ -71,7 +67,7 @@ func Pipeline(format, preprocess, process bool, name string, bs []byte, data int
 		return nil, fmt.Errorf("cannot process macro: %v", err)
 	}
 
-	if !format {
+	if process {
 		return bs, nil
 	}
 
@@ -87,7 +83,6 @@ type Macro struct {
 	doc        []string
 	data       interface{}
 	fields     map[string]string
-	format     bool
 	in         *os.File
 	input      io.Reader
 	interface_ string
@@ -106,12 +101,11 @@ func NewMacro(app *kingpin.Application) *Macro {
 	var c = app.Command("macro", "Run a macro.")
 
 	c.Flag("field", "Type field macro data.").Short('f').StringMapVar(&m.fields)
-	c.Flag("format", "Format the macro.").Default("true").BoolVar(&m.format)
 	c.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&m.in)
 	c.Flag("json", "JSON macro data. Overrides field.").Short('j').StringVar(&m.json_)
 	c.Flag("out", "Output file path. Defaults to standard out.").Short('o').OpenFileVar(&m.out, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	c.Flag("preprocess", "Preprocess the macro.").Default("true").BoolVar(&m.preprocess)
-	c.Flag("process", "Process the macro.").Default("true").BoolVar(&m.process)
+	c.Flag("preprocess", "Preprocess the macro then stop.").BoolVar(&m.preprocess)
+	c.Flag("process", "Process the macro then stop.").BoolVar(&m.process)
 
 	return &m
 }
@@ -138,7 +132,7 @@ func (m *Macro) Run() error {
 		return fmt.Errorf("cannot read %v: %v", m.in.Name(), err)
 	}
 
-	if bs, err = Pipeline(m.format, m.preprocess, m.process, m.in.Name(), bs, m.data); err != nil {
+	if bs, err = Pipeline(m.preprocess, m.process, m.in.Name(), bs, m.data); err != nil {
 		return fmt.Errorf("cannot run macro: %v", err)
 	}
 
@@ -252,7 +246,7 @@ func (s *Mock) Run() error {
 	}
 
 	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
-	bs, err := Pipeline(true, true, true, outputName, resource, d)
+	bs, err := Pipeline(false, false, outputName, resource, d)
 
 	if err != nil {
 		return fmt.Errorf("cannot create mock: %v", err)
@@ -452,7 +446,7 @@ func (r *Resource) Run() (err error) {
 		panic(ok)
 	}
 
-	if bs, err = Pipeline(true, true, true, inputName, resource, data); err != nil {
+	if bs, err = Pipeline(false, false, inputName, resource, data); err != nil {
 		return fmt.Errorf("cannot create resource: %v", err)
 	}
 
@@ -554,7 +548,7 @@ func (s *Stub) Run() error {
 	}
 
 	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
-	bs, err := Pipeline(true, true, true, outputName, resource, d)
+	bs, err := Pipeline(false, false, outputName, resource, d)
 
 	if err != nil {
 		return fmt.Errorf("cannot create stub: %v", err)
@@ -672,7 +666,7 @@ func (s *Wrap) Run() error {
 	}
 
 	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
-	bs, err := Pipeline(true, true, true, outputName, resource, d)
+	bs, err := Pipeline(false, false, outputName, resource, d)
 
 	if err != nil {
 		return fmt.Errorf("cannot create wrapper: %v", err)
