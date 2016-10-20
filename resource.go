@@ -7,6 +7,12 @@ import (
 	"sync"
 )
 
+// TODO: Store by package name
+// TODO: Func to list resources for debugging purposes
+// TODO: Change Set to Add and panic for conflicts
+// TODO: Add MustGet func
+// TODO: Add resource type with package default?
+
 var (
 	resourceData        = map[string][]byte{}
 	resourceCompression = map[string]bool{}
