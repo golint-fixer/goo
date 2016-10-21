@@ -102,7 +102,7 @@ func Pipeline(preprocess, process bool, name string, bs []byte, data interface{}
 	return bs, nil
 }
 
-func ReadAll(path string) ([]byte, error) {
+func ReadFile(path string) ([]byte, error) {
 	var file, err = os.Open(path)
 
 	if err != nil {
@@ -120,65 +120,6 @@ func ReadAll(path string) ([]byte, error) {
 	}
 
 	return bs, nil
-}
-
-func Run(outputPath, qualifiedInterface, receiverPackageName, receiverIdentifier, receiverType, resourceKey string, receiverPointer bool) error {
-	var qp, qt, err = ParseQualifiedType(qualifiedInterface)
-
-	if err != nil {
-		return err
-	}
-
-	mi, err := goo.GetMacroInterface(qp, qt)
-
-	if err != nil {
-		return fmt.Errorf("cannot parse interface %v: %v", qualifiedInterface, err)
-	}
-
-	if outputPath == "" {
-		outputPath = fmt.Sprintf("%v_%v.go", strings.ToLower(receiverType), strings.ToLower(qt))
-	}
-
-	outputPathAbs, err := filepath.Abs(outputPath)
-
-	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", outputPath, err)
-	}
-
-	var dn, dp = DirPackage(filepath.Dir(outputPathAbs))
-
-	if receiverPackageName == "" {
-		receiverPackageName = dn
-	}
-
-	if qp == "" || qp == dp {
-		mi.Package = ""
-		mi.Qualifier = ""
-	}
-
-	for _, m := range mi.Methods {
-		m.Receiver = receiverIdentifier
-	}
-
-	var resource, ok = goo.Resource(resourceKey)
-
-	if !ok {
-		panic(ok)
-	}
-
-	bs, err := Pipeline(false, false, outputPath, resource, &goo.MacroType{
-		Interface: mi,
-		Name:      receiverType,
-		Package:   receiverPackageName,
-		Pointer:   receiverPointer,
-		Receiver:  receiverIdentifier,
-	})
-
-	if err != nil {
-		return fmt.Errorf("cannot create mock: %v", err)
-	}
-
-	return WriteFile(outputPath, bs)
 }
 
 func WriteFile(path string, bs []byte) error {
@@ -279,7 +220,7 @@ func (m *Macro) Run() error {
 		data = m.Fields
 	}
 
-	var bs, err = ReadAll(m.Input)
+	var bs, err = ReadFile(m.Input)
 
 	if err != nil {
 		return err
@@ -349,7 +290,7 @@ func (r *Resource) Run() error {
 		r.Package, _ = DirPackage(outputAbsDir)
 	}
 
-	bs, err := ReadAll(r.File)
+	bs, err := ReadFile(r.File)
 
 	if err != nil {
 		return err
@@ -420,5 +361,66 @@ func NewTransformer(a *kingpin.Application, command, verb, noun, resource string
 }
 
 func (t *Transformer) Run() error {
-	return Run(t.Output, t.Interface, t.Package, t.Identifier, t.Type, t.Resource, !t.Value)
+	var m = qualified.FindStringSubmatch(t.Interface)
+
+	if len(m) != 3 {
+		return fmt.Errorf("type %v is invalid", t.Interface)
+	}
+
+	var qp, qt = m[1], m[2]
+
+	if !identifierExported.MatchString(qt) {
+		return fmt.Errorf("type %v is invalid", qt)
+	}
+
+	var mi, err = goo.GetMacroInterface(qp, qt)
+
+	if err != nil {
+		return fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
+	}
+
+	if t.Output == "" {
+		t.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(t.Type), strings.ToLower(qt))
+	}
+
+	outputPathAbs, err := filepath.Abs(t.Output)
+
+	if err != nil {
+		return fmt.Errorf("cannot get absolute path for %v: %v", t.Output, err)
+	}
+
+	var dn, dp = DirPackage(filepath.Dir(outputPathAbs))
+
+	if t.Package == "" {
+		t.Package = dn
+	}
+
+	if qp == "" || qp == dp {
+		mi.Package = ""
+		mi.Qualifier = ""
+	}
+
+	for _, m := range mi.Methods {
+		m.Receiver = t.Identifier
+	}
+
+	var resource, ok = goo.Resource(t.Resource)
+
+	if !ok {
+		panic(ok)
+	}
+
+	bs, err := Pipeline(false, false, t.Output, resource, &goo.MacroType{
+		Interface: mi,
+		Name:      t.Type,
+		Package:   t.Package,
+		Pointer:   !t.Value,
+		Receiver:  t.Identifier,
+	})
+
+	if err != nil {
+		return fmt.Errorf("cannot create mock: %v", err)
+	}
+
+	return WriteFile(t.Output, bs)
 }
