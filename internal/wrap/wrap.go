@@ -10,7 +10,10 @@ package __FIELD_Package__
 type __FIELDS_Interface_Qualifier_ENDFIELDS____X_PERIOD____FIELDS_Interface_Name_ENDFIELDS__ interface{}
 type __FIELDS_Interface_Name_ENDFIELDS__ interface{}
 type __X_IF_FIELD_Pointer_THEN_AMPERSAND_ENDIF_ACTION_FIELD_Name_ENDACTION__ struct{}
-type __X_SPACE_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__ struct{} /// {{end}}
+type __X_SPACE_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__ struct{}
+type __FIELD_Name__ struct {
+	__X_SPACE_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__
+} /// {{end}}
 
 /// {{if false}}
 type __X_IF_VAR_p_THEN_ASTERISK_ENDIF____VAR_n__ struct{}
@@ -21,10 +24,6 @@ func (__X_IF_VAR_p_THEN_ASTERISK_ENDIF____VAR_n__) Called() int { return 0 } ///
 /// {{if .Interface.Qualifier}}
 var _ __FIELDS_Interface_Qualifier_ENDFIELDS____X_PERIOD____FIELDS_Interface_Name_ENDFIELDS__ = __X_IF_FIELD_Pointer_THEN_AMPERSAND_ENDIF_ACTION_FIELD_Name_ENDACTION__{} /// {{else}}
 var _ __FIELDS_Interface_Name_ENDFIELDS__ = &__FIELD_Name__{}                                                                                                             /// {{end}} {{end}}
-
-type __FIELD_Name__ struct {
-	__X_SPACE_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__
-}
 
 func New__FIELD_Name__(__FIELDS_Interface_Initial_ENDFIELDS__ __X_SPACE_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__) __FIELDS_Interface_Name_ENDFIELDS__ {
 	return &__FIELD_Name__{__X_SPACE_ACTION_FIELDS_Interface_Name_ENDFIELDS_ENDACTION__: __FIELDS_Interface_Initial_ENDFIELDS__}
