@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -29,16 +28,16 @@ var (
 	qualified          = regexp.MustCompile(`(?m:^)(?:([\w.]+(?:\/[\w.]+)*)\.)?([\w.]+)(?m:$)`)
 )
 
-func convert(d interface{}) interface{} {
+func Convert(d interface{}) interface{} {
 	switch t := d.(type) {
 	case map[string]interface{}:
 		for k, v := range t {
-			t[k] = convert(v)
+			t[k] = Convert(v)
 		}
 
 	case []interface{}:
 		for i := range t {
-			t[i] = convert(t[i])
+			t[i] = Convert(t[i])
 		}
 
 	case float64:
@@ -50,8 +49,33 @@ func convert(d interface{}) interface{} {
 	return d
 }
 
-func main() {
-	NewProgram().Run()
+func DirPackage(path string) (packageName string, packagePath string) {
+	if p, err := build.ImportDir(path, 0); err == nil {
+		packageName = p.Name
+		packagePath = p.ImportPath
+	} else if b := filepath.Base(path); identifier.MatchString(b) {
+		packageName = b
+	} else {
+		packageName = "main"
+	}
+
+	return
+}
+
+func ParseQualifiedType(q string) (string, string, error) {
+	var g = qualified.FindStringSubmatch(q)
+
+	if len(g) != 3 {
+		return "", "", fmt.Errorf("type %v is invalid", q)
+	}
+
+	var p, t = g[1], g[2]
+
+	if !identifierExported.MatchString(t) {
+		return "", "", fmt.Errorf("type %v is invalid", t)
+	}
+
+	return p, t, nil
 }
 
 func Pipeline(preprocess, process bool, name string, bs []byte, data interface{}) ([]byte, error) {
@@ -78,343 +102,260 @@ func Pipeline(preprocess, process bool, name string, bs []byte, data interface{}
 	return bs, nil
 }
 
-type Macro struct {
-	app        *kingpin.Application
-	doc        []string
-	data       interface{}
-	fields     map[string]string
-	in         *os.File
-	input      io.Reader
-	interface_ string
-	json_      string
-	out        *os.File
-	output     io.Writer
-	package_   string
-	preprocess bool
-	process    bool
-	receiver   string
-	struct_    string
-}
-
-func NewMacro(app *kingpin.Application) *Macro {
-	var m = Macro{app: app}
-	var c = app.Command("macro", "Run a macro.")
-
-	c.Flag("field", "Type field macro data.").Short('f').StringMapVar(&m.fields)
-	c.Flag("in", "Input file path. Defaults to standard in.").Short('i').FileVar(&m.in)
-	c.Flag("json", "JSON macro data. Overrides field.").Short('j').StringVar(&m.json_)
-	c.Flag("out", "Output file path. Defaults to standard out.").Short('o').OpenFileVar(&m.out, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	c.Flag("preprocess", "Preprocess the macro then stop.").BoolVar(&m.preprocess)
-	c.Flag("process", "Process the macro then stop.").BoolVar(&m.process)
-
-	return &m
-}
-
-func (m *Macro) Run() error {
-	if m.json_ != "" {
-		m.app.FatalIfError(json.Unmarshal([]byte(m.json_), &m.data), "json is invalid")
-		convert(m.data)
-	} else {
-		m.data = m.fields
-	}
-
-	if m.in == nil {
-		m.in = os.Stdin
-	}
-
-	if m.out == nil {
-		m.out = os.Stdout
-	}
-
-	var bs, err = ioutil.ReadAll(m.in)
+func ReadAll(path string) ([]byte, error) {
+	var file, err = os.Open(path)
 
 	if err != nil {
-		return fmt.Errorf("cannot read %v: %v", m.in.Name(), err)
+		return nil, fmt.Errorf("cannot open %v: %v", path, err)
 	}
 
-	if bs, err = Pipeline(m.preprocess, m.process, m.in.Name(), bs, m.data); err != nil {
-		return fmt.Errorf("cannot run macro: %v", err)
-	}
-
-	if n, err := m.out.Write(bs); err != nil {
-		return fmt.Errorf("cannot write %v: %v", m.out.Name(), err)
-	} else if n != len(bs) {
-		return fmt.Errorf("cannot write %v: %v bytes unwritten", m.out.Name(), len(bs)-n)
-	}
-
-	if err := m.in.Close(); err != nil {
-		return fmt.Errorf("cannot close %v: %v", m.in.Name(), err)
-	}
-
-	if err := m.out.Close(); err != nil {
-		return fmt.Errorf("cannot close %v: %v", m.out.Name(), err)
-	}
-
-	return nil
-}
-
-type Mock struct {
-	app        *kingpin.Application
-	identifier string
-	interface_ string
-	output     string
-	package_   string
-	type_      string
-	value      bool
-}
-
-func NewMock(app *kingpin.Application) *Mock {
-	var m = Mock{app: app}
-	var c = app.Command("mock", "Mock an interface.")
-
-	c.Arg("type", "Mock receiver type.").Required().StringVar(&m.type_)
-	c.Arg("identifier", "Mock receiver identifier.").Required().StringVar(&m.identifier)
-	c.Arg("interface", "Mock interface.").Required().StringVar(&m.interface_)
-
-	c.Flag("output", "Mock file.").Short('o').StringVar(&m.output)
-	c.Flag("package", "Mock package.").Short('p').StringVar(&m.package_)
-	c.Flag("value", "Mock receiver is a value type.").Short('v').BoolVar(&m.value)
-
-	return &m
-}
-
-func (s *Mock) Run() error {
-	var g = qualified.FindStringSubmatch(s.interface_)
-
-	if len(g) != 3 {
-		return fmt.Errorf("interface %v is invalid: %v", s.interface_, g)
-	}
-
-	var p, t = g[1], g[2]
-
-	if !identifierExported.MatchString(t) {
-		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
-	}
-
-	var i, err = goo.GetMacroInterface(p, t)
+	bs, err := ioutil.ReadAll(file)
 
 	if err != nil {
-		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
+		return nil, fmt.Errorf("cannot read %v: %v", path, err)
 	}
 
-	if p == "" {
-		i.Package = ""
-		i.Qualifier = ""
+	if err := file.Close(); err != nil {
+		return nil, fmt.Errorf("cannot close %v: %v", path, err)
 	}
 
-	var outputName string
+	return bs, nil
+}
 
-	if s.output == "" {
-		outputName = fmt.Sprintf("%v_%v.go", strings.ToLower(s.type_), strings.ToLower(t))
-	} else {
-		outputName = s.output
-	}
-
-	outputNameAbs, err := filepath.Abs(outputName)
+func Run(outputPath, qualifiedInterface, receiverPackageName, receiverIdentifier, receiverType, resourceKey string, receiverPointer bool) error {
+	var qp, qt, err = ParseQualifiedType(qualifiedInterface)
 
 	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
+		return err
 	}
 
-	var outputNameAbsDir = filepath.Dir(outputNameAbs)
-	var outputPackage string
+	mi, err := goo.GetMacroInterface(qp, qt)
 
-	if s.package_ == "" {
-		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
-			s.package_ = p.Name
-			outputPackage = p.ImportPath
-		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
-			s.package_ = b
-		} else {
-			s.package_ = "main"
-		}
+	if err != nil {
+		return fmt.Errorf("cannot parse interface %v: %v", qualifiedInterface, err)
 	}
 
-	var resource, ok = goo.Resource("../../internal/mock/mock.go")
+	if outputPath == "" {
+		outputPath = fmt.Sprintf("%v_%v.go", strings.ToLower(receiverType), strings.ToLower(qt))
+	}
+
+	outputPathAbs, err := filepath.Abs(outputPath)
+
+	if err != nil {
+		return fmt.Errorf("cannot get absolute path for %v: %v", outputPath, err)
+	}
+
+	var dn, dp = DirPackage(filepath.Dir(outputPathAbs))
+
+	if receiverPackageName == "" {
+		receiverPackageName = dn
+	}
+
+	if qp == "" || qp == dp {
+		mi.Package = ""
+		mi.Qualifier = ""
+	}
+
+	for _, m := range mi.Methods {
+		m.Receiver = receiverIdentifier
+	}
+
+	var resource, ok = goo.Resource(resourceKey)
 
 	if !ok {
 		panic(ok)
 	}
 
-	if p == outputPackage {
-		i.Package = ""
-		i.Qualifier = ""
-	}
-
-	for _, m := range i.Methods {
-		m.Receiver = s.identifier
-	}
-
-	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
-	bs, err := Pipeline(false, false, outputName, resource, d)
+	bs, err := Pipeline(false, false, outputPath, resource, &goo.MacroType{
+		Interface: mi,
+		Name:      receiverType,
+		Package:   receiverPackageName,
+		Pointer:   receiverPointer,
+		Receiver:  receiverIdentifier,
+	})
 
 	if err != nil {
 		return fmt.Errorf("cannot create mock: %v", err)
 	}
 
-	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	return WriteFile(outputPath, bs)
+}
+
+func WriteFile(path string, bs []byte) error {
+	var file, err = os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 
 	if err != nil {
-		return fmt.Errorf("cannot open %v: %v", outputName, err)
+		return fmt.Errorf("cannot open %v: %v", path, err)
 	}
 
-	if n, err := output.Write(bs); err != nil {
-		return fmt.Errorf("cannot write %v: %v", outputName, err)
+	if n, err := file.Write(bs); err != nil {
+		return fmt.Errorf("cannot write %v: %v", path, err)
 	} else if n != len(bs) {
-		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
+		return fmt.Errorf("cannot write %v: %v bytes not written", path, len(bs)-n)
 	}
 
-	if err := output.Close(); err != nil {
-		return fmt.Errorf("cannot close %v: %v", outputName, err)
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("cannot close %v: %v", path, err)
 	}
 
 	return nil
 }
 
-type Program struct {
-	App      *kingpin.Application
-	Macro    *Macro
-	Mock     *Mock
-	Resource *Resource
-	Stub     *Stub
-	Wrap     *Wrap
-}
-
-func NewProgram() *Program {
+func main() {
 	var app = kingpin.New(os.Args[0], "Fill the gaps.")
 
 	app.Author("Will Faught")
 	app.Version("0.1.0")
 	app.HelpFlag.Short('h')
 
-	return &Program{
-		App:      app,
-		Macro:    NewMacro(app),
-		Mock:     NewMock(app),
-		Stub:     NewStub(app),
-		Resource: NewResource(app),
-		Wrap:     NewWrap(app),
-	}
-}
+	var args = os.Args[1:]
+	var err error
 
-func (p *Program) Run() {
-	var a = os.Args[1:]
+	var (
+		macro    = NewMacro(app)
+		mock     = NewTransformer(app, "mock", "Mock", "Mock", "../../internal/mock/mock.go")
+		stub     = NewTransformer(app, "stub", "Stub", "Stub", "../../internal/stub/stub.go")
+		resource = NewResource(app)
+		wrap     = NewTransformer(app, "wrap", "Wrap", "Wrap", "../../internal/wrap/wrap.go")
+	)
 
-	switch kingpin.MustParse(p.App.Parse(a)) {
+	switch kingpin.MustParse(app.Parse(args)) {
 	case "macro":
-		p.App.FatalIfError(p.Macro.Run(), "")
+		err = macro.Run()
 
 	case "mock":
-		p.App.FatalIfError(p.Mock.Run(), "")
+		err = mock.Run()
 
 	case "stub":
-		p.App.FatalIfError(p.Stub.Run(), "")
+		err = stub.Run()
 
 	case "resource":
-		p.App.FatalIfError(p.Resource.Run(), "")
+		err = resource.Run()
 
 	case "wrap":
-		p.App.FatalIfError(p.Wrap.Run(), "")
+		err = wrap.Run()
 
 	default:
-		p.App.Usage(a)
+		app.Usage(args)
 	}
+
+	app.FatalIfError(err, "")
+}
+
+type Macro struct {
+	Fields     map[string]string
+	Input      string
+	JSON       string
+	Output     string
+	Preprocess bool
+	Process    bool
+}
+
+func NewMacro(app *kingpin.Application) *Macro {
+	var m Macro
+	var c = app.Command("macro", "Run a macro.")
+
+	c.Arg("input", "Input file.").Required().StringVar(&m.Input)
+	c.Arg("output", "Output file.").Required().StringVar(&m.Output)
+
+	c.Flag("field", "Macro data JSON object field.").Short('f').StringMapVar(&m.Fields)
+	c.Flag("json", "Macro data JSON.").Short('j').StringVar(&m.JSON)
+	c.Flag("preprocess", "Preprocess the macro then stop.").BoolVar(&m.Preprocess)
+	c.Flag("process", "Process the macro then stop.").BoolVar(&m.Process)
+
+	return &m
+}
+
+func (m *Macro) Run() error {
+	var data interface{}
+
+	if m.JSON != "" {
+		if err := json.Unmarshal([]byte(m.JSON), &data); err != nil {
+			return fmt.Errorf("json is invalid: %v", err)
+		}
+
+		Convert(&data)
+	} else {
+		data = m.Fields
+	}
+
+	var bs, err = ReadAll(m.Input)
+
+	if err != nil {
+		return err
+	}
+
+	if bs, err = Pipeline(m.Preprocess, m.Process, m.Input, bs, data); err != nil {
+		return fmt.Errorf("cannot run macro: %v", err)
+	}
+
+	return WriteFile(m.Output, bs)
 }
 
 type Resource struct {
-	app      *kingpin.Application
-	compress bool
-	file     *os.File
-	name     string
-	output   *os.File
-	package_ string
+	Compress bool
+	File     string
+	Name     string
+	Output   string
+	Package  string
 }
 
 func NewResource(app *kingpin.Application) *Resource {
-	var r = Resource{app: app}
+	var r Resource
 	var c = app.Command("resource", "Create a resource.")
 
-	c.Arg("file", "Input file.").Required().FileVar(&r.file)
+	c.Arg("file", "Input file.").Required().StringVar(&r.File)
 
-	c.Flag("compress", "Resource compression.").Short('c').BoolVar(&r.compress)
-	c.Flag("name", "Resource name.").Short('n').StringVar(&r.name)
-	c.Flag("output", "Output file.").Short('o').OpenFileVar(&r.output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	c.Flag("package", "Resource package.").Short('p').StringVar(&r.package_)
+	c.Flag("compress", "Resource compression.").Short('c').BoolVar(&r.Compress)
+	c.Flag("name", "Resource name.").Short('n').StringVar(&r.Name)
+	c.Flag("output", "Output file.").Short('o').StringVar(&r.Output)
+	c.Flag("package", "Resource package.").Short('p').StringVar(&r.Package)
 
 	return &r
 }
 
-func (r *Resource) Run() (err error) {
-	defer func() {
-		if err2 := r.file.Close(); err2 != nil && err == nil {
-			err = fmt.Errorf("cannot close %v: %v", r.file.Name(), err2)
-		}
-
-		if r.output != nil {
-			if err2 := r.output.Close(); err2 != nil && err == nil {
-				err = fmt.Errorf("cannot close %v: %v", r.output.Name(), err2)
-			}
-		}
-	}()
-
-	var inputName = r.file.Name()
-	inputNameAbs, err := filepath.Abs(inputName)
+func (r *Resource) Run() error {
+	var fileAbs, err = filepath.Abs(r.File)
 
 	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", inputName, err)
+		return fmt.Errorf("cannot get absolute path for %v: %v", r.File, err)
 	}
 
-	var outputName string
+	if r.Output == "" {
+		r.Output = filepath.Base(fileAbs)
 
-	if r.output == nil {
-		outputName = filepath.Base(inputNameAbs)
-
-		if e := filepath.Ext(outputName); e == "" {
-			outputName += ".go"
+		if e := filepath.Ext(r.Output); e == "" {
+			r.Output += ".go"
 		} else if e != ".go" {
-			outputName = strings.TrimSuffix(outputName, e) + ".go"
+			r.Output = strings.TrimSuffix(r.Output, e) + ".go"
 		}
-	} else {
-		outputName = r.output.Name()
 	}
 
-	outputNameAbs, err := filepath.Abs(outputName)
+	outputAbs, err := filepath.Abs(r.Output)
 
 	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
+		return fmt.Errorf("cannot get absolute path for %v: %v", r.Output, err)
 	}
 
-	var outputNameAbsDir = filepath.Dir(outputNameAbs)
+	var outputAbsDir = filepath.Dir(outputAbs)
 
-	if r.name == "" {
-		if r.name, err = filepath.Rel(outputNameAbsDir, inputNameAbs); err != nil {
-			return fmt.Errorf("cannot get relative path from %v to %v: %v", outputNameAbsDir, inputNameAbs, err)
+	if r.Name == "" {
+		if r.Name, err = filepath.Rel(outputAbsDir, fileAbs); err != nil {
+			return fmt.Errorf("cannot get relative path from %v to %v: %v", outputAbsDir, fileAbs, err)
 		}
 	}
 
-	if r.package_ == "" {
-		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
-			r.package_ = p.Name
-		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
-			r.package_ = b
-		} else {
-			r.package_ = "main"
-		}
+	if r.Package == "" {
+		r.Package, _ = DirPackage(outputAbsDir)
 	}
 
-	if r.output == nil {
-		if r.output, err = os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644); err != nil {
-			return fmt.Errorf("cannot open %v: %v", outputName, err)
-		}
-	}
-
-	bs, err := ioutil.ReadAll(r.file)
+	bs, err := ReadAll(r.File)
 
 	if err != nil {
-		return fmt.Errorf("cannot read %v: %v", inputName, err)
+		return err
 	}
 
-	if r.compress {
+	if r.Compress {
 		var compressed bytes.Buffer
 		var w = gzip.NewWriter(&compressed)
 
@@ -434,10 +375,10 @@ func (r *Resource) Run() (err error) {
 	var data = struct {
 		Compressed, Data, Name, Package string
 	}{
-		Compressed: fmt.Sprint(r.compress),
+		Compressed: fmt.Sprint(r.Compress),
 		Data:       fmt.Sprintf("%#v", bs),
-		Name:       r.name,
-		Package:    r.package_,
+		Name:       r.Name,
+		Package:    r.Package,
 	}
 
 	var resource, ok = goo.Resource("../../internal/resource/resource.go")
@@ -446,247 +387,38 @@ func (r *Resource) Run() (err error) {
 		panic(ok)
 	}
 
-	if bs, err = Pipeline(false, false, inputName, resource, data); err != nil {
+	if bs, err = Pipeline(false, false, r.File, resource, data); err != nil {
 		return fmt.Errorf("cannot create resource: %v", err)
 	}
 
-	if n, err := r.output.Write(bs); err != nil {
-		return fmt.Errorf("cannot write %v: %v", outputName, err)
-	} else if n != len(bs) {
-		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
-	}
-
-	return nil
+	return WriteFile(r.Output, bs)
 }
 
-type Stub struct {
-	app        *kingpin.Application
-	identifier string
-	interface_ string
-	output     string
-	package_   string
-	type_      string
-	value      bool
+type Transformer struct {
+	Identifier string
+	Interface  string
+	Output     string
+	Package    string
+	Resource   string
+	Type       string
+	Value      bool
 }
 
-func NewStub(app *kingpin.Application) *Stub {
-	var s = Stub{app: app}
-	var c = app.Command("stub", "Stub an interface.")
+func NewTransformer(a *kingpin.Application, command, verb, noun, resource string) *Transformer {
+	var t = Transformer{Resource: resource}
+	var c = a.Command(command, fmt.Sprintf("%v an interface.", verb))
 
-	c.Arg("type", "Stub receiver type.").Required().StringVar(&s.type_)
-	c.Arg("interface", "Stub interface.").Required().StringVar(&s.interface_)
+	c.Arg("receiver-type", fmt.Sprintf("%v receiver type.", noun)).Required().StringVar(&t.Type)
+	c.Arg("receiver-identifier", fmt.Sprintf("%v receiver identifiet.", noun)).Required().StringVar(&t.Identifier)
+	c.Arg("interface", fmt.Sprintf("%v interface.", noun)).Required().StringVar(&t.Interface)
 
-	c.Flag("identifier", "Stub receiver identifier.").Short('i').StringVar(&s.identifier)
-	c.Flag("output", "Stub file.").Short('o').StringVar(&s.output)
-	c.Flag("package", "Stub package.").Short('p').StringVar(&s.package_)
-	c.Flag("value", "Stub receiver is a value type.").Short('v').BoolVar(&s.value)
+	c.Flag("output", fmt.Sprintf("%v file.", noun)).Short('o').StringVar(&t.Output)
+	c.Flag("package", fmt.Sprintf("%v package.", noun)).Short('p').StringVar(&t.Package)
+	c.Flag("value", fmt.Sprintf("%v receiver is a value type.", noun)).Short('v').BoolVar(&t.Value)
 
-	return &s
+	return &t
 }
 
-func (s *Stub) Run() error {
-	var g = qualified.FindStringSubmatch(s.interface_)
-
-	if len(g) != 3 {
-		return fmt.Errorf("interface %v is invalid: %v", s.interface_, g)
-	}
-
-	var p, t = g[1], g[2]
-
-	if !identifierExported.MatchString(t) {
-		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
-	}
-
-	var i, err = goo.GetMacroInterface(p, t)
-
-	if err != nil {
-		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
-	}
-
-	if p == "" {
-		i.Package = ""
-		i.Qualifier = ""
-	}
-
-	var outputName string
-
-	if s.output == "" {
-		outputName = fmt.Sprintf("%v_%v.go", strings.ToLower(s.type_), strings.ToLower(t))
-	} else {
-		outputName = s.output
-	}
-
-	outputNameAbs, err := filepath.Abs(outputName)
-
-	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
-	}
-
-	var outputNameAbsDir = filepath.Dir(outputNameAbs)
-	var outputPackage string
-
-	if s.package_ == "" {
-		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
-			s.package_ = p.Name
-			outputPackage = p.ImportPath
-		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
-			s.package_ = b
-		} else {
-			s.package_ = "main"
-		}
-	}
-
-	var resource, ok = goo.Resource("../../internal/stub/stub.go")
-
-	if !ok {
-		panic(ok)
-	}
-
-	if p == outputPackage {
-		i.Package = ""
-		i.Qualifier = ""
-	}
-
-	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
-	bs, err := Pipeline(false, false, outputName, resource, d)
-
-	if err != nil {
-		return fmt.Errorf("cannot create stub: %v", err)
-	}
-
-	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-
-	if err != nil {
-		return fmt.Errorf("cannot open %v: %v", outputName, err)
-	}
-
-	if n, err := output.Write(bs); err != nil {
-		return fmt.Errorf("cannot write %v: %v", outputName, err)
-	} else if n != len(bs) {
-		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
-	}
-
-	if err := output.Close(); err != nil {
-		return fmt.Errorf("cannot close %v: %v", outputName, err)
-	}
-
-	return nil
-}
-
-type Wrap struct {
-	app        *kingpin.Application
-	identifier string
-	interface_ string
-	output     string
-	package_   string
-	type_      string
-	value      bool
-}
-
-func NewWrap(app *kingpin.Application) *Wrap {
-	var m = Wrap{app: app}
-	var c = app.Command("wrap", "Wrap an interface.")
-
-	c.Arg("type", "Wrap receiver type.").Required().StringVar(&m.type_)
-	c.Arg("identifier", "Wrap receiver identifier.").Required().StringVar(&m.identifier)
-	c.Arg("interface", "Wrap interface.").Required().StringVar(&m.interface_)
-
-	c.Flag("output", "Wrap file.").Short('o').StringVar(&m.output)
-	c.Flag("package", "Wrap package.").Short('p').StringVar(&m.package_)
-	c.Flag("value", "Wrap receiver is a value type.").Short('v').BoolVar(&m.value)
-
-	return &m
-}
-
-func (s *Wrap) Run() error {
-	var g = qualified.FindStringSubmatch(s.interface_)
-
-	if len(g) != 3 {
-		return fmt.Errorf("interface %v is invalid: %v", s.interface_, g)
-	}
-
-	var p, t = g[1], g[2]
-
-	if !identifierExported.MatchString(t) {
-		return fmt.Errorf("interface %v is invalid: %v", s.interface_, t)
-	}
-
-	var i, err = goo.GetMacroInterface(p, t)
-
-	if err != nil {
-		s.app.FatalIfError(err, "cannot parse interface %v", s.interface_)
-	}
-
-	if p == "" {
-		i.Package = ""
-		i.Qualifier = ""
-	}
-
-	var outputName string
-
-	if s.output == "" {
-		outputName = fmt.Sprintf("%v_%v.go", strings.ToLower(s.type_), strings.ToLower(t))
-	} else {
-		outputName = s.output
-	}
-
-	outputNameAbs, err := filepath.Abs(outputName)
-
-	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", outputName, err)
-	}
-
-	var outputNameAbsDir = filepath.Dir(outputNameAbs)
-	var outputPackage string
-
-	if s.package_ == "" {
-		if p, err := build.ImportDir(outputNameAbsDir, 0); err == nil {
-			s.package_ = p.Name
-			outputPackage = p.ImportPath
-		} else if b := filepath.Base(outputNameAbsDir); identifier.MatchString(b) {
-			s.package_ = b
-		} else {
-			s.package_ = "main"
-		}
-	}
-
-	var resource, ok = goo.Resource("../../internal/wrap/wrap.go")
-
-	if !ok {
-		panic(ok)
-	}
-
-	if p == outputPackage {
-		i.Package = ""
-		i.Qualifier = ""
-	}
-
-	for _, m := range i.Methods {
-		m.Receiver = s.identifier
-	}
-
-	var d = &goo.MacroType{Interface: i, Name: s.type_, Package: s.package_, Pointer: !s.value, Receiver: s.identifier}
-	bs, err := Pipeline(false, false, outputName, resource, d)
-
-	if err != nil {
-		return fmt.Errorf("cannot create wrapper: %v", err)
-	}
-
-	output, err := os.OpenFile(outputNameAbs, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-
-	if err != nil {
-		return fmt.Errorf("cannot open %v: %v", outputName, err)
-	}
-
-	if n, err := output.Write(bs); err != nil {
-		return fmt.Errorf("cannot write %v: %v", outputName, err)
-	} else if n != len(bs) {
-		return fmt.Errorf("cannot write %v: %v bytes not written", outputName, len(bs)-n)
-	}
-
-	if err := output.Close(); err != nil {
-		return fmt.Errorf("cannot close %v: %v", outputName, err)
-	}
-
-	return nil
+func (t *Transformer) Run() error {
+	return Run(t.Output, t.Interface, t.Package, t.Identifier, t.Type, t.Resource, !t.Value)
 }
