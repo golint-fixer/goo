@@ -8,6 +8,8 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
@@ -43,6 +45,12 @@ var (
 	macroSpace           = []byte(" ")
 	macroUnderscoreB     = []byte("_")
 	macroUnderscores     = []byte("__")
+)
+
+var (
+	macroTransformerIdentifier         = regexp.MustCompile(`(?m:^)\w+(?m:$)`)
+	macroTransformerIdentifierExported = regexp.MustCompile(`(?m:^)[A-Z]\w*(?m:$)`)
+	macroTransformerQualified          = regexp.MustCompile(`(?m:^)(?:([\w.]+(?:\/[\w.]+)*)\.)?([\w.]+)(?m:$)`)
 )
 
 var macroAliases = map[string][]byte{
@@ -247,7 +255,7 @@ func MacroProcess(name string, file []byte, data interface{}) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func macroCommentGroup(cg *ast.CommentGroup) []string {
+func macroCommentGroupStrings(cg *ast.CommentGroup) []string {
 	if cg == nil {
 		return nil
 	}
@@ -261,16 +269,7 @@ func macroCommentGroup(cg *ast.CommentGroup) []string {
 	return cs
 }
 
-type MacroInterface struct {
-	Doc       []string
-	Initial   string
-	Methods   []*MacroMethod
-	Name      string
-	Package   string
-	Qualifier string
-}
-
-func exprString(e ast.Expr) string {
+func macroExprString(e ast.Expr) string {
 	if e == nil {
 		return ""
 	}
@@ -280,7 +279,7 @@ func exprString(e ast.Expr) string {
 		return e.Value
 
 	case *ast.ArrayType:
-		return fmt.Sprintf("[%v]%v", exprString(e.Len), exprString(e.Elt))
+		return fmt.Sprintf("[%v]%v", macroExprString(e.Len), macroExprString(e.Elt))
 
 	case *ast.ChanType:
 		var recv, send string
@@ -293,16 +292,16 @@ func exprString(e ast.Expr) string {
 			}
 		}
 
-		return fmt.Sprintf("%vchan%v %v", recv, send, exprString(e.Value))
+		return fmt.Sprintf("%vchan%v %v", recv, send, macroExprString(e.Value))
 
 	case *ast.Ident:
 		return e.Name
 
 	case *ast.Ellipsis:
-		return fmt.Sprintf("...%v", exprString(e.Elt))
+		return fmt.Sprintf("...%v", macroExprString(e.Elt))
 
 	case *ast.MapType:
-		return fmt.Sprintf("map[%v]%v", exprString(e.Key), exprString(e.Value))
+		return fmt.Sprintf("map[%v]%v", macroExprString(e.Key), macroExprString(e.Value))
 
 	case *ast.InterfaceType:
 		var fields []string
@@ -311,7 +310,7 @@ func exprString(e ast.Expr) string {
 			var field string
 
 			if len(f.Names) == 0 {
-				field = exprString(f.Type)
+				field = macroExprString(f.Type)
 			} else {
 				var ns []string
 
@@ -319,7 +318,7 @@ func exprString(e ast.Expr) string {
 					ns = append(ns, n.Name)
 				}
 
-				field = fmt.Sprintf("%v %v", strings.Join(ns, ", "), exprString(f.Type))
+				field = fmt.Sprintf("%v %v", strings.Join(ns, ", "), macroExprString(f.Type))
 			}
 
 			if f.Tag != nil {
@@ -342,7 +341,7 @@ func exprString(e ast.Expr) string {
 			var field string
 
 			if len(f.Names) == 0 {
-				field = exprString(f.Type)
+				field = macroExprString(f.Type)
 			} else {
 				var ns []string
 
@@ -350,7 +349,7 @@ func exprString(e ast.Expr) string {
 					ns = append(ns, n.Name)
 				}
 
-				field = fmt.Sprintf("%v %v", strings.Join(ns, ", "), exprString(f.Type))
+				field = fmt.Sprintf("%v %v", strings.Join(ns, ", "), macroExprString(f.Type))
 			}
 
 			if f.Tag != nil {
@@ -371,17 +370,26 @@ func exprString(e ast.Expr) string {
 	}
 }
 
-func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
-	var bp, err = build.Import(package_, "", 0)
+type MacroInterface struct {
+	Doc       []string
+	Initial   string
+	Methods   []*MacroMethod
+	Name      string
+	Package   string
+	Qualifier string
+}
+
+func NewMacroInterface(interfacePackage, interfaceName string) (*MacroInterface, error) {
+	var bp, err = build.Import(interfacePackage, "", 0)
 
 	if err != nil {
-		return nil, fmt.Errorf("cannot find package %v: %v", package_, err)
+		return nil, fmt.Errorf("cannot find package %v: %v", interfacePackage, err)
 	}
 
 	aps, err := parser.ParseDir(token.NewFileSet(), bp.Dir, nil, parser.ParseComments)
 
 	if err != nil {
-		return nil, fmt.Errorf("cannot parse package %v: %v", package_, err)
+		return nil, fmt.Errorf("cannot parse package %v: %v", interfacePackage, err)
 	}
 
 	var match *ast.TypeSpec
@@ -413,7 +421,7 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 					continue
 				}
 
-				if t.Name.Name == identifier {
+				if t.Name.Name == interfaceName {
 					match = t
 
 					return false
@@ -437,10 +445,10 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 	var initial, _ = utf8.DecodeRuneInString(strings.ToLower(match.Name.Name))
 
 	var mi = &MacroInterface{
-		Doc:       macroCommentGroup(match.Doc),
+		Doc:       macroCommentGroupStrings(match.Doc),
 		Initial:   fmt.Sprintf("%c", initial),
 		Name:      match.Name.Name,
-		Package:   package_,
+		Package:   interfacePackage,
 		Qualifier: bp.Name,
 	}
 
@@ -460,10 +468,10 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 
 				for _, n := range p.Names {
 					ns = append(ns, n.Name)
-					pfs = append(pfs, &MacroVar{Name: n.Name, Type: exprString(p.Type)})
+					pfs = append(pfs, &MacroVar{Name: n.Name, Type: macroExprString(p.Type)})
 				}
 
-				pgs = append(pgs, &MacroVars{Names: ns, Type: exprString(p.Type)})
+				pgs = append(pgs, &MacroVars{Names: ns, Type: macroExprString(p.Type)})
 			}
 		}
 
@@ -472,20 +480,20 @@ func GetMacroInterface(package_, identifier string) (*MacroInterface, error) {
 				var ns []string
 
 				if len(r.Names) == 0 {
-					rfs = append(rfs, &MacroVar{Type: exprString(r.Type)})
+					rfs = append(rfs, &MacroVar{Type: macroExprString(r.Type)})
 				} else {
 					for _, n := range r.Names {
 						ns = append(ns, n.Name)
-						rfs = append(rfs, &MacroVar{Name: n.Name, Type: exprString(r.Type)})
+						rfs = append(rfs, &MacroVar{Name: n.Name, Type: macroExprString(r.Type)})
 					}
 				}
 
-				rgs = append(rgs, &MacroVars{Names: ns, Type: exprString(r.Type)})
+				rgs = append(rgs, &MacroVars{Names: ns, Type: macroExprString(r.Type)})
 			}
 		}
 
 		mi.Methods = append(mi.Methods, &MacroMethod{
-			Doc:            macroCommentGroup(m.Doc),
+			Doc:            macroCommentGroupStrings(m.Doc),
 			Interface:      mi,
 			Name:           m.Names[0].Name,
 			ParamsFlat:     pfs,
@@ -507,6 +515,122 @@ type MacroMethod struct {
 	Receiver       string
 	ResultsFlat    []*MacroVar
 	ResultsGrouped []*MacroVars
+}
+
+type MacroTransformer struct {
+	Identifier  string
+	Interface   string
+	Output      string
+	Package     string
+	SkipFormat  bool
+	SkipProcess bool
+	Type        string
+	Value       bool
+}
+
+func (t *MacroTransformer) Transform(input []byte) error {
+	var s = macroTransformerQualified.FindStringSubmatch(t.Interface)
+
+	if len(s) != 3 {
+		return fmt.Errorf("type %v is invalid", t.Interface)
+	}
+
+	var qualifiedPackage, qualifiedType = s[1], s[2]
+
+	if !macroTransformerIdentifierExported.MatchString(qualifiedType) {
+		return fmt.Errorf("type %v is invalid", qualifiedType)
+	}
+
+	var mi, err = NewMacroInterface(qualifiedPackage, qualifiedType)
+
+	if err != nil {
+		return fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
+	}
+
+	if t.Output == "" {
+		t.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(t.Type), strings.ToLower(qualifiedType))
+	}
+
+	outputAbs, err := filepath.Abs(t.Output)
+
+	if err != nil {
+		return fmt.Errorf("cannot get absolute path for %v: %v", t.Output, err)
+	}
+
+	var outputAbsDir = filepath.Dir(outputAbs)
+	var packageName, packagePath string
+
+	if p, err := build.ImportDir(outputAbsDir, 0); err == nil {
+		packageName = p.Name
+		packagePath = p.ImportPath
+	} else if b := filepath.Base(outputAbsDir); macroTransformerIdentifier.MatchString(b) {
+		packageName = b
+	} else {
+		packageName = "main"
+	}
+
+	if t.Package == "" {
+		t.Package = packageName
+	}
+
+	if qualifiedPackage == "" || qualifiedPackage == packagePath {
+		mi.Package = ""
+		mi.Qualifier = ""
+	}
+
+	for _, m := range mi.Methods {
+		m.Receiver = t.Identifier
+	}
+
+	input = MacroPreprocess(input)
+
+	if t.SkipProcess {
+		return t.writeFile(t.Output, input)
+	}
+
+	input, err = MacroProcess(t.Output, input, &MacroType{
+		Interface: mi,
+		Name:      t.Type,
+		Package:   t.Package,
+		Pointer:   !t.Value,
+		Receiver:  t.Identifier,
+	})
+
+	if err != nil {
+		return fmt.Errorf("cannot process macro: %v", err)
+	}
+
+	if t.SkipFormat {
+		return t.writeFile(t.Output, input)
+	}
+
+	input, err = MacroFormat(input)
+
+	if err != nil {
+		return fmt.Errorf("cannot format macro: %v", err)
+	}
+
+	return t.writeFile(t.Output, input)
+}
+
+func (t *MacroTransformer) writeFile(path string, bs []byte) error {
+	var file, err = os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+
+	if err != nil {
+		return fmt.Errorf("cannot open %v: %v", path, err)
+	}
+
+	if n, err := file.Write(bs); err != nil {
+		return fmt.Errorf("cannot write %v: %v", path, err)
+	} else if n != len(bs) {
+		return fmt.Errorf("cannot write %v: %v bytes not written", path, len(bs)-n)
+	}
+
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("cannot close %v: %v", path, err)
+	}
+
+	return nil
 }
 
 type MacroType struct {

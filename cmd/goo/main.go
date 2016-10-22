@@ -122,6 +122,21 @@ func ReadFile(path string) ([]byte, error) {
 	return bs, nil
 }
 
+func TransformerCommand(a *kingpin.Application, command, verb, noun string) *goo.MacroTransformer {
+	var m goo.MacroTransformer
+	var c = a.Command(command, fmt.Sprintf("%v an interface.", verb))
+
+	c.Arg("receiver-type", fmt.Sprintf("%v receiver type.", noun)).Required().StringVar(&m.Type)
+	c.Arg("receiver-identifier", fmt.Sprintf("%v receiver identifiet.", noun)).Required().StringVar(&m.Identifier)
+	c.Arg("interface", fmt.Sprintf("%v interface.", noun)).Required().StringVar(&m.Interface)
+
+	c.Flag("output", fmt.Sprintf("%v file.", noun)).Short('o').StringVar(&m.Output)
+	c.Flag("package", fmt.Sprintf("%v package.", noun)).Short('p').StringVar(&m.Package)
+	c.Flag("value", fmt.Sprintf("%v receiver is a value type.", noun)).Short('v').BoolVar(&m.Value)
+
+	return &m
+}
+
 func WriteFile(path string, bs []byte) error {
 	var file, err = os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 
@@ -154,10 +169,10 @@ func main() {
 
 	var (
 		macro    = NewMacro(app)
-		mock     = NewTransformer(app, "mock", "Mock", "Mock", "../../internal/mock/mock.go")
-		stub     = NewTransformer(app, "stub", "Stub", "Stub", "../../internal/stub/stub.go")
+		mock     = TransformerCommand(app, "mock", "Mock", "Mock")
 		resource = NewResource(app)
-		wrap     = NewTransformer(app, "wrap", "Wrap", "Wrap", "../../internal/wrap/wrap.go")
+		stub     = TransformerCommand(app, "stub", "Stub", "Stub")
+		wrap     = TransformerCommand(app, "wrap", "Wrap", "Wrap")
 	)
 
 	switch kingpin.MustParse(app.Parse(args)) {
@@ -165,16 +180,16 @@ func main() {
 		err = macro.Run()
 
 	case "mock":
-		err = mock.Run()
+		err = mock.Transform(goo.Resource("github.com/willfaught/goo/cmd/goo", "../../internal/mock/mock.go"))
 
 	case "stub":
-		err = stub.Run()
+		err = stub.Transform(goo.Resource("github.com/willfaught/goo/cmd/goo", "../../internal/stub/stub.go"))
 
 	case "resource":
 		err = resource.Run()
 
 	case "wrap":
-		err = wrap.Run()
+		err = wrap.Transform(goo.Resource("github.com/willfaught/goo/cmd/goo", "../../internal/wrap/wrap.go"))
 
 	default:
 		app.Usage(args)
@@ -234,11 +249,12 @@ func (m *Macro) Run() error {
 }
 
 type Resource struct {
-	Compress bool
-	File     string
-	Name     string
-	Output   string
-	Package  string
+	Compress    bool
+	File        string
+	Name        string
+	Output      string
+	PackageName string
+	PackagePath string
 }
 
 func NewResource(app *kingpin.Application) *Resource {
@@ -250,7 +266,7 @@ func NewResource(app *kingpin.Application) *Resource {
 	c.Flag("compress", "Resource compression.").Short('c').BoolVar(&r.Compress)
 	c.Flag("name", "Resource name.").Short('n').StringVar(&r.Name)
 	c.Flag("output", "Output file.").Short('o').StringVar(&r.Output)
-	c.Flag("package", "Resource package.").Short('p').StringVar(&r.Package)
+	c.Flag("package", "Resource package.").Short('p').StringVar(&r.PackageName)
 
 	return &r
 }
@@ -286,8 +302,10 @@ func (r *Resource) Run() error {
 		}
 	}
 
-	if r.Package == "" {
-		r.Package, _ = DirPackage(outputAbsDir)
+	if n, p := DirPackage(outputAbsDir); r.PackageName == "" {
+		r.PackageName, r.PackagePath = n, p
+	} else {
+		r.PackagePath = p
 	}
 
 	bs, err := ReadFile(r.File)
@@ -314,113 +332,20 @@ func (r *Resource) Run() error {
 	}
 
 	var data = struct {
-		Compressed, Data, Name, Package string
+		Compressed, Data, Name, PackageName, PackagePath string
 	}{
-		Compressed: fmt.Sprint(r.Compress),
-		Data:       fmt.Sprintf("%#v", bs),
-		Name:       r.Name,
-		Package:    r.Package,
+		Compressed:  fmt.Sprint(r.Compress),
+		Data:        fmt.Sprintf("%#v", bs),
+		Name:        r.Name,
+		PackageName: r.PackageName,
+		PackagePath: r.PackagePath,
 	}
 
-	var resource, ok = goo.Resource("../../internal/resource/resource.go")
-
-	if !ok {
-		panic(ok)
-	}
+	var resource = goo.Resource("github.com/willfaught/goo/cmd/goo", "../../internal/resource/resource.go")
 
 	if bs, err = Pipeline(false, false, r.File, resource, data); err != nil {
 		return fmt.Errorf("cannot create resource: %v", err)
 	}
 
 	return WriteFile(r.Output, bs)
-}
-
-type Transformer struct {
-	Identifier string
-	Interface  string
-	Output     string
-	Package    string
-	Resource   string
-	Type       string
-	Value      bool
-}
-
-func NewTransformer(a *kingpin.Application, command, verb, noun, resource string) *Transformer {
-	var t = Transformer{Resource: resource}
-	var c = a.Command(command, fmt.Sprintf("%v an interface.", verb))
-
-	c.Arg("receiver-type", fmt.Sprintf("%v receiver type.", noun)).Required().StringVar(&t.Type)
-	c.Arg("receiver-identifier", fmt.Sprintf("%v receiver identifiet.", noun)).Required().StringVar(&t.Identifier)
-	c.Arg("interface", fmt.Sprintf("%v interface.", noun)).Required().StringVar(&t.Interface)
-
-	c.Flag("output", fmt.Sprintf("%v file.", noun)).Short('o').StringVar(&t.Output)
-	c.Flag("package", fmt.Sprintf("%v package.", noun)).Short('p').StringVar(&t.Package)
-	c.Flag("value", fmt.Sprintf("%v receiver is a value type.", noun)).Short('v').BoolVar(&t.Value)
-
-	return &t
-}
-
-func (t *Transformer) Run() error {
-	var m = qualified.FindStringSubmatch(t.Interface)
-
-	if len(m) != 3 {
-		return fmt.Errorf("type %v is invalid", t.Interface)
-	}
-
-	var qp, qt = m[1], m[2]
-
-	if !identifierExported.MatchString(qt) {
-		return fmt.Errorf("type %v is invalid", qt)
-	}
-
-	var mi, err = goo.GetMacroInterface(qp, qt)
-
-	if err != nil {
-		return fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
-	}
-
-	if t.Output == "" {
-		t.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(t.Type), strings.ToLower(qt))
-	}
-
-	outputPathAbs, err := filepath.Abs(t.Output)
-
-	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", t.Output, err)
-	}
-
-	var dn, dp = DirPackage(filepath.Dir(outputPathAbs))
-
-	if t.Package == "" {
-		t.Package = dn
-	}
-
-	if qp == "" || qp == dp {
-		mi.Package = ""
-		mi.Qualifier = ""
-	}
-
-	for _, m := range mi.Methods {
-		m.Receiver = t.Identifier
-	}
-
-	var resource, ok = goo.Resource(t.Resource)
-
-	if !ok {
-		panic(ok)
-	}
-
-	bs, err := Pipeline(false, false, t.Output, resource, &goo.MacroType{
-		Interface: mi,
-		Name:      t.Type,
-		Package:   t.Package,
-		Pointer:   !t.Value,
-		Receiver:  t.Identifier,
-	})
-
-	if err != nil {
-		return fmt.Errorf("cannot create mock: %v", err)
-	}
-
-	return WriteFile(t.Output, bs)
 }

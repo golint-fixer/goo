@@ -7,50 +7,53 @@ import (
 	"sync"
 )
 
-// TODO: Store by package name
-// TODO: Func to list resources for debugging purposes
-// TODO: Change Set to Add and panic for conflicts
-// TODO: Add MustGet func
-// TODO: Add resource type with package default?
-
 var (
-	resourceData        = map[string][]byte{}
-	resourceCompression = map[string]bool{}
+	resourceCompression = map[string]map[string]bool{}
+	resourceData        = map[string]map[string][]byte{}
 	resourceMutex       = &sync.Mutex{}
 )
 
-func DeleteResource(name string) bool {
+func AddResource(package_, name string, data []byte, compressed bool) {
 	resourceMutex.Lock()
-
 	defer resourceMutex.Unlock()
 
-	var _, ok = resourceData[name]
+	if nameData, ok := resourceData[package_]; ok {
+		if _, ok := nameData[name]; ok {
+			panic(ok)
+		}
 
-	delete(resourceData, name)
-	delete(resourceCompression, name)
-
-	return ok
+		nameData[name] = data
+		resourceCompression[package_][name] = compressed
+	} else {
+		resourceData[package_] = map[string][]byte{name: data}
+		resourceCompression[package_] = map[string]bool{name: compressed}
+	}
 }
 
-func Resource(name string) ([]byte, bool) {
+func Resource(package_, name string) []byte {
 	resourceMutex.Lock()
-
 	defer resourceMutex.Unlock()
 
-	var d, ok = resourceData[name]
+	var nameData, ok = resourceData[package_]
 
 	if !ok {
-		return nil, false
+		panic(ok)
 	}
 
-	if resourceCompression[name] {
-		var r, err = gzip.NewReader(bytes.NewBuffer(d))
+	data, ok := nameData[name]
+
+	if !ok {
+		panic(ok)
+	}
+
+	if resourceCompression[package_][name] {
+		var r, err = gzip.NewReader(bytes.NewBuffer(data))
 
 		if err != nil {
 			panic(err)
 		}
 
-		if d, err = ioutil.ReadAll(r); err != nil {
+		if data, err = ioutil.ReadAll(r); err != nil {
 			panic(err)
 		}
 
@@ -59,14 +62,5 @@ func Resource(name string) ([]byte, bool) {
 		}
 	}
 
-	return d, true
-}
-
-func SetResource(name string, file []byte, compressed bool) {
-	resourceMutex.Lock()
-
-	defer resourceMutex.Unlock()
-
-	resourceData[name] = file
-	resourceCompression[name] = compressed
+	return data
 }
