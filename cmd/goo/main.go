@@ -126,12 +126,12 @@ func TransformerCommand(a *kingpin.Application, command, verb, noun string) *goo
 	var m goo.MacroTransformer
 	var c = a.Command(command, fmt.Sprintf("%v an interface.", verb))
 
-	c.Arg("receiver-type", fmt.Sprintf("%v receiver type.", noun)).Required().StringVar(&m.Type)
-	c.Arg("receiver-identifier", fmt.Sprintf("%v receiver identifiet.", noun)).Required().StringVar(&m.Identifier)
+	c.Arg("type", fmt.Sprintf("%v receiver type.", noun)).Required().StringVar(&m.Type)
 	c.Arg("interface", fmt.Sprintf("%v interface.", noun)).Required().StringVar(&m.Interface)
 
 	c.Flag("output", fmt.Sprintf("%v file.", noun)).Short('o').StringVar(&m.Output)
 	c.Flag("package", fmt.Sprintf("%v package.", noun)).Short('p').StringVar(&m.Package)
+	c.Flag("identifier", fmt.Sprintf("%v receiver identifier.", noun)).StringVar(&m.Identifier)
 	c.Flag("value", fmt.Sprintf("%v receiver is a value type.", noun)).Short('v').BoolVar(&m.Value)
 
 	return &m

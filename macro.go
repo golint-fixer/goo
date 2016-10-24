@@ -14,6 +14,8 @@ import (
 	"strings"
 	"text/template"
 	"unicode/utf8"
+
+	"github.com/fatih/camelcase"
 )
 
 const macroIdentifierContent = "[[:alnum:]](?:_?[[:alnum:]])*?"
@@ -453,6 +455,7 @@ func NewMacroInterface(interfacePackage, interfaceName string) (*MacroInterface,
 	}
 
 	for _, m := range it.Methods.List {
+		// TODO: Handle embedded interfaces.
 		var f, ok = m.Type.(*ast.FuncType)
 
 		if !ok {
@@ -547,6 +550,16 @@ func (t *MacroTransformer) Transform(input []byte) error {
 		return fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
 	}
 
+	if t.Identifier == "" {
+		var r, err = t.receiver()
+
+		if err != nil {
+			return err
+		}
+
+		t.Identifier = r
+	}
+
 	if t.Output == "" {
 		t.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(t.Type), strings.ToLower(qualifiedType))
 	}
@@ -611,6 +624,78 @@ func (t *MacroTransformer) Transform(input []byte) error {
 	}
 
 	return t.writeFile(t.Output, input)
+}
+
+func (t *MacroTransformer) receiver() (string, error) {
+	var s = macroTransformerQualified.FindStringSubmatch(t.Interface)
+
+	if len(s) != 3 {
+		return "", fmt.Errorf("type %v is invalid", t.Interface)
+	}
+
+	var qualifiedPackage, qualifiedType = s[1], s[2]
+
+	if !macroTransformerIdentifierExported.MatchString(qualifiedType) {
+		return "", fmt.Errorf("type %v is invalid", qualifiedType)
+	}
+
+	var mi, err = NewMacroInterface(qualifiedPackage, qualifiedType)
+
+	if err != nil {
+		return "", fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
+	}
+
+	var names = map[string]struct{}{}
+
+	for _, m := range mi.Methods {
+		for _, p := range m.ParamsFlat {
+			names[p.Name] = struct{}{}
+		}
+
+		for _, r := range m.ResultsFlat {
+			names[r.Name] = struct{}{}
+		}
+	}
+
+	var words = camelcase.Split(t.Type)
+	var initials []string
+
+	for i, word := range words {
+		var r, _ = utf8.DecodeRuneInString(word)
+
+		if r == utf8.RuneError {
+			return "", fmt.Errorf("type %v is invalid: invalid utf8 string", t.Type)
+		}
+
+		initials = append(initials, strings.ToLower(fmt.Sprintf("%c", r)))
+		words[i] = strings.ToLower(word)
+	}
+
+	var tries = []string{
+		initials[0],
+		initials[len(initials)-1],
+		strings.Join(initials, ""),
+		words[0],
+		words[len(words)-1],
+	}
+
+	for _, name := range tries {
+		if _, ok := names[name]; !ok {
+			return name, nil
+		}
+	}
+
+	var name = initials[0]
+
+	for {
+		name += "_"
+
+		if _, ok := names[name]; !ok {
+			break
+		}
+	}
+
+	return name, nil
 }
 
 func (t *MacroTransformer) writeFile(path string, bs []byte) error {
