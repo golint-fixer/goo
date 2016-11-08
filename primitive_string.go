@@ -1,9 +1,9 @@
 package goo
 
-var _ Comparable = String("")
-
 // StringZero is the String zero value.
 var StringZero = String("")
+
+var _ Comparable = StringZero
 
 // String is a string.
 type String string
@@ -14,31 +14,31 @@ func (s String) Concat(other String) String {
 }
 
 // Equals implements Equatable.
-func (s String) Equals(e Equatable) bool {
-	return s == e.(String)
+func (s String) Equals(other Equatable) bool {
+	return s == other.(String)
 }
 
 // Greater implements Comparable.
-func (s String) Greater(c Comparable) bool {
-	return s > c.(String)
+func (s String) Greater(other Comparable) bool {
+	return s > other.(String)
 }
 
 // GreaterEqual implements Comparable.
-func (s String) GreaterEqual(c Comparable) bool {
-	return s >= c.(String)
+func (s String) GreaterEqual(other Comparable) bool {
+	return s >= other.(String)
 }
 
 // Less implements Comparable.
-func (s String) Less(c Comparable) bool {
-	return s < c.(String)
+func (s String) Less(other Comparable) bool {
+	return s < other.(String)
 }
 
 // LessEqual implements Comparable.
-func (s String) LessEqual(c Comparable) bool {
-	return s <= c.(String)
+func (s String) LessEqual(other Comparable) bool {
+	return s <= other.(String)
 }
 
 // NotEquals implements Equatable.
-func (s String) NotEquals(e Equatable) bool {
-	return s != e.(String)
+func (s String) NotEquals(other Equatable) bool {
+	return s != other.(String)
 }

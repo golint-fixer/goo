@@ -1,9 +1,9 @@
 package goo
 
-var _ Equatable = Bool(false)
-
 // BoolZero is the Bool zero value.
 var BoolZero = Bool(false)
+
+var _ Equatable = BoolZero
 
 // Bool is a bool.
 type Bool bool
@@ -14,8 +14,8 @@ func (b Bool) And(other Bool) Bool {
 }
 
 // Equals implements Equatable.
-func (b Bool) Equals(e Equatable) bool {
-	return b == e.(Bool)
+func (b Bool) Equals(other Equatable) bool {
+	return b == other.(Bool)
 }
 
 // Not returns the negation of b.
@@ -24,8 +24,8 @@ func (b Bool) Not() Bool {
 }
 
 // NotEquals implements Equatable.
-func (b Bool) NotEquals(e Equatable) bool {
-	return b != e.(Bool)
+func (b Bool) NotEquals(other Equatable) bool {
+	return b != other.(Bool)
 }
 
 // Or returns the disjunction of b and other.

@@ -48,8 +48,12 @@ func ChanEqualDeep(c, d ChanReceive) bool {
 			break
 		}
 
-		if !Equal(vc, vd) {
-			return false
+		if vc, ok := vc.(Equatable); ok {
+			if vd, ok := vd.(Equatable); ok {
+				if vc.NotEquals(vd) {
+					return false
+				}
+			}
 		}
 	}
 

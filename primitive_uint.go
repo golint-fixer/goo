@@ -1,9 +1,9 @@
 package goo
 
-var _ Integer = Uint(0)
-
 // UintZero is the Uint zero value.
 var UintZero = Uint(0)
+
+var _ Integer = UintZero
 
 // Uint is a uint.
 type Uint uint
@@ -13,49 +13,59 @@ func (u Uint) Add(n Number) Number {
 	return u + n.(Uint)
 }
 
-// And returns the bitwise conjunction of u and other.
+// And implements Integer.
 func (u Uint) And(other Integer) Integer {
 	return u & other.(Uint)
 }
 
+// AndNot implements Integer.
+func (u Uint) AndNot(other Integer) Integer {
+	return u &^ other.(Uint)
+}
+
 // Divide implements Number.
-func (u Uint) Divide(n Number) Number {
-	return u / n.(Uint)
+func (u Uint) Divide(other Number) Number {
+	return u / other.(Uint)
 }
 
 // Equals implements Equatable.
-func (u Uint) Equals(e Equatable) bool {
-	return u == e.(Uint)
+func (u Uint) Equals(other Equatable) bool {
+	return u == other.(Uint)
 }
 
 // Greater implements Comparable.
-func (u Uint) Greater(c Comparable) bool {
-	return u > c.(Uint)
+func (u Uint) Greater(other Comparable) bool {
+	return u > other.(Uint)
 }
 
 // GreaterEqual implements Comparable.
-func (u Uint) GreaterEqual(c Comparable) bool {
-	return u >= c.(Uint)
+func (u Uint) GreaterEqual(other Comparable) bool {
+	return u >= other.(Uint)
+}
+
+// Left implements Integer.
+func (u Uint) Left(n uint) Integer {
+	return u << n
 }
 
 // Less implements Comparable.
-func (u Uint) Less(c Comparable) bool {
-	return u < c.(Uint)
+func (u Uint) Less(other Comparable) bool {
+	return u < other.(Uint)
 }
 
 // LessEqual implements Comparable.
-func (u Uint) LessEqual(c Comparable) bool {
-	return u <= c.(Uint)
+func (u Uint) LessEqual(other Comparable) bool {
+	return u <= other.(Uint)
 }
 
-// Modulo implements Number.
+// Modulo implements Integer.
 func (u Uint) Modulo(other Integer) Integer {
 	return u % other.(Uint)
 }
 
 // Multiply implements Number.
-func (u Uint) Multiply(n Number) Number {
-	return u * n.(Uint)
+func (u Uint) Multiply(other Number) Number {
+	return u * other.(Uint)
 }
 
 // Negate implements Number.
@@ -63,12 +73,32 @@ func (u Uint) Negate() Number {
 	return -u
 }
 
+// Not implements Integer.
+func (u Uint) Not() Integer {
+	return ^u
+}
+
 // NotEquals implements Equatable.
-func (u Uint) NotEquals(e Equatable) bool {
-	return u != e.(Uint)
+func (u Uint) NotEquals(other Equatable) bool {
+	return u != other.(Uint)
+}
+
+// Or implements Integer.
+func (u Uint) Or(other Integer) Integer {
+	return u | other.(Uint)
+}
+
+// Right implements Integer.
+func (u Uint) Right(n uint) Integer {
+	return u >> n
 }
 
 // Subtract implements Number.
-func (u Uint) Subtract(n Number) Number {
-	return u - n.(Uint)
+func (u Uint) Subtract(other Number) Number {
+	return u - other.(Uint)
+}
+
+// Xor implements Integer.
+func (u Uint) Xor(other Integer) Integer {
+	return u ^ other.(Uint)
 }

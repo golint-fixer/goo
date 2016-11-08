@@ -1,9 +1,9 @@
 package goo
 
-var _ Number = Complex64(0)
-
 // Complex64Zero is the Complex64 zero value.
 var Complex64Zero = Complex64(0)
+
+var _ Number = Complex64Zero
 
 // Complex64 is a complex64.
 type Complex64 complex64
@@ -14,23 +14,23 @@ func (c Complex64) Add(n Number) Number {
 }
 
 // Divide implements Number.
-func (c Complex64) Divide(n Number) Number {
-	return c / n.(Complex64)
+func (c Complex64) Divide(other Number) Number {
+	return c / other.(Complex64)
 }
 
 // Equals implements Equatable.
-func (c Complex64) Equals(e Equatable) bool {
-	return c == e.(Complex64)
+func (c Complex64) Equals(other Equatable) bool {
+	return c == other.(Complex64)
 }
 
-// Imag returns the imaginary part.
+// Imag implements Complex.
 func (c Complex64) Imag() float32 {
 	return imag(c)
 }
 
 // Multiply implements Number.
-func (c Complex64) Multiply(n Number) Number {
-	return c * n.(Complex64)
+func (c Complex64) Multiply(other Number) Number {
+	return c * other.(Complex64)
 }
 
 // Negate implements Number.
@@ -39,16 +39,16 @@ func (c Complex64) Negate() Number {
 }
 
 // NotEquals implements Equatable.
-func (c Complex64) NotEquals(e Equatable) bool {
-	return c != e.(Complex64)
+func (c Complex64) NotEquals(other Equatable) bool {
+	return c != other.(Complex64)
 }
 
-// Real returns the real part.
+// Real implements Complex.
 func (c Complex64) Real() float32 {
 	return real(c)
 }
 
 // Subtract implements Number.
-func (c Complex64) Subtract(n Number) Number {
-	return c - n.(Complex64)
+func (c Complex64) Subtract(other Number) Number {
+	return c - other.(Complex64)
 }

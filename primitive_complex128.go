@@ -1,9 +1,9 @@
 package goo
 
-var _ Number = Complex128(0)
-
 // Complex128Zero is the Complex128 zero value.
 var Complex128Zero = Complex128(0)
+
+var _ Number = Complex128Zero
 
 // Complex128 is a complex128.
 type Complex128 complex128
@@ -14,23 +14,23 @@ func (c Complex128) Add(n Number) Number {
 }
 
 // Divide implements Number.
-func (c Complex128) Divide(n Number) Number {
-	return c / n.(Complex128)
+func (c Complex128) Divide(other Number) Number {
+	return c / other.(Complex128)
 }
 
 // Equals implements Equatable.
-func (c Complex128) Equals(e Equatable) bool {
-	return c == e.(Complex128)
+func (c Complex128) Equals(other Equatable) bool {
+	return c == other.(Complex128)
 }
 
-// Imag returns the imaginary part.
+// Imag implements Complex.
 func (c Complex128) Imag() float64 {
 	return imag(c)
 }
 
 // Multiply implements Number.
-func (c Complex128) Multiply(n Number) Number {
-	return c * n.(Complex128)
+func (c Complex128) Multiply(other Number) Number {
+	return c * other.(Complex128)
 }
 
 // Negate implements Number.
@@ -39,16 +39,16 @@ func (c Complex128) Negate() Number {
 }
 
 // NotEquals implements Equatable.
-func (c Complex128) NotEquals(e Equatable) bool {
-	return c != e.(Complex128)
+func (c Complex128) NotEquals(other Equatable) bool {
+	return c != other.(Complex128)
 }
 
-// Real returns the real part.
-func (c Complex128) Real() float64 {
+// Real implements Complex.
+func (c Complex128) Real_OMIT_complex128() float64 {
 	return real(c)
 }
 
 // Subtract implements Number.
-func (c Complex128) Subtract(n Number) Number {
-	return c - n.(Complex128)
+func (c Complex128) Subtract(other Number) Number {
+	return c - other.(Complex128)
 }
