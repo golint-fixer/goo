@@ -9,10 +9,12 @@ type Iterator interface {
 	Next() interface{}
 }
 
+// RepeatIterator returns an Iterator that repeats v forever.
 func RepeatIterator(v interface{}) Iterator {
 	return repeater{v: v}
 }
 
+// ReplicateIterator returns an Iterator that contains n v.
 func ReplicateIterator(v interface{}, n int) Iterator {
 	return &replicator{n: n, v: v}
 }
@@ -31,9 +33,7 @@ func (r repeater) Next() interface{} {
 
 type replicator struct {
 	i int
-
 	n int
-
 	v interface{}
 }
 
