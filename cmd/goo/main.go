@@ -75,13 +75,13 @@ func NewGeneralMacro(c *kingpin.CmdClause) *GeneralMacro {
 	var m GeneralMacro
 
 	c.Arg("input", "Input file path.").Required().StringVar(&m.Input)
+	c.Arg("output", "Output file path.").Required().StringVar(&m.Output)
 
 	c.Flag("data", "Macro data map as JSON.").Short('d').StringVar(&m.JSON)
 	c.Flag("disable-format", "Do not format the macro output.").BoolVar(&m.DisableFormat)
 	c.Flag("disable-preprocess", "Do not preprocess the macro output.").BoolVar(&m.DisablePreprocess)
 	c.Flag("disable-process", "Do not process the macro output.").BoolVar(&m.DisableProcess)
 	c.Flag("key", "Macro data key and value.").Short('k').StringMapVar(&m.Data)
-	c.Flag("output", "Output file path.").Short('o').StringVar(&m.Output)
 
 	return &m
 }
