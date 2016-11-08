@@ -5,6 +5,10 @@ var Int32Zero = Int32(0)
 
 var _ Integer = Int32Zero
 
+var _ Pointer = &Int32Zero
+
+var _ Value = Int32Zero
+
 // Int32 is a int32.
 type Int32 int32
 
@@ -21,6 +25,11 @@ func (i Int32) And(other Integer) Integer {
 // AndNot implements Integer.
 func (i Int32) AndNot(other Integer) Integer {
 	return i &^ other.(Int32)
+}
+
+// Dereference implements Pointer.
+func (i *Int32) Dereference() Value {
+	return *i
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (i Int32) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (i Int32) Or(other Integer) Integer {
 	return i | other.(Int32)
+}
+
+// Reference implements Value.
+func (i Int32) Reference() Pointer {
+	return &i
 }
 
 // Right implements Integer.

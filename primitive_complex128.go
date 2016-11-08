@@ -5,12 +5,21 @@ var Complex128Zero = Complex128(0)
 
 var _ Number = Complex128Zero
 
+var _ Pointer = &Complex128Zero
+
+var _ Value = Complex128Zero
+
 // Complex128 is a complex128.
 type Complex128 complex128
 
 // Add implements Number.
 func (c Complex128) Add(n Number) Number {
 	return c + n.(Complex128)
+}
+
+// Dereference implements Pointer.
+func (c *Complex128) Dereference() Value {
+	return *c
 }
 
 // Divide implements Number.
@@ -46,6 +55,11 @@ func (c Complex128) NotEquals(other Equatable) bool {
 // Real implements Complex.
 func (c Complex128) Real_OMIT_complex128() float64 {
 	return real(c)
+}
+
+// Reference implements Value.
+func (c Complex128) Reference() Pointer {
+	return &c
 }
 
 // Subtract implements Number.

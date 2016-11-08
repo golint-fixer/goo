@@ -5,6 +5,10 @@ var Uint32Zero = Uint32(0)
 
 var _ Integer = Uint32Zero
 
+var _ Pointer = &Uint32Zero
+
+var _ Value = Uint32Zero
+
 // Uint32 is a uint32.
 type Uint32 uint32
 
@@ -21,6 +25,11 @@ func (u Uint32) And(other Integer) Integer {
 // AndNot implements Integer.
 func (u Uint32) AndNot(other Integer) Integer {
 	return u &^ other.(Uint32)
+}
+
+// Dereference implements Pointer.
+func (u *Uint32) Dereference() Value {
+	return *u
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (u Uint32) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (u Uint32) Or(other Integer) Integer {
 	return u | other.(Uint32)
+}
+
+// Reference implements Value.
+func (u Uint32) Reference() Pointer {
+	return &u
 }
 
 // Right implements Integer.

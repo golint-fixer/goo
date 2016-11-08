@@ -5,6 +5,10 @@ var Int64Zero = Int64(0)
 
 var _ Integer = Int64Zero
 
+var _ Pointer = &Int64Zero
+
+var _ Value = Int64Zero
+
 // Int64 is a int64.
 type Int64 int64
 
@@ -21,6 +25,11 @@ func (i Int64) And(other Integer) Integer {
 // AndNot implements Integer.
 func (i Int64) AndNot(other Integer) Integer {
 	return i &^ other.(Int64)
+}
+
+// Dereference implements Pointer.
+func (i *Int64) Dereference() Value {
+	return *i
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (i Int64) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (i Int64) Or(other Integer) Integer {
 	return i | other.(Int64)
+}
+
+// Reference implements Value.
+func (i Int64) Reference() Pointer {
+	return &i
 }
 
 // Right implements Integer.

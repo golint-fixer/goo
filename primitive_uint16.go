@@ -5,6 +5,10 @@ var Uint16Zero = Uint16(0)
 
 var _ Integer = Uint16Zero
 
+var _ Pointer = &Uint16Zero
+
+var _ Value = Uint16Zero
+
 // Uint16 is a uint16.
 type Uint16 uint16
 
@@ -21,6 +25,11 @@ func (u Uint16) And(other Integer) Integer {
 // AndNot implements Integer.
 func (u Uint16) AndNot(other Integer) Integer {
 	return u &^ other.(Uint16)
+}
+
+// Dereference implements Pointer.
+func (u *Uint16) Dereference() Value {
+	return *u
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (u Uint16) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (u Uint16) Or(other Integer) Integer {
 	return u | other.(Uint16)
+}
+
+// Reference implements Value.
+func (u Uint16) Reference() Pointer {
+	return &u
 }
 
 // Right implements Integer.

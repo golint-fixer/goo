@@ -5,12 +5,21 @@ var Float64Zero = Float64(0)
 
 var _ Number = Float64Zero
 
+var _ Pointer = &Float64Zero
+
+var _ Value = Float64Zero
+
 // Float64 is a float64.
 type Float64 float64
 
 // Add implements Number.
 func (f Float64) Add(n Number) Number {
 	return f + n.(Float64)
+}
+
+// Dereference implements Pointer.
+func (f *Float64) Dereference() Value {
+	return *f
 }
 
 // Divide implements Number.
@@ -56,6 +65,11 @@ func (f Float64) Negate() Number {
 // NotEquals implements Equatable.
 func (f Float64) NotEquals(other Equatable) bool {
 	return f != other.(Float64)
+}
+
+// Reference implements Value.
+func (f Float64) Reference() Pointer {
+	return &f
 }
 
 // Subtract implements Number.

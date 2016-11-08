@@ -5,6 +5,10 @@ var RuneZero = Rune(0)
 
 var _ Integer = RuneZero
 
+var _ Pointer = &RuneZero
+
+var _ Value = RuneZero
+
 // Rune is a rune.
 type Rune rune
 
@@ -21,6 +25,11 @@ func (r Rune) And(other Integer) Integer {
 // AndNot implements Integer.
 func (r Rune) AndNot(other Integer) Integer {
 	return r &^ other.(Rune)
+}
+
+// Dereference implements Pointer.
+func (r *Rune) Dereference() Value {
+	return *r
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (r Rune) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (r Rune) Or(other Integer) Integer {
 	return r | other.(Rune)
+}
+
+// Reference implements Value.
+func (r Rune) Reference() Pointer {
+	return &r
 }
 
 // Right implements Integer.

@@ -5,6 +5,10 @@ var Uint8Zero = Uint8(0)
 
 var _ Integer = Uint8Zero
 
+var _ Pointer = &Uint8Zero
+
+var _ Value = Uint8Zero
+
 // Uint8 is a uint8.
 type Uint8 uint8
 
@@ -21,6 +25,11 @@ func (u Uint8) And(other Integer) Integer {
 // AndNot implements Integer.
 func (u Uint8) AndNot(other Integer) Integer {
 	return u &^ other.(Uint8)
+}
+
+// Dereference implements Pointer.
+func (u *Uint8) Dereference() Value {
+	return *u
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (u Uint8) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (u Uint8) Or(other Integer) Integer {
 	return u | other.(Uint8)
+}
+
+// Reference implements Value.
+func (u Uint8) Reference() Pointer {
+	return &u
 }
 
 // Right implements Integer.

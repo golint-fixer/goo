@@ -5,6 +5,10 @@ var ByteZero = Byte(0)
 
 var _ Integer = ByteZero
 
+var _ Pointer = &ByteZero
+
+var _ Value = ByteZero
+
 // Byte is a byte.
 type Byte byte
 
@@ -21,6 +25,11 @@ func (b Byte) And(other Integer) Integer {
 // AndNot implements Integer.
 func (b Byte) AndNot(other Integer) Integer {
 	return b &^ other.(Byte)
+}
+
+// Dereference implements Pointer.
+func (b *Byte) Dereference() Value {
+	return *b
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (b Byte) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (b Byte) Or(other Integer) Integer {
 	return b | other.(Byte)
+}
+
+// Reference implements Value.
+func (b Byte) Reference() Pointer {
+	return &b
 }
 
 // Right implements Integer.

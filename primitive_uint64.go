@@ -5,6 +5,10 @@ var Uint64Zero = Uint64(0)
 
 var _ Integer = Uint64Zero
 
+var _ Pointer = &Uint64Zero
+
+var _ Value = Uint64Zero
+
 // Uint64 is a uint64.
 type Uint64 uint64
 
@@ -21,6 +25,11 @@ func (u Uint64) And(other Integer) Integer {
 // AndNot implements Integer.
 func (u Uint64) AndNot(other Integer) Integer {
 	return u &^ other.(Uint64)
+}
+
+// Dereference implements Pointer.
+func (u *Uint64) Dereference() Value {
+	return *u
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (u Uint64) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (u Uint64) Or(other Integer) Integer {
 	return u | other.(Uint64)
+}
+
+// Reference implements Value.
+func (u Uint64) Reference() Pointer {
+	return &u
 }
 
 // Right implements Integer.

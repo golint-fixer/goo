@@ -5,6 +5,10 @@ var Int16Zero = Int16(0)
 
 var _ Integer = Int16Zero
 
+var _ Pointer = &Int16Zero
+
+var _ Value = Int16Zero
+
 // Int16 is a int16.
 type Int16 int16
 
@@ -21,6 +25,11 @@ func (i Int16) And(other Integer) Integer {
 // AndNot implements Integer.
 func (i Int16) AndNot(other Integer) Integer {
 	return i &^ other.(Int16)
+}
+
+// Dereference implements Pointer.
+func (i *Int16) Dereference() Value {
+	return *i
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (i Int16) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (i Int16) Or(other Integer) Integer {
 	return i | other.(Int16)
+}
+
+// Reference implements Value.
+func (i Int16) Reference() Pointer {
+	return &i
 }
 
 // Right implements Integer.

@@ -5,12 +5,21 @@ var Float32Zero = Float32(0)
 
 var _ Number = Float32Zero
 
+var _ Pointer = &Float32Zero
+
+var _ Value = Float32Zero
+
 // Float32 is a float32.
 type Float32 float32
 
 // Add implements Number.
 func (f Float32) Add(n Number) Number {
 	return f + n.(Float32)
+}
+
+// Dereference implements Pointer.
+func (f *Float32) Dereference() Value {
+	return *f
 }
 
 // Divide implements Number.
@@ -56,6 +65,11 @@ func (f Float32) Negate() Number {
 // NotEquals implements Equatable.
 func (f Float32) NotEquals(other Equatable) bool {
 	return f != other.(Float32)
+}
+
+// Reference implements Value.
+func (f Float32) Reference() Pointer {
+	return &f
 }
 
 // Subtract implements Number.

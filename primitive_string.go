@@ -5,12 +5,21 @@ var StringZero = String("")
 
 var _ Comparable = StringZero
 
+var _ Pointer = &StringZero
+
+var _ Value = StringZero
+
 // String is a string.
 type String string
 
 // Concat returns the concatenation of s and other.
 func (s String) Concat(other String) String {
 	return s + other
+}
+
+// Dereference implements Pointer.
+func (s *String) Dereference() Value {
+	return *s
 }
 
 // Equals implements Equatable.
@@ -41,4 +50,9 @@ func (s String) LessEqual(other Comparable) bool {
 // NotEquals implements Equatable.
 func (s String) NotEquals(other Equatable) bool {
 	return s != other.(String)
+}
+
+// Reference implements Value.
+func (s String) Reference() Pointer {
+	return &s
 }

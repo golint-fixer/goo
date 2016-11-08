@@ -34,7 +34,9 @@ type (
 	Equatable               interface{}
 	Integer                 interface{}
 	Number                  interface{}
+	Pointer                 interface{}
 	String                  string
+	Value                   interface{}
 ) /// {{end}}
 
 /// {{if false}}
@@ -48,6 +50,10 @@ var _ Integer = __FIELD_name__Zero    /// {{else if .number}}
 var _ Number = __FIELD_name__Zero     /// {{else if .comparable}}
 var _ Comparable = __FIELD_name__Zero /// {{else if .equatable}}
 var _ Equatable = __FIELD_name__Zero  /// {{end}}
+
+var _ Pointer = &__FIELD_name__Zero
+
+var _ Value = __FIELD_name__Zero
 
 // {{.name}} is a {{.base}}.
 type __FIELD_name__ __FIELD_base__
@@ -80,6 +86,11 @@ func (__FIELD_rec__ __FIELD_name__) AndNot(other Integer) Integer {
 func (__FIELD_rec__ __FIELD_name__) Concat(other __FIELD_name__) __FIELD_name__ {
 	return __FIELD_rec__ + other
 } /// {{end}}
+
+// Dereference implements Pointer.
+func (__FIELD_rec__ *__FIELD_name__) Dereference() Value {
+	return *__FIELD_rec__
+}
 
 /// {{if .number}}
 // Divide implements Number.
@@ -191,6 +202,11 @@ func (__FIELD_rec__ Complex64) Real__X_OMIT_complex64__() float32 {
 func (__FIELD_rec__ Complex128) Real_OMIT_complex128() float64 {
 	return real(__FIELD_rec__)
 } /// {{end}}
+
+// Reference implements Value.
+func (__FIELD_rec__ __FIELD_name__) Reference() Pointer {
+	return &__FIELD_rec__
+}
 
 /// {{if .integer}}
 // Right implements Integer.

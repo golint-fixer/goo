@@ -5,6 +5,10 @@ var IntZero = Int(0)
 
 var _ Integer = IntZero
 
+var _ Pointer = &IntZero
+
+var _ Value = IntZero
+
 // Int is a int.
 type Int int
 
@@ -21,6 +25,11 @@ func (i Int) And(other Integer) Integer {
 // AndNot implements Integer.
 func (i Int) AndNot(other Integer) Integer {
 	return i &^ other.(Int)
+}
+
+// Dereference implements Pointer.
+func (i *Int) Dereference() Value {
+	return *i
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (i Int) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (i Int) Or(other Integer) Integer {
 	return i | other.(Int)
+}
+
+// Reference implements Value.
+func (i Int) Reference() Pointer {
+	return &i
 }
 
 // Right implements Integer.

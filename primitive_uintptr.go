@@ -5,6 +5,10 @@ var UintptrZero = Uintptr(0)
 
 var _ Integer = UintptrZero
 
+var _ Pointer = &UintptrZero
+
+var _ Value = UintptrZero
+
 // Uintptr is a uintptr.
 type Uintptr uintptr
 
@@ -21,6 +25,11 @@ func (u Uintptr) And(other Integer) Integer {
 // AndNot implements Integer.
 func (u Uintptr) AndNot(other Integer) Integer {
 	return u &^ other.(Uintptr)
+}
+
+// Dereference implements Pointer.
+func (u *Uintptr) Dereference() Value {
+	return *u
 }
 
 // Divide implements Number.
@@ -86,6 +95,11 @@ func (u Uintptr) NotEquals(other Equatable) bool {
 // Or implements Integer.
 func (u Uintptr) Or(other Integer) Integer {
 	return u | other.(Uintptr)
+}
+
+// Reference implements Value.
+func (u Uintptr) Reference() Pointer {
+	return &u
 }
 
 // Right implements Integer.
