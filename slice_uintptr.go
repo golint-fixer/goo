@@ -2,14 +2,17 @@ package goo
 
 import "sort"
 
-// SliceUintptr is a slice of uintptr.
-type SliceUintptr []uintptr
+// SliceUintptrZero is the SliceUintptr zero value.
+var SliceUintptrZero = SliceUintptr(nil)
 
 var _ Slice = SliceUintptr(nil)
 
 var _ sort.Interface = SliceUintptr(nil)
 
-// Append appends v to s and returns the result.
+// SliceUintptr is a slice of uintptr.
+type SliceUintptr []uintptr
+
+// Append implements Slice.
 func (s SliceUintptr) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(uintptr))
@@ -18,32 +21,27 @@ func (s SliceUintptr) Append(v ...interface{}) Slice {
 	return s
 }
 
-// AppendSlice appends t to s and returns the result.
-func (s SliceUintptr) AppendSlice(t Slice) Slice {
-	return append(s, t.(SliceUintptr)...)
+// AppendSlice implements Slice.
+func (s SliceUintptr) AppendSlice(other Slice) Slice {
+	return append(s, other.(SliceUintptr)...)
 }
 
-// Cap returns the s capacity.
+// Cap implements Slice.
 func (s SliceUintptr) Cap() int {
 	return cap(s)
 }
 
-// Copy copies t to s.
-func (s SliceUintptr) Copy(t Slice) int {
-	return copy(s, t.(SliceUintptr))
+// Copy implements Slice.
+func (s SliceUintptr) Copy(other Slice) int {
+	return copy(s, other.(SliceUintptr))
 }
 
-// Equals returns whether s equals v.
-func (s SliceUintptr) Equals(v interface{}) bool {
-	var t = v.(SliceUintptr)
-	var l = len(s)
+// Equals implements Equatable.
+func (s SliceUintptr) Equals(other Equatable) bool {
+	var t = other.(SliceUintptr)
 
-	if len(t) != l {
+	if len(t) != len(s) {
 		return false
-	}
-
-	if l == 0 {
-		return true
 	}
 
 	for i := range s {
@@ -55,22 +53,22 @@ func (s SliceUintptr) Equals(v interface{}) bool {
 	return true
 }
 
-// Get returns the s element at index i.
+// Get implements Slice.
 func (s SliceUintptr) Get(i int) interface{} {
 	return s[i]
 }
 
-// GetRange returns the slice of s from indexes i to j.
+// GetRange implements Slice.
 func (s SliceUintptr) GetRange(i, j int) Slice {
 	return s[i:j]
 }
 
-// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+// GetRangeCap implements Slice.
 func (s SliceUintptr) GetRangeCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
-// Len returns the s length.
+// Len implements Slice.
 func (s SliceUintptr) Len() int {
 	return len(s)
 }
@@ -80,12 +78,17 @@ func (s SliceUintptr) Less(i, j int) bool {
 	return s[i] < s[j]
 }
 
-// Make returns a new SliceUintptr with length l and capacity c.
+// Make implements Slice.
 func (s SliceUintptr) Make(l, c int) Slice {
 	return make(SliceUintptr, l, c)
 }
 
-// Set sets the s element at index i to v.
+// NotEquals implements Equatable.
+func (s SliceUintptr) NotEquals(other Equatable) bool {
+	return !s.Equals(other)
+}
+
+// Set implements Slice.
 func (s SliceUintptr) Set(i int, v interface{}) {
 	s[i] = v.(uintptr)
 }

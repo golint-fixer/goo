@@ -2,14 +2,17 @@ package goo
 
 import "sort"
 
-// SliceInt8 is a slice of int8.
-type SliceInt8 []int8
+// SliceInt8Zero is the SliceInt8 zero value.
+var SliceInt8Zero = SliceInt8(nil)
 
 var _ Slice = SliceInt8(nil)
 
 var _ sort.Interface = SliceInt8(nil)
 
-// Append appends v to s and returns the result.
+// SliceInt8 is a slice of int8.
+type SliceInt8 []int8
+
+// Append implements Slice.
 func (s SliceInt8) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(int8))
@@ -18,32 +21,27 @@ func (s SliceInt8) Append(v ...interface{}) Slice {
 	return s
 }
 
-// AppendSlice appends t to s and returns the result.
-func (s SliceInt8) AppendSlice(t Slice) Slice {
-	return append(s, t.(SliceInt8)...)
+// AppendSlice implements Slice.
+func (s SliceInt8) AppendSlice(other Slice) Slice {
+	return append(s, other.(SliceInt8)...)
 }
 
-// Cap returns the s capacity.
+// Cap implements Slice.
 func (s SliceInt8) Cap() int {
 	return cap(s)
 }
 
-// Copy copies t to s.
-func (s SliceInt8) Copy(t Slice) int {
-	return copy(s, t.(SliceInt8))
+// Copy implements Slice.
+func (s SliceInt8) Copy(other Slice) int {
+	return copy(s, other.(SliceInt8))
 }
 
-// Equals returns whether s equals v.
-func (s SliceInt8) Equals(v interface{}) bool {
-	var t = v.(SliceInt8)
-	var l = len(s)
+// Equals implements Equatable.
+func (s SliceInt8) Equals(other Equatable) bool {
+	var t = other.(SliceInt8)
 
-	if len(t) != l {
+	if len(t) != len(s) {
 		return false
-	}
-
-	if l == 0 {
-		return true
 	}
 
 	for i := range s {
@@ -55,22 +53,22 @@ func (s SliceInt8) Equals(v interface{}) bool {
 	return true
 }
 
-// Get returns the s element at index i.
+// Get implements Slice.
 func (s SliceInt8) Get(i int) interface{} {
 	return s[i]
 }
 
-// GetRange returns the slice of s from indexes i to j.
+// GetRange implements Slice.
 func (s SliceInt8) GetRange(i, j int) Slice {
 	return s[i:j]
 }
 
-// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+// GetRangeCap implements Slice.
 func (s SliceInt8) GetRangeCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
-// Len returns the s length.
+// Len implements Slice.
 func (s SliceInt8) Len() int {
 	return len(s)
 }
@@ -80,12 +78,17 @@ func (s SliceInt8) Less(i, j int) bool {
 	return s[i] < s[j]
 }
 
-// Make returns a new SliceInt8 with length l and capacity c.
+// Make implements Slice.
 func (s SliceInt8) Make(l, c int) Slice {
 	return make(SliceInt8, l, c)
 }
 
-// Set sets the s element at index i to v.
+// NotEquals implements Equatable.
+func (s SliceInt8) NotEquals(other Equatable) bool {
+	return !s.Equals(other)
+}
+
+// Set implements Slice.
 func (s SliceInt8) Set(i int, v interface{}) {
 	s[i] = v.(int8)
 }

@@ -1,11 +1,14 @@
 package goo
 
-// SliceComplex64 is a slice of complex64.
-type SliceComplex64 []complex64
+// SliceComplex64Zero is the SliceComplex64 zero value.
+var SliceComplex64Zero = SliceComplex64(nil)
 
 var _ Slice = SliceComplex64(nil)
 
-// Append appends v to s and returns the result.
+// SliceComplex64 is a slice of complex64.
+type SliceComplex64 []complex64
+
+// Append implements Slice.
 func (s SliceComplex64) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(complex64))
@@ -14,32 +17,27 @@ func (s SliceComplex64) Append(v ...interface{}) Slice {
 	return s
 }
 
-// AppendSlice appends t to s and returns the result.
-func (s SliceComplex64) AppendSlice(t Slice) Slice {
-	return append(s, t.(SliceComplex64)...)
+// AppendSlice implements Slice.
+func (s SliceComplex64) AppendSlice(other Slice) Slice {
+	return append(s, other.(SliceComplex64)...)
 }
 
-// Cap returns the s capacity.
+// Cap implements Slice.
 func (s SliceComplex64) Cap() int {
 	return cap(s)
 }
 
-// Copy copies t to s.
-func (s SliceComplex64) Copy(t Slice) int {
-	return copy(s, t.(SliceComplex64))
+// Copy implements Slice.
+func (s SliceComplex64) Copy(other Slice) int {
+	return copy(s, other.(SliceComplex64))
 }
 
-// Equals returns whether s equals v.
-func (s SliceComplex64) Equals(v interface{}) bool {
-	var t = v.(SliceComplex64)
-	var l = len(s)
+// Equals implements Equatable.
+func (s SliceComplex64) Equals(other Equatable) bool {
+	var t = other.(SliceComplex64)
 
-	if len(t) != l {
+	if len(t) != len(s) {
 		return false
-	}
-
-	if l == 0 {
-		return true
 	}
 
 	for i := range s {
@@ -51,32 +49,37 @@ func (s SliceComplex64) Equals(v interface{}) bool {
 	return true
 }
 
-// Get returns the s element at index i.
+// Get implements Slice.
 func (s SliceComplex64) Get(i int) interface{} {
 	return s[i]
 }
 
-// GetRange returns the slice of s from indexes i to j.
+// GetRange implements Slice.
 func (s SliceComplex64) GetRange(i, j int) Slice {
 	return s[i:j]
 }
 
-// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+// GetRangeCap implements Slice.
 func (s SliceComplex64) GetRangeCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
-// Len returns the s length.
+// Len implements Slice.
 func (s SliceComplex64) Len() int {
 	return len(s)
 }
 
-// Make returns a new SliceComplex64 with length l and capacity c.
+// Make implements Slice.
 func (s SliceComplex64) Make(l, c int) Slice {
 	return make(SliceComplex64, l, c)
 }
 
-// Set sets the s element at index i to v.
+// NotEquals implements Equatable.
+func (s SliceComplex64) NotEquals(other Equatable) bool {
+	return !s.Equals(other)
+}
+
+// Set implements Slice.
 func (s SliceComplex64) Set(i int, v interface{}) {
 	s[i] = v.(complex64)
 }

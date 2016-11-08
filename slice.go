@@ -4,6 +4,8 @@ var _ Iterator = &sliceIterator{}
 
 // Slice is a slice.
 type Slice interface {
+	Equatable
+
 	// Append appends v and returns the result.
 	Append(v ...interface{}) Slice
 

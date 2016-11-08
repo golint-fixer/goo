@@ -26,20 +26,22 @@ package goo
 import "sort" /// {{end}}
 
 /// {{if false}}
+type __FIELD_Element__ int
+type Equatable interface{}
 type Slice interface{} /// {{end}}
 
-/// {{if false}}
-type __FIELD_Element__ int /// {{end}}
-
-// Slice__FIELD_Name__ is a slice of __FIELD_Element__.
-type Slice__FIELD_Name__ []__FIELD_Element__
+// Slice__FIELD_Name__Zero is the Slice__FIELD_Name__ zero value.
+var Slice__FIELD_Name__Zero = Slice__FIELD_Name__(nil)
 
 var _ Slice = Slice__FIELD_Name__(nil)
 
 /// {{if .Sort}}
 var _ sort.Interface = Slice__FIELD_Name__(nil) /// {{end}}
 
-// Append appends v to s and returns the result.
+// Slice__FIELD_Name__ is a slice of __FIELD_Element__.
+type Slice__FIELD_Name__ []__FIELD_Element__
+
+// Append implements Slice.
 func (s Slice__FIELD_Name__) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(__FIELD_Element__))
@@ -48,32 +50,27 @@ func (s Slice__FIELD_Name__) Append(v ...interface{}) Slice {
 	return s
 }
 
-// AppendSlice appends t to s and returns the result.
-func (s Slice__FIELD_Name__) AppendSlice(t Slice) Slice {
-	return append(s, t.(Slice__FIELD_Name__)...)
+// AppendSlice implements Slice.
+func (s Slice__FIELD_Name__) AppendSlice(other Slice) Slice {
+	return append(s, other.(Slice__FIELD_Name__)...)
 }
 
-// Cap returns the s capacity.
+// Cap implements Slice.
 func (s Slice__FIELD_Name__) Cap() int {
 	return cap(s)
 }
 
-// Copy copies t to s.
-func (s Slice__FIELD_Name__) Copy(t Slice) int {
-	return copy(s, t.(Slice__FIELD_Name__))
+// Copy implements Slice.
+func (s Slice__FIELD_Name__) Copy(other Slice) int {
+	return copy(s, other.(Slice__FIELD_Name__))
 }
 
-// Equals returns whether s equals v.
-func (s Slice__FIELD_Name__) Equals(v interface{}) bool {
-	var t = v.(Slice__FIELD_Name__)
-	var l = len(s)
+// Equals implements Equatable.
+func (s Slice__FIELD_Name__) Equals(other Equatable) bool {
+	var t = other.(Slice__FIELD_Name__)
 
-	if len(t) != l {
+	if len(t) != len(s) {
 		return false
-	}
-
-	if l == 0 {
-		return true
 	}
 
 	for i := range s {
@@ -85,22 +82,22 @@ func (s Slice__FIELD_Name__) Equals(v interface{}) bool {
 	return true
 }
 
-// Get returns the s element at index i.
+// Get implements Slice.
 func (s Slice__FIELD_Name__) Get(i int) interface{} {
 	return s[i]
 }
 
-// GetRange returns the slice of s from indexes i to j.
+// GetRange implements Slice.
 func (s Slice__FIELD_Name__) GetRange(i, j int) Slice {
 	return s[i:j]
 }
 
-// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+// GetRangeCap implements Slice.
 func (s Slice__FIELD_Name__) GetRangeCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
-// Len returns the s length.
+// Len implements Slice.
 func (s Slice__FIELD_Name__) Len() int {
 	return len(s)
 }
@@ -111,12 +108,17 @@ func (s Slice__FIELD_Name__) Less(i, j int) bool {
 	return s[i] < s[j]
 } /// {{end}}
 
-// Make returns a new Slice__FIELD_Name__ with length l and capacity c.
+// Make implements Slice.
 func (s Slice__FIELD_Name__) Make(l, c int) Slice {
 	return make(Slice__FIELD_Name__, l, c)
 }
 
-// Set sets the s element at index i to v.
+// NotEquals implements Equatable.
+func (s Slice__FIELD_Name__) NotEquals(other Equatable) bool {
+	return !s.Equals(other)
+}
+
+// Set implements Slice.
 func (s Slice__FIELD_Name__) Set(i int, v interface{}) {
 	s[i] = v.(__FIELD_Element__)
 }

@@ -2,14 +2,17 @@ package goo
 
 import "sort"
 
-// SliceByte is a slice of byte.
-type SliceByte []byte
+// SliceByteZero is the SliceByte zero value.
+var SliceByteZero = SliceByte(nil)
 
 var _ Slice = SliceByte(nil)
 
 var _ sort.Interface = SliceByte(nil)
 
-// Append appends v to s and returns the result.
+// SliceByte is a slice of byte.
+type SliceByte []byte
+
+// Append implements Slice.
 func (s SliceByte) Append(v ...interface{}) Slice {
 	for _, v := range v {
 		s = append(s, v.(byte))
@@ -18,32 +21,27 @@ func (s SliceByte) Append(v ...interface{}) Slice {
 	return s
 }
 
-// AppendSlice appends t to s and returns the result.
-func (s SliceByte) AppendSlice(t Slice) Slice {
-	return append(s, t.(SliceByte)...)
+// AppendSlice implements Slice.
+func (s SliceByte) AppendSlice(other Slice) Slice {
+	return append(s, other.(SliceByte)...)
 }
 
-// Cap returns the s capacity.
+// Cap implements Slice.
 func (s SliceByte) Cap() int {
 	return cap(s)
 }
 
-// Copy copies t to s.
-func (s SliceByte) Copy(t Slice) int {
-	return copy(s, t.(SliceByte))
+// Copy implements Slice.
+func (s SliceByte) Copy(other Slice) int {
+	return copy(s, other.(SliceByte))
 }
 
-// Equals returns whether s equals v.
-func (s SliceByte) Equals(v interface{}) bool {
-	var t = v.(SliceByte)
-	var l = len(s)
+// Equals implements Equatable.
+func (s SliceByte) Equals(other Equatable) bool {
+	var t = other.(SliceByte)
 
-	if len(t) != l {
+	if len(t) != len(s) {
 		return false
-	}
-
-	if l == 0 {
-		return true
 	}
 
 	for i := range s {
@@ -55,22 +53,22 @@ func (s SliceByte) Equals(v interface{}) bool {
 	return true
 }
 
-// Get returns the s element at index i.
+// Get implements Slice.
 func (s SliceByte) Get(i int) interface{} {
 	return s[i]
 }
 
-// GetRange returns the slice of s from indexes i to j.
+// GetRange implements Slice.
 func (s SliceByte) GetRange(i, j int) Slice {
 	return s[i:j]
 }
 
-// GetRangeCap returns the slice of s from indexes i to j with capacity c.
+// GetRangeCap implements Slice.
 func (s SliceByte) GetRangeCap(i, j, c int) Slice {
 	return s[i:j:c]
 }
 
-// Len returns the s length.
+// Len implements Slice.
 func (s SliceByte) Len() int {
 	return len(s)
 }
@@ -80,12 +78,17 @@ func (s SliceByte) Less(i, j int) bool {
 	return s[i] < s[j]
 }
 
-// Make returns a new SliceByte with length l and capacity c.
+// Make implements Slice.
 func (s SliceByte) Make(l, c int) Slice {
 	return make(SliceByte, l, c)
 }
 
-// Set sets the s element at index i to v.
+// NotEquals implements Equatable.
+func (s SliceByte) NotEquals(other Equatable) bool {
+	return !s.Equals(other)
+}
+
+// Set implements Slice.
 func (s SliceByte) Set(i int, v interface{}) {
 	s[i] = v.(byte)
 }
