@@ -1,5 +1,6 @@
 package goo
 
+// Integer is integer operations.
 type Integer interface {
 	Number
 
