@@ -1,24 +1,24 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo macro slice.go ../../slice_bool.go -d {"Element":"bool","Name":"Bool","Sort":false}
-//go:generate goo macro slice.go ../../slice_byte.go -d {"Element":"byte","Name":"Byte","Sort":true}
-//go:generate goo macro slice.go ../../slice_complex64.go -d {"Element":"complex64","Name":"Complex64","Sort":false}
-//go:generate goo macro slice.go ../../slice_complex128.go -d {"Element":"complex128","Name":"Complex128","Sort":false}
-//go:generate goo macro slice.go ../../slice_float32.go -d {"Element":"float32","Name":"Float32","Sort":true}
-//go:generate goo macro slice.go ../../slice_float64.go -d {"Element":"float64","Name":"Float64","Sort":true}
-//go:generate goo macro slice.go ../../slice_int.go -d {"Element":"int","Name":"Int","Sort":true}
-//go:generate goo macro slice.go ../../slice_interface.go -d {"Element":"interface{}","Name":"Interface","Sort":false}
-//go:generate goo macro slice.go ../../slice_int8.go -d {"Element":"int8","Name":"Int8","Sort":true}
-//go:generate goo macro slice.go ../../slice_int16.go -d {"Element":"int16","Name":"Int16","Sort":true}
-//go:generate goo macro slice.go ../../slice_int32.go -d {"Element":"int32","Name":"Int32","Sort":true}
-//go:generate goo macro slice.go ../../slice_int64.go -d {"Element":"int64","Name":"Int64","Sort":true}
-//go:generate goo macro slice.go ../../slice_rune.go -d {"Element":"rune","Name":"Rune","Sort":true}
-//go:generate goo macro slice.go ../../slice_string.go -d {"Element":"string","Name":"String","Sort":true}
-//go:generate goo macro slice.go ../../slice_uint.go -d {"Element":"uint","Name":"Uint","Sort":true}
-//go:generate goo macro slice.go ../../slice_uintptr.go -d {"Element":"uintptr","Name":"Uintptr","Sort":true}
-//go:generate goo macro slice.go ../../slice_uint8.go -d {"Element":"uint8","Name":"Uint8","Sort":true}
-//go:generate goo macro slice.go ../../slice_uint16.go -d {"Element":"uint16","Name":"Uint16","Sort":true}
-//go:generate goo macro slice.go ../../slice_uint32.go -d {"Element":"uint32","Name":"Uint32","Sort":true}
-//go:generate goo macro slice.go ../../slice_uint64.go -d {"Element":"uint64","Name":"Uint64","Sort":true}
+//go:generate goo macro slices.go ../../slice_bool.go -d {"Element":"bool","Name":"Bool","Sort":false}
+//go:generate goo macro slices.go ../../slice_byte.go -d {"Element":"byte","Name":"Byte","Sort":true}
+//go:generate goo macro slices.go ../../slice_complex64.go -d {"Element":"complex64","Name":"Complex64","Sort":false}
+//go:generate goo macro slices.go ../../slice_complex128.go -d {"Element":"complex128","Name":"Complex128","Sort":false}
+//go:generate goo macro slices.go ../../slice_float32.go -d {"Element":"float32","Name":"Float32","Sort":true}
+//go:generate goo macro slices.go ../../slice_float64.go -d {"Element":"float64","Name":"Float64","Sort":true}
+//go:generate goo macro slices.go ../../slice_int.go -d {"Element":"int","Name":"Int","Sort":true}
+//go:generate goo macro slices.go ../../slice_interface.go -d {"Element":"interface{}","Name":"Interface","Sort":false}
+//go:generate goo macro slices.go ../../slice_int8.go -d {"Element":"int8","Name":"Int8","Sort":true}
+//go:generate goo macro slices.go ../../slice_int16.go -d {"Element":"int16","Name":"Int16","Sort":true}
+//go:generate goo macro slices.go ../../slice_int32.go -d {"Element":"int32","Name":"Int32","Sort":true}
+//go:generate goo macro slices.go ../../slice_int64.go -d {"Element":"int64","Name":"Int64","Sort":true}
+//go:generate goo macro slices.go ../../slice_rune.go -d {"Element":"rune","Name":"Rune","Sort":true}
+//go:generate goo macro slices.go ../../slice_string.go -d {"Element":"string","Name":"String","Sort":true}
+//go:generate goo macro slices.go ../../slice_uint.go -d {"Element":"uint","Name":"Uint","Sort":true}
+//go:generate goo macro slices.go ../../slice_uintptr.go -d {"Element":"uintptr","Name":"Uintptr","Sort":true}
+//go:generate goo macro slices.go ../../slice_uint8.go -d {"Element":"uint8","Name":"Uint8","Sort":true}
+//go:generate goo macro slices.go ../../slice_uint16.go -d {"Element":"uint16","Name":"Uint16","Sort":true}
+//go:generate goo macro slices.go ../../slice_uint32.go -d {"Element":"uint32","Name":"Uint32","Sort":true}
+//go:generate goo macro slices.go ../../slice_uint64.go -d {"Element":"uint64","Name":"Uint64","Sort":true}
 
 package goo
 
