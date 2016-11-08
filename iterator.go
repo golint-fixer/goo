@@ -1,8 +1,11 @@
 package goo
 
+// Iterator iterates a sequence of elements.
 type Iterator interface {
+	// More returns whether there is a next element.
 	More() bool
 
+	// Next returns the next element.
 	Next() interface{}
 }
 
