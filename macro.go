@@ -8,6 +8,7 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -33,6 +34,7 @@ var (
 	macroLonghand    = regexp.MustCompile("(?m:^__X_(" + macroIdentifierContent + ")__$)")
 	macroMethods     = regexp.MustCompile("METHODS_(" + macroIdentifierContent + ")_ENDMETHODS")
 	macroMultiLine   = regexp.MustCompile(`(?s:\/\*\*(.*?)\*\*\/)`)
+	macroPackage     = regexp.MustCompile(`(?m:^)\w+(?m:$)`)
 	macroShorthand   = regexp.MustCompile("(?m:^__(" + macroIdentifierContent + ")__$)")
 	macroUnderscoreR = regexp.MustCompile("_")
 )
@@ -47,12 +49,6 @@ var (
 	macroSpace           = []byte(" ")
 	macroUnderscoreB     = []byte("_")
 	macroUnderscores     = []byte("__")
-)
-
-var (
-	macroTransformerIdentifier         = regexp.MustCompile(`(?m:^)\w+(?m:$)`)
-	macroTransformerIdentifierExported = regexp.MustCompile(`(?m:^)[A-Z]\w*(?m:$)`)
-	macroTransformerQualified          = regexp.MustCompile(`(?m:^)(?:([\w.]+(?:\/[\w.]+)*)\.)?([\w.]+)(?m:$)`)
 )
 
 var macroAliases = map[string][]byte{
@@ -126,7 +122,7 @@ var macroSyms = map[string][]byte{
 	"LPAREN":      []byte("("),
 	"MINUS":       []byte("-"),
 	"NUMBER":      []byte("#"),
-	"PERCENT":     []byte("%"),
+	"PERCENT":     []byte(`%`),
 	"PERIOD":      []byte("."),
 	"PIPE":        []byte("|"),
 	"PLUS":        []byte("+"),
@@ -142,107 +138,27 @@ var macroSyms = map[string][]byte{
 	"UNDERSCORE":  []byte("_"),
 }
 
-func macroFieldsFunc(bs []byte) []byte {
-	return append([]byte("."), macroUnderscoreR.ReplaceAll(macroFields.FindSubmatch(bs)[1], macroDot)...)
+// MacroFormat returns input formatted with go/format.
+func MacroFormat(input []byte) ([]byte, error) {
+	return format.Source(input)
 }
 
-func macroKeysFunc(bs []byte) []byte {
-	return append([]byte("."), macroUnderscoreR.ReplaceAll(macroKeys.FindSubmatch(bs)[1], macroDot)...)
-}
-
-func macroMethodsFunc(bs []byte) []byte {
-	return append([]byte("."), macroUnderscoreR.ReplaceAll(macroMethods.FindSubmatch(bs)[1], macroDot)...)
-}
-
-func macroEscapeFunc(bs []byte) []byte {
-	return macroPlaceholder
-}
-
-func macroEscapeXFunc(bs []byte) []byte {
-	return macroPlaceholderX
-}
-
-func macroPreprocess(bs []byte) []byte {
-	var escapes = macroEscape.FindAll(bs, -1)
-	var escapesX = macroEscapeX.FindAll(bs, -1)
-
-	bs = macroEscape.ReplaceAllFunc(bs, macroEscapeFunc)
-	bs = macroEscapeX.ReplaceAllFunc(bs, macroEscapeXFunc)
-	bs = macroLonghand.ReplaceAll(bs, macroDollarOne)
-	bs = macroShorthand.ReplaceAll(bs, macroDollarOneBraces)
-
-	for call, f := range macroSpecials {
-		bs = call.ReplaceAllFunc(bs, f)
-	}
-
-	for call, result := range macroFuncs {
-		bs = call.ReplaceAll(bs, result)
-	}
-
-	for short, long := range macroAliases {
-		bs = bytes.Replace(bs, []byte(short), long, -1)
-	}
-
-	bs = bytes.TrimPrefix(bs, macroUnderscores)
-	bs = bytes.TrimSuffix(bs, macroUnderscores)
-	bs = bytes.Replace(bs, macroUnderscoreB, macroSpace, -1)
-
-	for name, symbol := range macroSyms {
-		bs = bytes.Replace(bs, []byte(name), symbol, -1)
-	}
-
-	bs = macroEscaped.ReplaceAllFunc(bs, func([]byte) []byte {
-		var bs = escapes[0]
-
-		escapes = escapes[1:]
-
-		return macroEscape.ReplaceAll(bs, macroDollarOne)
-	})
-
-	bs = macroEscapedX.ReplaceAllFunc(bs, func([]byte) []byte {
-		var bs = escapesX[0]
-
-		escapesX = escapesX[1:]
-
-		return macroEscapeX.ReplaceAll(bs, macroDollarOne)
-	})
-
-	return bs
-}
-
-// Macro calls MacroPreprocess, MacroProcess, and then MacroFormat with file and
-// returns the result.
-func Macro(name string, file []byte, data interface{}) ([]byte, error) {
-	file, err := MacroProcess(name, MacroPreprocess(file), data)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return MacroFormat(file)
-}
-
-// MacroFormat returns file formatted with go/format.
-func MacroFormat(file []byte) ([]byte, error) {
-	return format.Source(file)
-}
-
-// MacroPreprocess returns file with generate comments stripped, identifiers of
+// MacroPreprocess returns input with generate comments stripped, identifiers of
 // the form __My_ID__ renamed to {{.My_ID}}, and single-line comments beginning
 // with a slash and multi-line comments beginning and ending with an asterisk
 // replaced with their content.
-func MacroPreprocess(file []byte) []byte {
-	file = macroGenerate.ReplaceAll(file, macroEmpty)
-	file = macroIdentifier.ReplaceAllFunc(file, macroPreprocess)
-	file = macroLine.ReplaceAll(file, macroDollarOne)
-	file = macroMultiLine.ReplaceAll(file, macroDollarOne)
+func MacroPreprocess(input []byte) []byte {
+	input = macroGenerate.ReplaceAll(input, macroEmpty)
+	input = macroIdentifier.ReplaceAllFunc(input, macroPreprocess)
+	input = macroLine.ReplaceAll(input, macroDollarOne)
+	input = macroMultiLine.ReplaceAll(input, macroDollarOne)
 
-	return file
+	return input
 }
 
-// MacroProcess returns file ran as a text/template with name and data.
-func MacroProcess(name string, file []byte, data interface{}) ([]byte, error) {
-	var t, err = template.New(name).Parse(string(file))
+// MacroProcess returns input ran as a text/template with name and data.
+func MacroProcess(name string, input []byte, data interface{}) ([]byte, error) {
+	var t, err = template.New(name).Parse(string(input))
 
 	if err != nil {
 		return nil, err
@@ -257,7 +173,13 @@ func MacroProcess(name string, file []byte, data interface{}) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func macroCommentGroupStrings(cg *ast.CommentGroup) []string {
+// MacroRun calls MacroPreprocess, MacroProcess, and then MacroFormat with input
+// and returns the result.
+func MacroRun(name string, input []byte, data interface{}) ([]byte, error) {
+	return (&Macro{Data: data, Name: name}).Run(input)
+}
+
+func macroCommentGroup(cg *ast.CommentGroup) []string {
 	if cg == nil {
 		return nil
 	}
@@ -269,6 +191,14 @@ func macroCommentGroupStrings(cg *ast.CommentGroup) []string {
 	}
 
 	return cs
+}
+
+func macroEscapeFunc(bs []byte) []byte {
+	return macroPlaceholder
+}
+
+func macroEscapeXFunc(bs []byte) []byte {
+	return macroPlaceholderX
 }
 
 func macroExprString(e ast.Expr) string {
@@ -372,26 +302,225 @@ func macroExprString(e ast.Expr) string {
 	}
 }
 
-type MacroInterface struct {
-	Doc       []string
-	Initial   string
-	Methods   []*MacroMethod
-	Name      string
-	Package   string
-	Qualifier string
+func macroFieldsFunc(bs []byte) []byte {
+	return append([]byte("."), macroUnderscoreR.ReplaceAll(macroFields.FindSubmatch(bs)[1], macroDot)...)
 }
 
-func NewMacroInterface(interfacePackage, interfaceName string) (*MacroInterface, error) {
-	var bp, err = build.Import(interfacePackage, "", 0)
+func macroKeysFunc(bs []byte) []byte {
+	return append([]byte("."), macroUnderscoreR.ReplaceAll(macroKeys.FindSubmatch(bs)[1], macroDot)...)
+}
+
+func macroMethodsFunc(bs []byte) []byte {
+	return append([]byte("."), macroUnderscoreR.ReplaceAll(macroMethods.FindSubmatch(bs)[1], macroDot)...)
+}
+
+func macroPreprocess(bs []byte) []byte {
+	var escapes = macroEscape.FindAll(bs, -1)
+	var escapesX = macroEscapeX.FindAll(bs, -1)
+
+	bs = macroEscape.ReplaceAllFunc(bs, macroEscapeFunc)
+	bs = macroEscapeX.ReplaceAllFunc(bs, macroEscapeXFunc)
+	bs = macroLonghand.ReplaceAll(bs, macroDollarOne)
+	bs = macroShorthand.ReplaceAll(bs, macroDollarOneBraces)
+
+	for call, f := range macroSpecials {
+		bs = call.ReplaceAllFunc(bs, f)
+	}
+
+	for call, result := range macroFuncs {
+		bs = call.ReplaceAll(bs, result)
+	}
+
+	for short, long := range macroAliases {
+		bs = bytes.Replace(bs, []byte(short), long, -1)
+	}
+
+	bs = bytes.TrimPrefix(bs, macroUnderscores)
+	bs = bytes.TrimSuffix(bs, macroUnderscores)
+	bs = bytes.Replace(bs, macroUnderscoreB, macroSpace, -1)
+
+	for name, symbol := range macroSyms {
+		bs = bytes.Replace(bs, []byte(name), symbol, -1)
+	}
+
+	bs = macroEscaped.ReplaceAllFunc(bs, func([]byte) []byte {
+		var bs = escapes[0]
+
+		escapes = escapes[1:]
+
+		return macroEscape.ReplaceAll(bs, macroDollarOne)
+	})
+
+	bs = macroEscapedX.ReplaceAllFunc(bs, func([]byte) []byte {
+		var bs = escapesX[0]
+
+		escapesX = escapesX[1:]
+
+		return macroEscapeX.ReplaceAll(bs, macroDollarOne)
+	})
+
+	return bs
+}
+
+type Macro struct {
+	Data              interface{}
+	DisableFormat     bool
+	DisablePreprocess bool
+	DisableProcess    bool
+	Name              string
+}
+
+func (m *Macro) Run(input []byte) ([]byte, error) {
+	var err error
+
+	if m.DisablePreprocess {
+		return input, nil
+	}
+
+	input = MacroPreprocess(input)
+
+	if m.DisableProcess {
+		return input, nil
+	}
+
+	if input, err = MacroProcess(m.Name, input, m.Data); err != nil {
+		return nil, fmt.Errorf("cannot process macro: %v", err)
+	}
+
+	if m.DisableFormat {
+		return input, nil
+	}
+
+	if input, err = MacroFormat(input); err != nil {
+		return nil, fmt.Errorf("cannot format macro: %v", err)
+	}
+
+	return input, nil
+}
+
+type MacroInput struct {
+	Macro
+	Input string
+}
+
+func (m *MacroInput) Run() ([]byte, error) {
+	var input, err = ioutil.ReadFile(m.Input)
 
 	if err != nil {
-		return nil, fmt.Errorf("cannot find package %v: %v", interfacePackage, err)
+		return nil, fmt.Errorf("cannot read %v: %v", m.Input, err)
+	}
+
+	m.Name = m.Input
+
+	return m.Macro.Run(input)
+}
+
+type MacroInputOutput struct {
+	Macro
+	Input  string
+	Output string
+}
+
+func (m *MacroInputOutput) Run() error {
+	var input, err = ioutil.ReadFile(m.Input)
+
+	if err != nil {
+		return fmt.Errorf("cannot read %v: %v", m.Input, err)
+	}
+
+	m.Name = m.Input
+
+	output, err := m.Macro.Run(input)
+
+	if err != nil {
+		return err
+	}
+
+	if err := ioutil.WriteFile(m.Output, output, 0644); err != nil {
+		return fmt.Errorf("cannot write %v: %v", m.Output, err)
+	}
+
+	return nil
+}
+
+type MacroInterface struct {
+	InterfaceMethods          []*MacroMethod
+	InterfaceName             string
+	InterfacePackageName      string
+	InterfacePackagePath      string
+	InterfacePackageQualifier string
+	InterfaceVar              string
+	Output                    string
+	ReceiverAddress           string
+	ReceiverIdentifier        string
+	ReceiverPackageName       string
+	ReceiverPointer           string
+	ReceiverType              string
+}
+
+func (m *MacroInterface) Init() error {
+	if m.ReceiverIdentifier == "" {
+		var r, err = m.receiver()
+
+		if err != nil {
+			return err
+		}
+
+		m.ReceiverIdentifier = r
+	}
+
+	if m.InterfaceMethods == nil {
+		var ms, err = m.methods()
+
+		if err != nil {
+			return err
+		}
+
+		m.InterfaceMethods = ms
+	}
+
+	if m.InterfaceVar == "" {
+		var i, _ = utf8.DecodeRuneInString(strings.ToLower(m.InterfaceName))
+
+		m.InterfaceVar = fmt.Sprintf("%c", i)
+	}
+
+	if m.Output == "" {
+		m.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(m.ReceiverType), strings.ToLower(m.InterfaceName))
+	}
+
+	var outputPackageName, outputPackagePath, err = m.filePackage(m.Output)
+
+	if err != nil {
+		return err
+	}
+
+	if m.ReceiverPackageName == "" {
+		m.ReceiverPackageName = outputPackageName
+	}
+
+	if m.InterfacePackageQualifier == "" && m.InterfacePackagePath != outputPackagePath {
+		m.InterfacePackageQualifier = m.InterfacePackageName + "."
+	}
+
+	return nil
+}
+
+func (m *MacroInterface) methods() ([]*MacroMethod, error) {
+	var bp, err = build.Import(m.InterfacePackagePath, "", 0)
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot find package %v: %v", m.InterfacePackagePath, err)
+	}
+
+	if m.InterfacePackageName == "" {
+		m.InterfacePackageName = bp.Name
 	}
 
 	aps, err := parser.ParseDir(token.NewFileSet(), bp.Dir, nil, parser.ParseComments)
 
 	if err != nil {
-		return nil, fmt.Errorf("cannot parse package %v: %v", interfacePackage, err)
+		return nil, fmt.Errorf("cannot parse package %v: %v", m.InterfacePackagePath, err)
 	}
 
 	var match *ast.TypeSpec
@@ -423,7 +552,7 @@ func NewMacroInterface(interfacePackage, interfaceName string) (*MacroInterface,
 					continue
 				}
 
-				if t.Name.Name == interfaceName {
+				if t.Name.Name == m.InterfaceName {
 					match = t
 
 					return false
@@ -444,22 +573,14 @@ func NewMacroInterface(interfacePackage, interfaceName string) (*MacroInterface,
 		panic(match.Type)
 	}
 
-	var initial, _ = utf8.DecodeRuneInString(strings.ToLower(match.Name.Name))
+	var methods []*MacroMethod
 
-	var mi = &MacroInterface{
-		Doc:       macroCommentGroupStrings(match.Doc),
-		Initial:   fmt.Sprintf("%c", initial),
-		Name:      match.Name.Name,
-		Package:   interfacePackage,
-		Qualifier: bp.Name,
-	}
-
-	for _, m := range it.Methods.List {
+	for _, method := range it.Methods.List {
 		// TODO: Handle embedded interfaces.
-		var f, ok = m.Type.(*ast.FuncType)
+		var f, ok = method.Type.(*ast.FuncType)
 
 		if !ok {
-			panic(m.Type)
+			panic(method.Type)
 		}
 
 		var pfs, rfs []*MacroVar
@@ -495,176 +616,71 @@ func NewMacroInterface(interfacePackage, interfaceName string) (*MacroInterface,
 			}
 		}
 
-		mi.Methods = append(mi.Methods, &MacroMethod{
-			Doc:            macroCommentGroupStrings(m.Doc),
-			Interface:      mi,
-			Name:           m.Names[0].Name,
+		methods = append(methods, &MacroMethod{
+			Doc:            macroCommentGroup(method.Doc),
+			Name:           method.Names[0].Name,
 			ParamsFlat:     pfs,
 			ParamsGrouped:  pgs,
+			Receiver:       m.ReceiverIdentifier,
 			ResultsFlat:    rfs,
 			ResultsGrouped: rgs,
 		})
 	}
 
-	return mi, nil
+	return methods, nil
 }
 
-type MacroMethod struct {
-	Doc            []string
-	Interface      *MacroInterface
-	Name           string
-	ParamsFlat     []*MacroVar
-	ParamsGrouped  []*MacroVars
-	Receiver       string
-	ResultsFlat    []*MacroVar
-	ResultsGrouped []*MacroVars
-}
-
-type MacroTransformer struct {
-	Identifier  string
-	Interface   string
-	Output      string
-	Package     string
-	SkipFormat  bool
-	SkipProcess bool
-	Type        string
-	Value       bool
-}
-
-func (t *MacroTransformer) Transform(input []byte) error {
-	var s = macroTransformerQualified.FindStringSubmatch(t.Interface)
-
-	if len(s) != 3 {
-		return fmt.Errorf("type %v is invalid", t.Interface)
-	}
-
-	var qualifiedPackage, qualifiedType = s[1], s[2]
-
-	if !macroTransformerIdentifierExported.MatchString(qualifiedType) {
-		return fmt.Errorf("type %v is invalid", qualifiedType)
-	}
-
-	var mi, err = NewMacroInterface(qualifiedPackage, qualifiedType)
+func (m *MacroInterface) filePackage(file string) (name, path string, err error) {
+	abs, err := filepath.Abs(file)
 
 	if err != nil {
-		return fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
+		return "", "", fmt.Errorf("cannot get absolute path for %v: %v", file, err)
 	}
 
-	if t.Identifier == "" {
-		var r, err = t.receiver()
+	var dir = filepath.Dir(abs)
 
-		if err != nil {
-			return err
+	if p, err := build.ImportDir(dir, 0); err == nil {
+		return p.Name, p.ImportPath, nil
+	}
+
+	if p := os.Getenv("GOPATH"); p != "" && filepath.IsAbs(p) && filepath.HasPrefix(abs, p) {
+		var names = strings.Split(strings.TrimPrefix(abs, p), fmt.Sprintf("%c", filepath.Separator))
+		var name = names[len(names)-1]
+		var path = strings.Join(names[1:], fmt.Sprintf("%c", filepath.Separator))
+
+		if macroPackage.MatchString(name) {
+			return name, path, nil
 		}
-
-		t.Identifier = r
 	}
 
-	if t.Output == "" {
-		t.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(t.Type), strings.ToLower(qualifiedType))
+	if b := filepath.Base(dir); macroPackage.MatchString(b) {
+		return b, "", nil
 	}
 
-	outputAbs, err := filepath.Abs(t.Output)
-
-	if err != nil {
-		return fmt.Errorf("cannot get absolute path for %v: %v", t.Output, err)
-	}
-
-	var outputAbsDir = filepath.Dir(outputAbs)
-	var packageName, packagePath string
-
-	if p, err := build.ImportDir(outputAbsDir, 0); err == nil {
-		packageName = p.Name
-		packagePath = p.ImportPath
-	} else if b := filepath.Base(outputAbsDir); macroTransformerIdentifier.MatchString(b) {
-		packageName = b
-	} else {
-		packageName = "main"
-	}
-
-	if t.Package == "" {
-		t.Package = packageName
-	}
-
-	if qualifiedPackage == "" || qualifiedPackage == packagePath {
-		mi.Package = ""
-		mi.Qualifier = ""
-	}
-
-	for _, m := range mi.Methods {
-		m.Receiver = t.Identifier
-	}
-
-	input = MacroPreprocess(input)
-
-	if t.SkipProcess {
-		return t.writeFile(t.Output, input)
-	}
-
-	input, err = MacroProcess(t.Output, input, &MacroType{
-		Interface: mi,
-		Name:      t.Type,
-		Package:   t.Package,
-		Pointer:   !t.Value,
-		Receiver:  t.Identifier,
-	})
-
-	if err != nil {
-		return fmt.Errorf("cannot process macro: %v", err)
-	}
-
-	if t.SkipFormat {
-		return t.writeFile(t.Output, input)
-	}
-
-	input, err = MacroFormat(input)
-
-	if err != nil {
-		return fmt.Errorf("cannot format macro: %v", err)
-	}
-
-	return t.writeFile(t.Output, input)
+	return "main", "", nil
 }
 
-func (t *MacroTransformer) receiver() (string, error) {
-	var s = macroTransformerQualified.FindStringSubmatch(t.Interface)
-
-	if len(s) != 3 {
-		return "", fmt.Errorf("type %v is invalid", t.Interface)
-	}
-
-	var qualifiedPackage, qualifiedType = s[1], s[2]
-
-	if !macroTransformerIdentifierExported.MatchString(qualifiedType) {
-		return "", fmt.Errorf("type %v is invalid", qualifiedType)
-	}
-
-	var mi, err = NewMacroInterface(qualifiedPackage, qualifiedType)
-
-	if err != nil {
-		return "", fmt.Errorf("cannot parse interface %v: %v", t.Interface, err)
-	}
-
+func (m *MacroInterface) receiver() (string, error) {
 	var names = map[string]struct{}{}
 
-	for _, m := range mi.Methods {
-		for _, p := range m.ParamsFlat {
+	for _, method := range m.InterfaceMethods {
+		for _, p := range method.ParamsFlat {
 			names[p.Name] = struct{}{}
 		}
 
-		for _, r := range m.ResultsFlat {
+		for _, r := range method.ResultsFlat {
 			names[r.Name] = struct{}{}
 		}
 	}
 
-	var words = camelcase.Split(t.Type)
+	var words = camelcase.Split(m.ReceiverType)
 	var initials []string
 
 	for i, word := range words {
 		var r, _ = utf8.DecodeRuneInString(word)
 
 		if r == utf8.RuneError {
-			return "", fmt.Errorf("type %v is invalid: invalid utf8 string", t.Type)
+			return "", fmt.Errorf("type %v is invalid: invalid utf8 string", m.ReceiverType)
 		}
 
 		initials = append(initials, strings.ToLower(fmt.Sprintf("%c", r)))
@@ -698,33 +714,33 @@ func (t *MacroTransformer) receiver() (string, error) {
 	return name, nil
 }
 
-func (t *MacroTransformer) writeFile(path string, bs []byte) error {
-	var file, err = os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+type MacroMethod struct {
+	Doc            []string
+	Name           string
+	ParamsFlat     []*MacroVar
+	ParamsGrouped  []*MacroVars
+	Receiver       string
+	ResultsFlat    []*MacroVar
+	ResultsGrouped []*MacroVars
+}
+
+type MacroOutput struct {
+	Macro
+	Output string
+}
+
+func (m *MacroOutput) Run(input []byte) error {
+	var output, err = m.Macro.Run(input)
 
 	if err != nil {
-		return fmt.Errorf("cannot open %v: %v", path, err)
+		return err
 	}
 
-	if n, err := file.Write(bs); err != nil {
-		return fmt.Errorf("cannot write %v: %v", path, err)
-	} else if n != len(bs) {
-		return fmt.Errorf("cannot write %v: %v bytes not written", path, len(bs)-n)
-	}
-
-	if err := file.Close(); err != nil {
-		return fmt.Errorf("cannot close %v: %v", path, err)
+	if err := ioutil.WriteFile(m.Output, output, 0644); err != nil {
+		return fmt.Errorf("cannot write %v: %v", m.Output, err)
 	}
 
 	return nil
-}
-
-type MacroType struct {
-	Doc       []string
-	Interface *MacroInterface
-	Name      string
-	Package   string
-	Pointer   bool
-	Receiver  string
 }
 
 type MacroVar struct {
