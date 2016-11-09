@@ -32,7 +32,7 @@ func (s SliceInterface) Copy(other Slice) int {
 	return copy(s, other.(SliceInterface))
 }
 
-// Equals implements Equatable.
+// Equals implements Slice.
 func (s SliceInterface) Equals(other Equatable) bool {
 	var t = other.(SliceInterface)
 
@@ -74,7 +74,7 @@ func (s SliceInterface) Make(l, c int) Slice {
 	return make(SliceInterface, l, c)
 }
 
-// NotEquals implements Equatable.
+// NotEquals implements Slice.
 func (s SliceInterface) NotEquals(other Equatable) bool {
 	return !s.Equals(other)
 }

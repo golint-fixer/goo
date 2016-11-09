@@ -32,7 +32,7 @@ func (s SliceComplex128) Copy(other Slice) int {
 	return copy(s, other.(SliceComplex128))
 }
 
-// Equals implements Equatable.
+// Equals implements Slice.
 func (s SliceComplex128) Equals(other Equatable) bool {
 	var t = other.(SliceComplex128)
 
@@ -74,7 +74,7 @@ func (s SliceComplex128) Make(l, c int) Slice {
 	return make(SliceComplex128, l, c)
 }
 
-// NotEquals implements Equatable.
+// NotEquals implements Slice.
 func (s SliceComplex128) NotEquals(other Equatable) bool {
 	return !s.Equals(other)
 }

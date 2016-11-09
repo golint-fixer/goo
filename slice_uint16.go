@@ -36,7 +36,7 @@ func (s SliceUint16) Copy(other Slice) int {
 	return copy(s, other.(SliceUint16))
 }
 
-// Equals implements Equatable.
+// Equals implements Slice.
 func (s SliceUint16) Equals(other Equatable) bool {
 	var t = other.(SliceUint16)
 
@@ -83,7 +83,7 @@ func (s SliceUint16) Make(l, c int) Slice {
 	return make(SliceUint16, l, c)
 }
 
-// NotEquals implements Equatable.
+// NotEquals implements Slice.
 func (s SliceUint16) NotEquals(other Equatable) bool {
 	return !s.Equals(other)
 }

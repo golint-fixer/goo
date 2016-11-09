@@ -65,7 +65,7 @@ func (s Slice__FIELD_Name__) Copy(other Slice) int {
 	return copy(s, other.(Slice__FIELD_Name__))
 }
 
-// Equals implements Equatable.
+// Equals implements Slice.
 func (s Slice__FIELD_Name__) Equals(other Equatable) bool {
 	var t = other.(Slice__FIELD_Name__)
 
@@ -113,7 +113,7 @@ func (s Slice__FIELD_Name__) Make(l, c int) Slice {
 	return make(Slice__FIELD_Name__, l, c)
 }
 
-// NotEquals implements Equatable.
+// NotEquals implements Slice.
 func (s Slice__FIELD_Name__) NotEquals(other Equatable) bool {
 	return !s.Equals(other)
 }
