@@ -10,6 +10,25 @@ func (m MapComplex128Int) Delete(k interface{}) {
 	delete(m, k.(complex128))
 }
 
+// Equals implements Map.
+func (m MapComplex128Int) Equals(other Equatable) bool {
+	var n = other.(MapComplex128Int)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Get implements Map.
 func (m MapComplex128Int) Get(k interface{}) interface{} {
 	return m[k.(complex128)]
@@ -52,6 +71,11 @@ func (m MapComplex128Int) Len() int {
 // Make implements Map.
 func (m MapComplex128Int) Make(c int) Map {
 	return make(MapComplex128Int, c)
+}
+
+// NotEquals implements Map.
+func (m MapComplex128Int) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

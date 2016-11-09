@@ -10,6 +10,25 @@ func (m MapInt64String) Delete(k interface{}) {
 	delete(m, k.(int64))
 }
 
+// Equals implements Map.
+func (m MapInt64String) Equals(other Equatable) bool {
+	var n = other.(MapInt64String)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Get implements Map.
 func (m MapInt64String) Get(k interface{}) interface{} {
 	return m[k.(int64)]
@@ -52,6 +71,11 @@ func (m MapInt64String) Len() int {
 // Make implements Map.
 func (m MapInt64String) Make(c int) Map {
 	return make(MapInt64String, c)
+}
+
+// NotEquals implements Map.
+func (m MapInt64String) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

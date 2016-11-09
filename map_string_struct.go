@@ -10,6 +10,25 @@ func (m MapStringStruct) Delete(k interface{}) {
 	delete(m, k.(string))
 }
 
+// Equals implements Map.
+func (m MapStringStruct) Equals(other Equatable) bool {
+	var n = other.(MapStringStruct)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Get implements Map.
 func (m MapStringStruct) Get(k interface{}) interface{} {
 	return m[k.(string)]
@@ -52,6 +71,11 @@ func (m MapStringStruct) Len() int {
 // Make implements Map.
 func (m MapStringStruct) Make(c int) Map {
 	return make(MapStringStruct, c)
+}
+
+// NotEquals implements Map.
+func (m MapStringStruct) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

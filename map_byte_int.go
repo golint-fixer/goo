@@ -10,6 +10,25 @@ func (m MapByteInt) Delete(k interface{}) {
 	delete(m, k.(byte))
 }
 
+// Equals implements Map.
+func (m MapByteInt) Equals(other Equatable) bool {
+	var n = other.(MapByteInt)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Get implements Map.
 func (m MapByteInt) Get(k interface{}) interface{} {
 	return m[k.(byte)]
@@ -52,6 +71,11 @@ func (m MapByteInt) Len() int {
 // Make implements Map.
 func (m MapByteInt) Make(c int) Map {
 	return make(MapByteInt, c)
+}
+
+// NotEquals implements Map.
+func (m MapByteInt) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

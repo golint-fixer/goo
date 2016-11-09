@@ -103,6 +103,7 @@ package goo
 /// {{if false}}
 type __FIELD_KeyType__ interface{}
 type __FIELD_ValueType__ interface{}
+type Equatable interface{}
 type Map interface{} /// {{end}}
 
 var _ Map = Map__FIELD_Key____FIELD_Value__(nil)
@@ -113,6 +114,25 @@ type Map__FIELD_Key____FIELD_Value__ map[__FIELD_KeyType__]__FIELD_ValueType__
 // Delete implements Map.
 func (m Map__FIELD_Key____FIELD_Value__) Delete(k interface{}) {
 	delete(m, k.(__FIELD_KeyType__))
+}
+
+// Equals implements Map.
+func (m Map__FIELD_Key____FIELD_Value__) Equals(other Equatable) bool {
+	var n = other.(Map__FIELD_Key____FIELD_Value__)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
 }
 
 // Get implements Map.
@@ -157,6 +177,11 @@ func (m Map__FIELD_Key____FIELD_Value__) Len() int {
 // Make implements Map.
 func (m Map__FIELD_Key____FIELD_Value__) Make(c int) Map {
 	return make(Map__FIELD_Key____FIELD_Value__, c)
+}
+
+// NotEquals implements Map.
+func (m Map__FIELD_Key____FIELD_Value__) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

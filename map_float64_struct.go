@@ -10,6 +10,25 @@ func (m MapFloat64Struct) Delete(k interface{}) {
 	delete(m, k.(float64))
 }
 
+// Equals implements Map.
+func (m MapFloat64Struct) Equals(other Equatable) bool {
+	var n = other.(MapFloat64Struct)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Get implements Map.
 func (m MapFloat64Struct) Get(k interface{}) interface{} {
 	return m[k.(float64)]
@@ -52,6 +71,11 @@ func (m MapFloat64Struct) Len() int {
 // Make implements Map.
 func (m MapFloat64Struct) Make(c int) Map {
 	return make(MapFloat64Struct, c)
+}
+
+// NotEquals implements Map.
+func (m MapFloat64Struct) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

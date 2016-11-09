@@ -10,6 +10,25 @@ func (m MapComplex64Int) Delete(k interface{}) {
 	delete(m, k.(complex64))
 }
 
+// Equals implements Map.
+func (m MapComplex64Int) Equals(other Equatable) bool {
+	var n = other.(MapComplex64Int)
+
+	if len(n) != len(m) {
+		return false
+	}
+
+	for k, v := range m {
+		if nv, ok := n[k]; !ok {
+			return false
+		} else if nv != v {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Get implements Map.
 func (m MapComplex64Int) Get(k interface{}) interface{} {
 	return m[k.(complex64)]
@@ -52,6 +71,11 @@ func (m MapComplex64Int) Len() int {
 // Make implements Map.
 func (m MapComplex64Int) Make(c int) Map {
 	return make(MapComplex64Int, c)
+}
+
+// NotEquals implements Map.
+func (m MapComplex64Int) NotEquals(other Equatable) bool {
+	return !m.Equals(other)
 }
 
 // Set implements Map.

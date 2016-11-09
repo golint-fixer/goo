@@ -2,6 +2,8 @@ package goo
 
 // Map is a map.
 type Map interface {
+	Equatable
+
 	// Delete deletes k.
 	Delete(k interface{})
 
