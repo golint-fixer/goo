@@ -21,16 +21,16 @@ type Slice interface {
 	// Get returns the element at index i.
 	Get(i int) interface{}
 
-	// GetRange returns a Slice from index i to index j.
+	// GetRange returns a slice from index i to index j.
 	GetRange(i, j int) Slice
 
-	// GetRangeCap returns a Slice from index i to index j with capacity c.
+	// GetRangeCap returns a slice from index i to index j with capacity c.
 	GetRangeCap(i, j, c int) Slice
 
 	// Len returns the length.
 	Len() int
 
-	// Make returns a new Slice with length l and capacity c.
+	// Make returns a new slice with length l and capacity c.
 	Make(l, c int) Slice
 
 	// Set sets the element at index i to v.
