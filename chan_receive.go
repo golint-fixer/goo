@@ -1,14 +1,20 @@
 package goo
 
+// ChanReceive is a receive channel.
 type ChanReceive interface {
+	// Cap returns the capacity.
 	Cap() int
 
+	// Len returns the length.
 	Len() int
 
+	// Make returns a new chan with capacity c.
 	Make(c int) Chan
 
+	// Receive returns the next element.
 	Receive() interface{}
 
+	// ReceiveCheck returns the next element and whether there is a next element.
 	ReceiveCheck() (interface{}, bool)
 }
 

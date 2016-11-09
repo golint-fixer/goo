@@ -1,22 +1,32 @@
 package goo
 
+// Chan is a channel.
 type Chan interface {
+	// Cap returns the capacity.
 	Cap() int
 
+	// ChanReceive returns the receive channel.
 	ChanReceive() ChanReceive
 
+	// ChanSend returns the send channel.
 	ChanSend() ChanSend
 
+	// Close closes.
 	Close()
 
+	// Len returns the length.
 	Len() int
 
+	// Make returns a new chan with capacity c.
 	Make(c int) Chan
 
+	// Receive returns the next element.
 	Receive() interface{}
 
+	// ReceiveCheck returns the next element and whether there is a next element.
 	ReceiveCheck() (interface{}, bool)
 
+	// Send sends v.
 	Send(v interface{})
 }
 
