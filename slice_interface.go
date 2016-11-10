@@ -32,6 +32,11 @@ func (s SliceInterface) Copy(other Slice) int {
 	return copy(s, other.(SliceInterface))
 }
 
+// Dereference implements Slice.
+func (s *SliceInterface) Dereference() Value {
+	return *s
+}
+
 // Equals implements Slice.
 func (s SliceInterface) Equals(other Equatable) bool {
 	var t = other.(SliceInterface)
@@ -77,6 +82,11 @@ func (s SliceInterface) Make(l, c int) Slice {
 // NotEquals implements Slice.
 func (s SliceInterface) NotEquals(other Equatable) bool {
 	return !s.Equals(other)
+}
+
+// Reference implements Slice.
+func (s SliceInterface) Reference() Pointer {
+	return &s
 }
 
 // Set implements Slice.

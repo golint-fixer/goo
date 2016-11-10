@@ -28,7 +28,9 @@ import "sort" /// {{end}}
 /// {{if false}}
 type __FIELD_Element__ int
 type Equatable interface{}
-type Slice interface{} /// {{end}}
+type Pointer interface{}
+type Slice interface{}
+type Value interface{} /// {{end}}
 
 // Slice__FIELD_Name__Zero is the Slice__FIELD_Name__ zero value.
 var Slice__FIELD_Name__Zero = Slice__FIELD_Name__(nil)
@@ -63,6 +65,11 @@ func (s Slice__FIELD_Name__) Cap() int {
 // Copy implements Slice.
 func (s Slice__FIELD_Name__) Copy(other Slice) int {
 	return copy(s, other.(Slice__FIELD_Name__))
+}
+
+// Dereference implements Slice.
+func (s *Slice__FIELD_Name__) Dereference() Value {
+	return *s
 }
 
 // Equals implements Slice.
@@ -116,6 +123,11 @@ func (s Slice__FIELD_Name__) Make(l, c int) Slice {
 // NotEquals implements Slice.
 func (s Slice__FIELD_Name__) NotEquals(other Equatable) bool {
 	return !s.Equals(other)
+}
+
+// Reference implements Slice.
+func (s Slice__FIELD_Name__) Reference() Pointer {
+	return &s
 }
 
 // Set implements Slice.
