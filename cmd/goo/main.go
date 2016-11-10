@@ -107,7 +107,7 @@ func NewInterfaceMacro(c *kingpin.CmdClause) *InterfaceMacro {
 
 	c.Arg("interface-package-path", "Interface package path.").Required().StringVar(&m.InterfacePackagePath)
 	c.Arg("interface-name", "Interface name.").Required().StringVar(&m.InterfaceName)
-	c.Arg("receiver-type", "Receiver type.").Required().StringVar(&m.ReceiverType)
+	c.Arg("receiver-type-type", "Receiver type name.").Required().StringVar(&m.ReceiverTypeName)
 
 	c.Flag("disable-format", "Do not format the macro output.").BoolVar(&m.DisableFormat)
 	c.Flag("disable-preprocess", "Do not preprocess the macro output.").BoolVar(&m.DisablePreprocess)

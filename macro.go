@@ -455,7 +455,7 @@ type MacroInterface struct {
 	ReceiverIdentifier        string
 	ReceiverPackageName       string
 	ReceiverPointer           string
-	ReceiverType              string
+	ReceiverTypeName          string
 }
 
 func (m *MacroInterface) Init() error {
@@ -486,7 +486,7 @@ func (m *MacroInterface) Init() error {
 	}
 
 	if m.Output == "" {
-		m.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(m.ReceiverType), strings.ToLower(m.InterfaceName))
+		m.Output = fmt.Sprintf("%v_%v.go", strings.ToLower(m.ReceiverTypeName), strings.ToLower(m.InterfaceName))
 	}
 
 	var outputPackageName, outputPackagePath, err = m.filePackage(m.Output)
@@ -673,14 +673,14 @@ func (m *MacroInterface) receiver() (string, error) {
 		}
 	}
 
-	var words = camelcase.Split(m.ReceiverType)
+	var words = camelcase.Split(m.ReceiverTypeName)
 	var initials []string
 
 	for i, word := range words {
 		var r, _ = utf8.DecodeRuneInString(word)
 
 		if r == utf8.RuneError {
-			return "", fmt.Errorf("type %v is invalid: invalid utf8 string", m.ReceiverType)
+			return "", fmt.Errorf("type %v is invalid: invalid utf8 string", m.ReceiverTypeName)
 		}
 
 		initials = append(initials, strings.ToLower(fmt.Sprintf("%c", r)))
