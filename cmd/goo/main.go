@@ -1,8 +1,8 @@
 //go:generate go get github.com/willfaught/goo/cmd/goo
-//go:generate goo resource ../../internal/mock/mock.go
-//go:generate goo resource ../../internal/resource/resource.go
-//go:generate goo resource ../../internal/stub/stub.go
-//go:generate goo resource ../../internal/wrap/wrap.go
+//go:generate goo resource ../../internal/mocks/mocks.go
+//go:generate goo resource ../../internal/resources/resources.go
+//go:generate goo resource ../../internal/stubs/stubs.go
+//go:generate goo resource ../../internal/wraps/wraps.go
 
 package main
 
