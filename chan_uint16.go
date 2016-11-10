@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanUint16(nil)
 
+var _ Pointer = (*ChanUint16)(nil)
+
 // ChanUint16 is a channel of uint16.
 type ChanUint16 chan uint16
 

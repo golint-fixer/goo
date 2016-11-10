@@ -2,6 +2,8 @@ package goo
 
 var _ ChanSend = ChanSendUint8(nil)
 
+var _ Pointer = (*ChanSendUint8)(nil)
+
 // ChanSendUint8 is a send channel of uint8.
 type ChanSendUint8 chan uint8
 

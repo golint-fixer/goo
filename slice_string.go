@@ -5,6 +5,8 @@ import "sort"
 // SliceStringZero is the SliceString zero value.
 var SliceStringZero = SliceString(nil)
 
+var _ Pointer = &SliceString{}
+
 var _ Slice = SliceString(nil)
 
 var _ sort.Interface = SliceString(nil)

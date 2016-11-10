@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapRuneString(nil)
 
+var _ Pointer = &MapRuneString{}
+
 // MapRuneString is a map from rune to string.
 type MapRuneString map[rune]string
 

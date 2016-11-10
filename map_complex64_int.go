@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapComplex64Int(nil)
 
+var _ Pointer = &MapComplex64Int{}
+
 // MapComplex64Int is a map from complex64 to int.
 type MapComplex64Int map[complex64]int
 

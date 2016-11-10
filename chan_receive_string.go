@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveString(nil)
 
+var _ Pointer = (*ChanReceiveString)(nil)
+
 // ChanReceiveString is a receive channel of string.
 type ChanReceiveString chan string
 

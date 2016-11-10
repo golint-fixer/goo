@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapInterfaceBool(nil)
 
+var _ Pointer = &MapInterfaceBool{}
+
 // MapInterfaceBool is a map from interface{} to bool.
 type MapInterfaceBool map[interface{}]bool
 

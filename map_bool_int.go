@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapBoolInt(nil)
 
+var _ Pointer = &MapBoolInt{}
+
 // MapBoolInt is a map from bool to int.
 type MapBoolInt map[bool]int
 

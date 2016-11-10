@@ -5,6 +5,8 @@ import "sort"
 // SliceFloat64Zero is the SliceFloat64 zero value.
 var SliceFloat64Zero = SliceFloat64(nil)
 
+var _ Pointer = &SliceFloat64{}
+
 var _ Slice = SliceFloat64(nil)
 
 var _ sort.Interface = SliceFloat64(nil)

@@ -5,6 +5,8 @@ import "sort"
 // SliceRuneZero is the SliceRune zero value.
 var SliceRuneZero = SliceRune(nil)
 
+var _ Pointer = &SliceRune{}
+
 var _ Slice = SliceRune(nil)
 
 var _ sort.Interface = SliceRune(nil)

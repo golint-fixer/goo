@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveComplex128(nil)
 
+var _ Pointer = (*ChanReceiveComplex128)(nil)
+
 // ChanReceiveComplex128 is a receive channel of complex128.
 type ChanReceiveComplex128 chan complex128
 

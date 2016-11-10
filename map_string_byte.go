@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapStringByte(nil)
 
+var _ Pointer = &MapStringByte{}
+
 // MapStringByte is a map from string to byte.
 type MapStringByte map[string]byte
 

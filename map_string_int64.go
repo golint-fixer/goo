@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapStringInt64(nil)
 
+var _ Pointer = &MapStringInt64{}
+
 // MapStringInt64 is a map from string to int64.
 type MapStringInt64 map[string]int64
 

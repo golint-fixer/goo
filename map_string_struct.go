@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapStringStruct(nil)
 
+var _ Pointer = &MapStringStruct{}
+
 // MapStringStruct is a map from string to struct{}.
 type MapStringStruct map[string]struct{}
 

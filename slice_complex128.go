@@ -3,6 +3,8 @@ package goo
 // SliceComplex128Zero is the SliceComplex128 zero value.
 var SliceComplex128Zero = SliceComplex128(nil)
 
+var _ Pointer = &SliceComplex128{}
+
 var _ Slice = SliceComplex128(nil)
 
 // SliceComplex128 is a slice of complex128.

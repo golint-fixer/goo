@@ -5,6 +5,8 @@ import "sort"
 // SliceUint64Zero is the SliceUint64 zero value.
 var SliceUint64Zero = SliceUint64(nil)
 
+var _ Pointer = &SliceUint64{}
+
 var _ Slice = SliceUint64(nil)
 
 var _ sort.Interface = SliceUint64(nil)

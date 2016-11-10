@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapStringInterface(nil)
 
+var _ Pointer = &MapStringInterface{}
+
 // MapStringInterface is a map from string to interface{}.
 type MapStringInterface map[string]interface{}
 

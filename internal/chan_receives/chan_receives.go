@@ -32,6 +32,8 @@ type Value interface{} /// {{end}}
 
 var _ ChanReceive = ChanReceive__FIELD_Name__(nil)
 
+var _ Pointer = (*ChanReceive__FIELD_Name__)(nil)
+
 // ChanReceive__FIELD_Name__ is a receive channel of __FIELD_Type__.
 type ChanReceive__FIELD_Name__ chan __FIELD_Type__
 

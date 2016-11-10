@@ -5,6 +5,8 @@ import "sort"
 // SliceInt32Zero is the SliceInt32 zero value.
 var SliceInt32Zero = SliceInt32(nil)
 
+var _ Pointer = &SliceInt32{}
+
 var _ Slice = SliceInt32(nil)
 
 var _ sort.Interface = SliceInt32(nil)

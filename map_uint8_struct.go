@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapUint8Struct(nil)
 
+var _ Pointer = &MapUint8Struct{}
+
 // MapUint8Struct is a map from uint8 to struct{}.
 type MapUint8Struct map[uint8]struct{}
 

@@ -2,6 +2,8 @@ package goo
 
 var _ ChanSend = ChanSendComplex64(nil)
 
+var _ Pointer = (*ChanSendComplex64)(nil)
+
 // ChanSendComplex64 is a send channel of complex64.
 type ChanSendComplex64 chan complex64
 

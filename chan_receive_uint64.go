@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveUint64(nil)
 
+var _ Pointer = (*ChanReceiveUint64)(nil)
+
 // ChanReceiveUint64 is a receive channel of uint64.
 type ChanReceiveUint64 chan uint64
 

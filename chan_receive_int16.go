@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveInt16(nil)
 
+var _ Pointer = (*ChanReceiveInt16)(nil)
+
 // ChanReceiveInt16 is a receive channel of int16.
 type ChanReceiveInt16 chan int16
 

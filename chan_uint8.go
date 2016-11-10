@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanUint8(nil)
 
+var _ Pointer = (*ChanUint8)(nil)
+
 // ChanUint8 is a channel of uint8.
 type ChanUint8 chan uint8
 

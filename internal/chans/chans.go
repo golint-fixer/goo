@@ -32,6 +32,8 @@ type Value interface{} /// {{end}}
 
 var _ Chan = Chan__FIELD_Name__(nil)
 
+var _ Pointer = (*Chan__FIELD_Name__)(nil)
+
 // Chan__FIELD_Name__ is a channel of __FIELD_Type__.
 type Chan__FIELD_Name__ chan __FIELD_Type__
 

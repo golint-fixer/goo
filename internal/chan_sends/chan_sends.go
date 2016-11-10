@@ -32,6 +32,8 @@ type Value interface{} /// {{end}}
 
 var _ ChanSend = ChanSend__FIELD_Name__(nil)
 
+var _ Pointer = (*ChanSend__FIELD_Name__)(nil)
+
 // ChanSend__FIELD_Name__ is a send channel of __FIELD_Type__.
 type ChanSend__FIELD_Name__ chan __FIELD_Type__
 

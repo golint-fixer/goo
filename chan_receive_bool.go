@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveBool(nil)
 
+var _ Pointer = (*ChanReceiveBool)(nil)
+
 // ChanReceiveBool is a receive channel of bool.
 type ChanReceiveBool chan bool
 

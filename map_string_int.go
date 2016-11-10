@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapStringInt(nil)
 
+var _ Pointer = &MapStringInt{}
+
 // MapStringInt is a map from string to int.
 type MapStringInt map[string]int
 

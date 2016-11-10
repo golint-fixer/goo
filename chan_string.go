@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanString(nil)
 
+var _ Pointer = (*ChanString)(nil)
+
 // ChanString is a channel of string.
 type ChanString chan string
 

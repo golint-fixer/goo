@@ -110,6 +110,8 @@ type Value interface{} /// {{end}}
 
 var _ Map = Map__FIELD_Key____FIELD_Value__(nil)
 
+var _ Pointer = &Map__FIELD_Key____FIELD_Value__{}
+
 // Map__FIELD_Key____FIELD_Value__ is a map from __FIELD_KeyType__ to __FIELD_ValueType__.
 type Map__FIELD_Key____FIELD_Value__ map[__FIELD_KeyType__]__FIELD_ValueType__
 

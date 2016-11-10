@@ -2,6 +2,8 @@ package goo
 
 var _ ChanSend = ChanSendInterface(nil)
 
+var _ Pointer = (*ChanSendInterface)(nil)
+
 // ChanSendInterface is a send channel of interface{}.
 type ChanSendInterface chan interface{}
 

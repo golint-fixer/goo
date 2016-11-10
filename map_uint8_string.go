@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapUint8String(nil)
 
+var _ Pointer = &MapUint8String{}
+
 // MapUint8String is a map from uint8 to string.
 type MapUint8String map[uint8]string
 

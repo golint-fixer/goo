@@ -35,6 +35,8 @@ type Value interface{} /// {{end}}
 // Slice__FIELD_Name__Zero is the Slice__FIELD_Name__ zero value.
 var Slice__FIELD_Name__Zero = Slice__FIELD_Name__(nil)
 
+var _ Pointer = &Slice__FIELD_Name__{}
+
 var _ Slice = Slice__FIELD_Name__(nil)
 
 /// {{if .Sort}}

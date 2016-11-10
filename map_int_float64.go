@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapIntFloat64(nil)
 
+var _ Pointer = &MapIntFloat64{}
+
 // MapIntFloat64 is a map from int to float64.
 type MapIntFloat64 map[int]float64
 

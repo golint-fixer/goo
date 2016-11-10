@@ -3,6 +3,8 @@ package goo
 // SliceInterfaceZero is the SliceInterface zero value.
 var SliceInterfaceZero = SliceInterface(nil)
 
+var _ Pointer = &SliceInterface{}
+
 var _ Slice = SliceInterface(nil)
 
 // SliceInterface is a slice of interface{}.

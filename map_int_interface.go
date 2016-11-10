@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapIntInterface(nil)
 
+var _ Pointer = &MapIntInterface{}
+
 // MapIntInterface is a map from int to interface{}.
 type MapIntInterface map[int]interface{}
 

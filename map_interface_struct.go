@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapInterfaceStruct(nil)
 
+var _ Pointer = &MapInterfaceStruct{}
+
 // MapInterfaceStruct is a map from interface{} to struct{}.
 type MapInterfaceStruct map[interface{}]struct{}
 

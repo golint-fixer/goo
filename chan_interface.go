@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanInterface(nil)
 
+var _ Pointer = (*ChanInterface)(nil)
+
 // ChanInterface is a channel of interface{}.
 type ChanInterface chan interface{}
 

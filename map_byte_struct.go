@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapByteStruct(nil)
 
+var _ Pointer = &MapByteStruct{}
+
 // MapByteStruct is a map from byte to struct{}.
 type MapByteStruct map[byte]struct{}
 

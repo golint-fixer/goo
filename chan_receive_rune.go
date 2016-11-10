@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveRune(nil)
 
+var _ Pointer = (*ChanReceiveRune)(nil)
+
 // ChanReceiveRune is a receive channel of rune.
 type ChanReceiveRune chan rune
 

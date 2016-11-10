@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapComplex128Int(nil)
 
+var _ Pointer = &MapComplex128Int{}
+
 // MapComplex128Int is a map from complex128 to int.
 type MapComplex128Int map[complex128]int
 

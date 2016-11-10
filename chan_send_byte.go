@@ -2,6 +2,8 @@ package goo
 
 var _ ChanSend = ChanSendByte(nil)
 
+var _ Pointer = (*ChanSendByte)(nil)
+
 // ChanSendByte is a send channel of byte.
 type ChanSendByte chan byte
 

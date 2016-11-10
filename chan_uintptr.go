@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanUintptr(nil)
 
+var _ Pointer = (*ChanUintptr)(nil)
+
 // ChanUintptr is a channel of uintptr.
 type ChanUintptr chan uintptr
 

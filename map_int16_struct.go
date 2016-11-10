@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapInt16Struct(nil)
 
+var _ Pointer = &MapInt16Struct{}
+
 // MapInt16Struct is a map from int16 to struct{}.
 type MapInt16Struct map[int16]struct{}
 

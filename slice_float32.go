@@ -5,6 +5,8 @@ import "sort"
 // SliceFloat32Zero is the SliceFloat32 zero value.
 var SliceFloat32Zero = SliceFloat32(nil)
 
+var _ Pointer = &SliceFloat32{}
+
 var _ Slice = SliceFloat32(nil)
 
 var _ sort.Interface = SliceFloat32(nil)

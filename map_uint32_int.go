@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapUint32Int(nil)
 
+var _ Pointer = &MapUint32Int{}
+
 // MapUint32Int is a map from uint32 to int.
 type MapUint32Int map[uint32]int
 

@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapComplex64String(nil)
 
+var _ Pointer = &MapComplex64String{}
+
 // MapComplex64String is a map from complex64 to string.
 type MapComplex64String map[complex64]string
 

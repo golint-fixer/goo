@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveFloat32(nil)
 
+var _ Pointer = (*ChanReceiveFloat32)(nil)
+
 // ChanReceiveFloat32 is a receive channel of float32.
 type ChanReceiveFloat32 chan float32
 

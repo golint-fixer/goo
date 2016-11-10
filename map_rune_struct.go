@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapRuneStruct(nil)
 
+var _ Pointer = &MapRuneStruct{}
+
 // MapRuneStruct is a map from rune to struct{}.
 type MapRuneStruct map[rune]struct{}
 

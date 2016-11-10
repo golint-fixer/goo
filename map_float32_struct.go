@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapFloat32Struct(nil)
 
+var _ Pointer = &MapFloat32Struct{}
+
 // MapFloat32Struct is a map from float32 to struct{}.
 type MapFloat32Struct map[float32]struct{}
 

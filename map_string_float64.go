@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapStringFloat64(nil)
 
+var _ Pointer = &MapStringFloat64{}
+
 // MapStringFloat64 is a map from string to float64.
 type MapStringFloat64 map[string]float64
 

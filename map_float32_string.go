@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapFloat32String(nil)
 
+var _ Pointer = &MapFloat32String{}
+
 // MapFloat32String is a map from float32 to string.
 type MapFloat32String map[float32]string
 

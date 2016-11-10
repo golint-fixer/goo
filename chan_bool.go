@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanBool(nil)
 
+var _ Pointer = (*ChanBool)(nil)
+
 // ChanBool is a channel of bool.
 type ChanBool chan bool
 

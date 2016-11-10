@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapFloat64Struct(nil)
 
+var _ Pointer = &MapFloat64Struct{}
+
 // MapFloat64Struct is a map from float64 to struct{}.
 type MapFloat64Struct map[float64]struct{}
 

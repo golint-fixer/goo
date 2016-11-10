@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveInterface(nil)
 
+var _ Pointer = (*ChanReceiveInterface)(nil)
+
 // ChanReceiveInterface is a receive channel of interface{}.
 type ChanReceiveInterface chan interface{}
 

@@ -2,6 +2,8 @@ package goo
 
 var _ ChanReceive = ChanReceiveInt(nil)
 
+var _ Pointer = (*ChanReceiveInt)(nil)
+
 // ChanReceiveInt is a receive channel of int.
 type ChanReceiveInt chan int
 

@@ -2,6 +2,8 @@ package goo
 
 var _ ChanSend = ChanSendFloat32(nil)
 
+var _ Pointer = (*ChanSendFloat32)(nil)
+
 // ChanSendFloat32 is a send channel of float32.
 type ChanSendFloat32 chan float32
 

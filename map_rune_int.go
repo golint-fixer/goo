@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapRuneInt(nil)
 
+var _ Pointer = &MapRuneInt{}
+
 // MapRuneInt is a map from rune to int.
 type MapRuneInt map[rune]int
 

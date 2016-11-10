@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapIntUint16(nil)
 
+var _ Pointer = &MapIntUint16{}
+
 // MapIntUint16 is a map from int to uint16.
 type MapIntUint16 map[int]uint16
 

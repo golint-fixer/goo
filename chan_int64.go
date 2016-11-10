@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanInt64(nil)
 
+var _ Pointer = (*ChanInt64)(nil)
+
 // ChanInt64 is a channel of int64.
 type ChanInt64 chan int64
 

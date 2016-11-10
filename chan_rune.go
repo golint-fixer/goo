@@ -2,6 +2,8 @@ package goo
 
 var _ Chan = ChanRune(nil)
 
+var _ Pointer = (*ChanRune)(nil)
+
 // ChanRune is a channel of rune.
 type ChanRune chan rune
 

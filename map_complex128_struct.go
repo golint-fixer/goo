@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapComplex128Struct(nil)
 
+var _ Pointer = &MapComplex128Struct{}
+
 // MapComplex128Struct is a map from complex128 to struct{}.
 type MapComplex128Struct map[complex128]struct{}
 

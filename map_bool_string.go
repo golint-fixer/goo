@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapBoolString(nil)
 
+var _ Pointer = &MapBoolString{}
+
 // MapBoolString is a map from bool to string.
 type MapBoolString map[bool]string
 

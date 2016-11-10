@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapInt64Struct(nil)
 
+var _ Pointer = &MapInt64Struct{}
+
 // MapInt64Struct is a map from int64 to struct{}.
 type MapInt64Struct map[int64]struct{}
 

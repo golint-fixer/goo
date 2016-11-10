@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapIntByte(nil)
 
+var _ Pointer = &MapIntByte{}
+
 // MapIntByte is a map from int to byte.
 type MapIntByte map[int]byte
 

@@ -3,6 +3,8 @@ package goo
 // SliceBoolZero is the SliceBool zero value.
 var SliceBoolZero = SliceBool(nil)
 
+var _ Pointer = &SliceBool{}
+
 var _ Slice = SliceBool(nil)
 
 // SliceBool is a slice of bool.

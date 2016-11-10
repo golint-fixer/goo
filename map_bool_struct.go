@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapBoolStruct(nil)
 
+var _ Pointer = &MapBoolStruct{}
+
 // MapBoolStruct is a map from bool to struct{}.
 type MapBoolStruct map[bool]struct{}
 

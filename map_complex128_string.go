@@ -2,6 +2,8 @@ package goo
 
 var _ Map = MapComplex128String(nil)
 
+var _ Pointer = &MapComplex128String{}
+
 // MapComplex128String is a map from complex128 to string.
 type MapComplex128String map[complex128]string
 
