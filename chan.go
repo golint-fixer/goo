@@ -2,6 +2,8 @@ package goo
 
 // Chan is a channel.
 type Chan interface {
+	Value
+
 	// Cap returns the capacity.
 	Cap() int
 

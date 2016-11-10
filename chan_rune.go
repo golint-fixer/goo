@@ -25,6 +25,11 @@ func (c ChanRune) Close() {
 	close(c)
 }
 
+// Dereference implements Chan.
+func (c *ChanRune) Dereference() Value {
+	return *c
+}
+
 // Len implements Chan.
 func (c ChanRune) Len() int {
 	return len(c)
@@ -45,6 +50,11 @@ func (c ChanRune) ReceiveCheck() (interface{}, bool) {
 	var v, ok = <-c
 
 	return v, ok
+}
+
+// Reference implements Chan.
+func (c ChanRune) Reference() Pointer {
+	return &c
 }
 
 // Send implements Chan.

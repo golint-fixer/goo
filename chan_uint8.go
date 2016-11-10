@@ -25,6 +25,11 @@ func (c ChanUint8) Close() {
 	close(c)
 }
 
+// Dereference implements Chan.
+func (c *ChanUint8) Dereference() Value {
+	return *c
+}
+
 // Len implements Chan.
 func (c ChanUint8) Len() int {
 	return len(c)
@@ -45,6 +50,11 @@ func (c ChanUint8) ReceiveCheck() (interface{}, bool) {
 	var v, ok = <-c
 
 	return v, ok
+}
+
+// Reference implements Chan.
+func (c ChanUint8) Reference() Pointer {
+	return &c
 }
 
 // Send implements Chan.
