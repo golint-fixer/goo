@@ -37,11 +37,11 @@ func (s stack) Peek() interface{} {
 func (s stack) Pop() interface{} {
 	var v interface{}
 
-	s.s, v = Pop(s.s)
+	s.s, v = SlicePop(s.s)
 
 	return v
 }
 
 func (s stack) Push(v interface{}) {
-	s.s = Push(s.s, v)
+	s.s = SlicePush(s.s, v)
 }

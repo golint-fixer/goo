@@ -27,7 +27,7 @@ func NewQueueFor(s Slice) Queue {
 }
 
 func (q queue) Add(v interface{}) {
-	q.s = Enqueue(q.s, v)
+	q.s = SliceEnqueue(q.s, v)
 }
 
 func (q queue) Len() int {
@@ -41,7 +41,7 @@ func (q queue) Peek() interface{} {
 func (q queue) Remove() interface{} {
 	var v interface{}
 
-	q.s, v = Dequeue(q.s)
+	q.s, v = SliceDequeue(q.s)
 
 	return v
 }
