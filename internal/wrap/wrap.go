@@ -20,8 +20,8 @@ var _ __FIELD_InterfaceName__ = &__FIELD_ReceiverTypeName__{}                   
 /// {{define "params"}} {{range $i, $p := .ParamsGrouped}} {{if $i}}, {{end}} {{range $j, $n := $p.Names}} {{if $j}} , {{end}} {{$n}} {{end}} {{$p.Type}} {{end}} {{end}}
 /// {{define "results"}} {{if .ResultsGrouped}} {{if or (gt (len .ResultsGrouped) 1) (index .ResultsGrouped 0).Names}} ( {{end}} {{end}} {{range $i, $r := .ResultsGrouped}} {{if $i}}, {{end}} {{range $j, $n := $r.Names}} {{if $j}} , {{end}} {{$n}} {{end}} {{$r.Type}} {{end}} {{if .ResultsGrouped}} {{if or (gt (len .ResultsGrouped) 1) (index .ResultsGrouped 0).Names}} ) {{end}} {{end}} {{end}}
 /// {{define "args"}} {{range $i, $p := .ParamsFlat}} {{if $i}} , {{end}} {{$p.Name}} {{end}} {{end}}
-/// {{define "body-none"}} {{.Receiver}} .wrapped. {{.Name}} ( {{template "args" .}} ) {{end}}
-/// {{define "body-many"}} return {{.Receiver}} .wrapped. {{.Name}} ( {{template "args" .}} ) {{end}}
+/// {{define "body-none"}} {{.Interface.ReceiverIdentifier}} .wrapped. {{.Name}} ( {{template "args" .}} ) {{end}}
+/// {{define "body-many"}} return {{.Interface.ReceiverIdentifier}} .wrapped. {{.Name}} ( {{template "args" .}} ) {{end}}
 /// {{define "body"}} {{if .ResultsFlat}} {{template "body-many" .}} {{else}} {{template "body-none" .}} {{end}} {{end}}
 
 /// {{range .InterfaceMethods}}

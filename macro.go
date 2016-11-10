@@ -588,47 +588,17 @@ func (m *MacroInterface) methods() ([]*MacroMethod, error) {
 			panic(method.Type)
 		}
 
-		var pfs, rfs []*MacroVar
-		var pgs, rgs []*MacroVars
-
-		if f.Params != nil {
-			for _, p := range f.Params.List {
-				var ns []string
-
-				for _, n := range p.Names {
-					ns = append(ns, n.Name)
-					pfs = append(pfs, &MacroVar{Name: n.Name, Type: macroExprString(p.Type)})
-				}
-
-				pgs = append(pgs, &MacroVars{Names: ns, Type: macroExprString(p.Type)})
-			}
-		}
-
-		if f.Results != nil {
-			for _, r := range f.Results.List {
-				var ns []string
-
-				if len(r.Names) == 0 {
-					rfs = append(rfs, &MacroVar{Type: macroExprString(r.Type)})
-				} else {
-					for _, n := range r.Names {
-						ns = append(ns, n.Name)
-						rfs = append(rfs, &MacroVar{Name: n.Name, Type: macroExprString(r.Type)})
-					}
-				}
-
-				rgs = append(rgs, &MacroVars{Names: ns, Type: macroExprString(r.Type)})
-			}
-		}
+		var pf, pg = m.vars(f.Params.List)
+		var rf, rg = m.vars(f.Results.List)
 
 		methods = append(methods, &MacroMethod{
 			Doc:            macroCommentGroup(method.Doc),
+			Interface:      m,
 			Name:           method.Names[0].Name,
-			ParamsFlat:     pfs,
-			ParamsGrouped:  pgs,
-			Receiver:       m.ReceiverIdentifier,
-			ResultsFlat:    rfs,
-			ResultsGrouped: rgs,
+			ParamsFlat:     pf,
+			ParamsGrouped:  pg,
+			ResultsFlat:    rf,
+			ResultsGrouped: rg,
 		})
 	}
 
@@ -719,12 +689,34 @@ func (m *MacroInterface) receiver() (string, error) {
 	return name, nil
 }
 
+func (m *MacroInterface) vars(vars []*ast.Field) ([]*MacroVar, []*MacroVars) {
+	var flat []*MacroVar
+	var grouped []*MacroVars
+
+	for _, v := range vars {
+		var names []string
+
+		if len(v.Names) == 0 {
+			flat = append(flat, &MacroVar{Interface: m, Type: macroExprString(v.Type)})
+		} else {
+			for _, n := range v.Names {
+				names = append(names, n.Name)
+				flat = append(flat, &MacroVar{Interface: m, Name: n.Name, Type: macroExprString(v.Type)})
+			}
+		}
+
+		grouped = append(grouped, &MacroVars{Interface: m, Names: names, Type: macroExprString(v.Type)})
+	}
+
+	return flat, grouped
+}
+
 type MacroMethod struct {
 	Doc            []string
+	Interface      *MacroInterface
 	Name           string
 	ParamsFlat     []*MacroVar
 	ParamsGrouped  []*MacroVars
-	Receiver       string
 	ResultsFlat    []*MacroVar
 	ResultsGrouped []*MacroVars
 }
@@ -749,11 +741,13 @@ func (m *MacroOutput) Run(input []byte) error {
 }
 
 type MacroVar struct {
-	Name string
-	Type string
+	Interface *MacroInterface
+	Name      string
+	Type      string
 }
 
 type MacroVars struct {
-	Names []string
-	Type  string
+	Interface *MacroInterface
+	Names     []string
+	Type      string
 }
