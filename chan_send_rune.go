@@ -10,9 +10,14 @@ func (c ChanSendRune) Cap() int {
 	return cap(c)
 }
 
-// Close implements Chan.
+// Close implements ChanSend.
 func (c ChanSendRune) Close() {
 	close(c)
+}
+
+// Dereference implements ChanSend.
+func (c *ChanSendRune) Dereference() Value {
+	return *c
 }
 
 // Len implements ChanSend.
@@ -23,6 +28,11 @@ func (c ChanSendRune) Len() int {
 // Make implements ChanSend.
 func (c ChanSendRune) Make(cap int) Chan {
 	return make(ChanRune, cap)
+}
+
+// Reference implements ChanSend.
+func (c ChanSendRune) Reference() Pointer {
+	return &c
 }
 
 // Send implements Chan.

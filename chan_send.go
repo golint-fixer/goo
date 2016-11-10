@@ -2,6 +2,8 @@ package goo
 
 // ChanSend is a send channel.
 type ChanSend interface {
+	Value
+
 	// Cap returns the capacity.
 	Cap() int
 

@@ -26,7 +26,9 @@ package goo
 type __FIELD_Type__ struct{}
 type Chan__FIELD_Name__ chan struct{}
 type Chan interface{}
-type ChanSend interface{} /// {{end}}
+type ChanSend interface{}
+type Pointer interface{}
+type Value interface{} /// {{end}}
 
 var _ ChanSend = ChanSend__FIELD_Name__(nil)
 
@@ -38,9 +40,14 @@ func (c ChanSend__FIELD_Name__) Cap() int {
 	return cap(c)
 }
 
-// Close implements Chan.
+// Close implements ChanSend.
 func (c ChanSend__FIELD_Name__) Close() {
 	close(c)
+}
+
+// Dereference implements ChanSend.
+func (c *ChanSend__FIELD_Name__) Dereference() Value {
+	return *c
 }
 
 // Len implements ChanSend.
@@ -51,6 +58,11 @@ func (c ChanSend__FIELD_Name__) Len() int {
 // Make implements ChanSend.
 func (c ChanSend__FIELD_Name__) Make(cap int) Chan {
 	return make(Chan__FIELD_Name__, cap)
+}
+
+// Reference implements ChanSend.
+func (c ChanSend__FIELD_Name__) Reference() Pointer {
+	return &c
 }
 
 // Send implements Chan.
