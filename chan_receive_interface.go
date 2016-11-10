@@ -10,6 +10,11 @@ func (c ChanReceiveInterface) Cap() int {
 	return cap(c)
 }
 
+// Dereference implements ChanReceive.
+func (c *ChanReceiveInterface) Dereference() Value {
+	return *c
+}
+
 // Len implements ChanReceive.
 func (c ChanReceiveInterface) Len() int {
 	return len(c)
@@ -30,4 +35,9 @@ func (c ChanReceiveInterface) ReceiveCheck() (interface{}, bool) {
 	var v, ok = <-c
 
 	return v, ok
+}
+
+// Reference implements ChanReceive.
+func (c ChanReceiveInterface) Reference() Pointer {
+	return &c
 }

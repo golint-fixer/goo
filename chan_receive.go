@@ -2,6 +2,8 @@ package goo
 
 // ChanReceive is a receive channel.
 type ChanReceive interface {
+	Value
+
 	// Cap returns the capacity.
 	Cap() int
 
