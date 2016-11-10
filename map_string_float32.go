@@ -10,6 +10,11 @@ func (m MapStringFloat32) Delete(k interface{}) {
 	delete(m, k.(string))
 }
 
+// Dereference implements Map.
+func (m *MapStringFloat32) Dereference() Value {
+	return *m
+}
+
 // Equals implements Map.
 func (m MapStringFloat32) Equals(other Equatable) bool {
 	var n = other.(MapStringFloat32)
@@ -76,6 +81,11 @@ func (m MapStringFloat32) Make(c int) Map {
 // NotEquals implements Map.
 func (m MapStringFloat32) NotEquals(other Equatable) bool {
 	return !m.Equals(other)
+}
+
+// Reference implements Map.
+func (m MapStringFloat32) Reference() Pointer {
+	return &m
 }
 
 // Set implements Map.

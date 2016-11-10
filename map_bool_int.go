@@ -10,6 +10,11 @@ func (m MapBoolInt) Delete(k interface{}) {
 	delete(m, k.(bool))
 }
 
+// Dereference implements Map.
+func (m *MapBoolInt) Dereference() Value {
+	return *m
+}
+
 // Equals implements Map.
 func (m MapBoolInt) Equals(other Equatable) bool {
 	var n = other.(MapBoolInt)
@@ -76,6 +81,11 @@ func (m MapBoolInt) Make(c int) Map {
 // NotEquals implements Map.
 func (m MapBoolInt) NotEquals(other Equatable) bool {
 	return !m.Equals(other)
+}
+
+// Reference implements Map.
+func (m MapBoolInt) Reference() Pointer {
+	return &m
 }
 
 // Set implements Map.

@@ -10,6 +10,11 @@ func (m MapInt32Struct) Delete(k interface{}) {
 	delete(m, k.(int32))
 }
 
+// Dereference implements Map.
+func (m *MapInt32Struct) Dereference() Value {
+	return *m
+}
+
 // Equals implements Map.
 func (m MapInt32Struct) Equals(other Equatable) bool {
 	var n = other.(MapInt32Struct)
@@ -76,6 +81,11 @@ func (m MapInt32Struct) Make(c int) Map {
 // NotEquals implements Map.
 func (m MapInt32Struct) NotEquals(other Equatable) bool {
 	return !m.Equals(other)
+}
+
+// Reference implements Map.
+func (m MapInt32Struct) Reference() Pointer {
+	return &m
 }
 
 // Set implements Map.

@@ -104,7 +104,9 @@ package goo
 type __FIELD_KeyType__ interface{}
 type __FIELD_ValueType__ interface{}
 type Equatable interface{}
-type Map interface{} /// {{end}}
+type Map interface{}
+type Pointer interface{}
+type Value interface{} /// {{end}}
 
 var _ Map = Map__FIELD_Key____FIELD_Value__(nil)
 
@@ -114,6 +116,11 @@ type Map__FIELD_Key____FIELD_Value__ map[__FIELD_KeyType__]__FIELD_ValueType__
 // Delete implements Map.
 func (m Map__FIELD_Key____FIELD_Value__) Delete(k interface{}) {
 	delete(m, k.(__FIELD_KeyType__))
+}
+
+// Dereference implements Map.
+func (m *Map__FIELD_Key____FIELD_Value__) Dereference() Value {
+	return *m
 }
 
 // Equals implements Map.
@@ -182,6 +189,11 @@ func (m Map__FIELD_Key____FIELD_Value__) Make(c int) Map {
 // NotEquals implements Map.
 func (m Map__FIELD_Key____FIELD_Value__) NotEquals(other Equatable) bool {
 	return !m.Equals(other)
+}
+
+// Reference implements Map.
+func (m Map__FIELD_Key____FIELD_Value__) Reference() Pointer {
+	return &m
 }
 
 // Set implements Map.

@@ -10,6 +10,11 @@ func (m MapComplex128Struct) Delete(k interface{}) {
 	delete(m, k.(complex128))
 }
 
+// Dereference implements Map.
+func (m *MapComplex128Struct) Dereference() Value {
+	return *m
+}
+
 // Equals implements Map.
 func (m MapComplex128Struct) Equals(other Equatable) bool {
 	var n = other.(MapComplex128Struct)
@@ -76,6 +81,11 @@ func (m MapComplex128Struct) Make(c int) Map {
 // NotEquals implements Map.
 func (m MapComplex128Struct) NotEquals(other Equatable) bool {
 	return !m.Equals(other)
+}
+
+// Reference implements Map.
+func (m MapComplex128Struct) Reference() Pointer {
+	return &m
 }
 
 // Set implements Map.

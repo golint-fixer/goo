@@ -10,6 +10,11 @@ func (m MapUintptrString) Delete(k interface{}) {
 	delete(m, k.(uintptr))
 }
 
+// Dereference implements Map.
+func (m *MapUintptrString) Dereference() Value {
+	return *m
+}
+
 // Equals implements Map.
 func (m MapUintptrString) Equals(other Equatable) bool {
 	var n = other.(MapUintptrString)
@@ -76,6 +81,11 @@ func (m MapUintptrString) Make(c int) Map {
 // NotEquals implements Map.
 func (m MapUintptrString) NotEquals(other Equatable) bool {
 	return !m.Equals(other)
+}
+
+// Reference implements Map.
+func (m MapUintptrString) Reference() Pointer {
+	return &m
 }
 
 // Set implements Map.
