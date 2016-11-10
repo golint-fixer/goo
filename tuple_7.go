@@ -1,18 +1,26 @@
 package goo
 
-var _ Equatable = Tuple7{}
-
 // Tuple7 is a tuple of 7 elements.
 type Tuple7 [7]interface{}
 
+// Dereference implements Equatable.
+func (t *Tuple7) Dereference() Value {
+	return *t
+}
+
 // Equals implements Equatable.
-func (t Tuple7) Equals(e Equatable) bool {
-	return t == e.(Tuple7)
+func (t Tuple7) Equals(other Equatable) bool {
+	return t == other.(Tuple7)
 }
 
 // NotEquals implements Equatable.
-func (t Tuple7) NotEquals(e Equatable) bool {
-	return t != e.(Tuple7)
+func (t Tuple7) NotEquals(other Equatable) bool {
+	return t != other.(Tuple7)
+}
+
+// Reference implements Equatable.
+func (t Tuple7) Reference() Pointer {
+	return &t
 }
 
 // First returns the element at index 0.

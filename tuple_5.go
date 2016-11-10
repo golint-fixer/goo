@@ -1,18 +1,26 @@
 package goo
 
-var _ Equatable = Tuple5{}
-
 // Tuple5 is a tuple of 5 elements.
 type Tuple5 [5]interface{}
 
+// Dereference implements Equatable.
+func (t *Tuple5) Dereference() Value {
+	return *t
+}
+
 // Equals implements Equatable.
-func (t Tuple5) Equals(e Equatable) bool {
-	return t == e.(Tuple5)
+func (t Tuple5) Equals(other Equatable) bool {
+	return t == other.(Tuple5)
 }
 
 // NotEquals implements Equatable.
-func (t Tuple5) NotEquals(e Equatable) bool {
-	return t != e.(Tuple5)
+func (t Tuple5) NotEquals(other Equatable) bool {
+	return t != other.(Tuple5)
+}
+
+// Reference implements Equatable.
+func (t Tuple5) Reference() Pointer {
+	return &t
 }
 
 // First returns the element at index 0.

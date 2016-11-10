@@ -1,18 +1,26 @@
 package goo
 
-var _ Equatable = Tuple3{}
-
 // Tuple3 is a tuple of 3 elements.
 type Tuple3 [3]interface{}
 
+// Dereference implements Equatable.
+func (t *Tuple3) Dereference() Value {
+	return *t
+}
+
 // Equals implements Equatable.
-func (t Tuple3) Equals(e Equatable) bool {
-	return t == e.(Tuple3)
+func (t Tuple3) Equals(other Equatable) bool {
+	return t == other.(Tuple3)
 }
 
 // NotEquals implements Equatable.
-func (t Tuple3) NotEquals(e Equatable) bool {
-	return t != e.(Tuple3)
+func (t Tuple3) NotEquals(other Equatable) bool {
+	return t != other.(Tuple3)
+}
+
+// Reference implements Equatable.
+func (t Tuple3) Reference() Pointer {
+	return &t
 }
 
 // First returns the element at index 0.
