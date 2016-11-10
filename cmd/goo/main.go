@@ -107,16 +107,16 @@ func NewInterfaceMacro(c *kingpin.CmdClause) *InterfaceMacro {
 
 	c.Arg("interface-package-path", "Interface package path.").Required().StringVar(&m.InterfacePackagePath)
 	c.Arg("interface-name", "Interface name.").Required().StringVar(&m.InterfaceName)
-	c.Arg("receiver-type-type", "Receiver type name.").Required().StringVar(&m.ReceiverTypeName)
+	c.Arg("receiver-type-name", "Receiver type name.").Required().StringVar(&m.ReceiverTypeName)
 
 	c.Flag("disable-format", "Do not format the macro output.").BoolVar(&m.DisableFormat)
 	c.Flag("disable-preprocess", "Do not preprocess the macro output.").BoolVar(&m.DisablePreprocess)
 	c.Flag("disable-process", "Do not process the macro output.").BoolVar(&m.DisableProcess)
-	c.Flag("interface-package-name", "Input file path.").StringVar(&m.InterfacePackageName)
+	c.Flag("interface-package-name", "Interface package name.").StringVar(&m.InterfacePackageName)
 	c.Flag("output", "Output file path.").Short('o').StringVar(&m.MacroInterface.Output)
-	c.Flag("receiver-identifier", "Input file path.").StringVar(&m.ReceiverIdentifier)
-	c.Flag("receiver-package", "Input file path.").StringVar(&m.ReceiverPackageName)
-	c.Flag("receiver-value", "Input file path.").BoolVar(&m.Value)
+	c.Flag("receiver-identifier", "Receiver identifier.").StringVar(&m.ReceiverIdentifier)
+	c.Flag("receiver-type-package-name", "Receiver type package name.").StringVar(&m.ReceiverTypePackageName)
+	c.Flag("receiver-type-value", "Receiver type is a value.").BoolVar(&m.Value)
 
 	return &m
 }
@@ -135,8 +135,8 @@ func (m *InterfaceMacro) Run(input []byte) error {
 	m.Name = m.MacroOutput.Output
 
 	if !m.Value {
-		m.ReceiverAddress = "&"
-		m.ReceiverPointer = "*"
+		m.ReceiverTypePointer = "*"
+		m.ReceiverTypeReference = "&"
 	}
 
 	return m.MacroOutput.Run(input)

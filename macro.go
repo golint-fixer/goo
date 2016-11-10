@@ -451,11 +451,11 @@ type MacroInterface struct {
 	InterfacePackageQualifier string
 	InterfaceVar              string
 	Output                    string
-	ReceiverAddress           string
 	ReceiverIdentifier        string
-	ReceiverPackageName       string
-	ReceiverPointer           string
 	ReceiverTypeName          string
+	ReceiverTypePackageName   string
+	ReceiverTypePointer       string
+	ReceiverTypeReference     string
 }
 
 func (m *MacroInterface) Init() error {
@@ -495,8 +495,8 @@ func (m *MacroInterface) Init() error {
 		return err
 	}
 
-	if m.ReceiverPackageName == "" {
-		m.ReceiverPackageName = outputPackageName
+	if m.ReceiverTypePackageName == "" {
+		m.ReceiverTypePackageName = outputPackageName
 	}
 
 	if m.InterfacePackageQualifier == "" && m.InterfacePackagePath != outputPackagePath {
