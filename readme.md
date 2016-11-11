@@ -1,6 +1,6 @@
 # goo
 
-Fill the gaps.
+*Fill the gaps.*
 
 [![Documentation](https://godoc.org/github.com/willfaught/goo?status.svg)](https://godoc.org/github.com/willfaught/goo)
 [![Build](https://travis-ci.org/willfaught/goo.svg?branch=master)](https://travis-ci.org/willfaught/goo)
